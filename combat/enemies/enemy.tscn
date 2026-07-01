@@ -1,0 +1,44 @@
+[gd_scene format=3 uid="uid://dokngmx1d2gj"]
+
+[ext_resource type="Script" uid="uid://bg60alx4ht84t" path="res://combat/enemies/enemy_ui.gd" id="1_f5gfq"]
+[ext_resource type="Script" uid="uid://chrfkcuftv0ng" path="res://combat/enemies/enemy_data.gd" id="2_c4d5t"]
+
+[sub_resource type="Resource" id="Resource_f5gfq"]
+script = ExtResource("2_c4d5t")
+health = null
+metadata/_custom_type_script = "uid://chrfkcuftv0ng"
+
+[node name="Enemy" type="Panel" unique_id=1705568424]
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+size_flags_vertical = 8
+script = ExtResource("1_f5gfq")
+enemy_data = SubResource("Resource_f5gfq")
+
+[node name="NameLabel" type="Label" parent="." unique_id=1709609383]
+layout_mode = 1
+anchors_preset = 10
+anchor_right = 1.0
+offset_bottom = 23.0
+grow_horizontal = 2
+
+[node name="PortraitRect" type="TextureRect" parent="." unique_id=1505991801]
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="ProgressBar" type="ProgressBar" parent="." unique_id=1299524747]
+z_index = 2
+layout_mode = 1
+anchors_preset = 10
+anchor_right = 1.0
+offset_bottom = 27.0
+grow_horizontal = 2

@@ -1,0 +1,11 @@
+[gd_scene format=3 uid="uid://p3hvjrohvjvp"]
+
+[ext_resource type="Script" uid="uid://d178c31pndtte" path="res://floating_text.gd" id="1_58iww"]
+
+[node name="FloatingText" type="Label" unique_id=1321602171]
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+script = ExtResource("1_58iww")
