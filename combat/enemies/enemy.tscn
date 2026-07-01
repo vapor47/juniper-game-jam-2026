@@ -30,7 +30,6 @@ layout_mode = 2
 size_flags_horizontal = 4
 
 [node name="ProgressBar" type="ProgressBar" parent="VBoxContainer" unique_id=1299524747]
-z_index = 2
 layout_mode = 2
 
 [node name="NameLabel" type="Label" parent="VBoxContainer" unique_id=1709609383]

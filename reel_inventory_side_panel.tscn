@@ -1,6 +1,6 @@
 [gd_scene format=3 uid="uid://dsxlmk6rkjoo8"]
 
-[ext_resource type="Script" uid="uid://qg2siyv1b5f5" path="res://reel_inventory_side_panel.gd" id="1_rtaw8"]
+[ext_resource type="Script" uid="uid://bjlywqrqx4mt2" path="res://reel_inventory_side_panel.gd" id="1_rtaw8"]
 
 [node name="ReelInventorySidePanel" type="PanelContainer" unique_id=1440181094]
 anchors_preset = 15

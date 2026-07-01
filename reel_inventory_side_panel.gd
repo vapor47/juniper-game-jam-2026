@@ -13,11 +13,12 @@ const ReelInventoryItemScene = preload("res://reel_inventory_item.tscn")
 
 
 func _ready() -> void:
+	await get_tree().process_frame
 	custom_minimum_size.x = panel_width
 	
 	# Start off-screen
 	# TODO: investigate why i have to add
-	position.x = get_viewport().size.x + size.x + 200
+	position.x = _get_screen_width() + size.x
 	
 	EventBus.slot_selected.connect(_on_open_requested)
 	EventBus.close_side_panel.connect(close)
@@ -50,14 +51,14 @@ func open() -> void:
 	if is_open: return
 		
 	is_open = true
-	_animate_to(get_viewport().size.x - size.x)
+	_animate_to(_get_screen_width() - size.x)
 
 func close() -> void:
 	if !is_open: return
 
 	is_open = false
 	curr_selected_slot = null
-	_animate_to(get_viewport().size.x)
+	_animate_to(_get_screen_width())
 
 func _animate_to(target_x: float) -> void:
 	if tween:
@@ -67,6 +68,8 @@ func _animate_to(target_x: float) -> void:
 	tween.set_trans(Tween.TRANS_CUBIC)
 	tween.tween_property(self, "position:x", target_x, slide_duration)
 
+func _get_screen_width() -> float:
+	return get_viewport().get_visible_rect().size.x
 """
 if we click the same slot, it will close it
 if we click a different slot than current,

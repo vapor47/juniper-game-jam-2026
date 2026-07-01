@@ -5,6 +5,7 @@ extends Panel
 @export var enemy_data: EnemyData:
 	set(new_enemy_data):
 		enemy_data = new_enemy_data
+		print("Enemy is now: " + enemy_data.display_name)
 		if is_inside_tree():
 			update_ui()
 

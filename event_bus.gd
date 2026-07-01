@@ -1,5 +1,7 @@
 extends Node
 
+@warning_ignore_start("unused_signal")
+
 signal open_side_panel(slot)
 signal close_side_panel
 
