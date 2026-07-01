@@ -53,7 +53,7 @@ func _on_entity_died(who) -> void:
 	if who == Global.player:
 		state = CombatState.ENDED
 		EventBus.combat_ended.emit("lose")
-		spawn_popup("THE HOUSE ALWAYS WINS")
+		#spawn_popup("THE HOUSE ALWAYS WINS")
 	else:
 		enemies.erase(who)
 		if enemies.is_empty():

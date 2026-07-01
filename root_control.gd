@@ -2,6 +2,7 @@ extends Control
 
 @onready var side_panel: PanelContainer = %ReelInventorySidePanel
 #@onready var toggle_btn: Button = $ToggleButton
+const DEATH_SCREEN_SCENE = preload("res://death_screen.tscn")
 
 func _ready() -> void:
 	#toggle_btn.pressed.connect(side_panel.toggle)
@@ -10,6 +11,11 @@ func _ready() -> void:
 	set_process_unhandled_input(true)
 	
 	EventBus.reel_swapped.connect(func(_reel): side_panel.populate(_get_reel_inventory_data()))
+	EventBus.combat_ended.connect(
+		func(result):
+			if result == "lose":
+				add_child(DEATH_SCREEN_SCENE.instantiate())
+	)
 
 func _unhandled_input(event: InputEvent) -> void:
 	if not side_panel.is_open:

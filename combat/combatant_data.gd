@@ -17,6 +17,7 @@ func take_damage(amount: int) -> void:
 		EventBus.entity_died.emit(self)
 		
 	print_debug(str(display_name) + " Current Health: " + str(health))
+	reset_block()
 
 func add_block(amount: int) -> void:
 	block += amount
