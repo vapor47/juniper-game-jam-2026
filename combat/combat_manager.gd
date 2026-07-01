@@ -42,8 +42,10 @@ func _ready() -> void:
 	print("About to instantiate EnemyUI")
 	var dummy = EnemyScene.instantiate()
 	dummy.enemy_data = gambler
-	var current_scene = get_tree().current_scene
+	var current_scene = get_tree().current_scene.get_child(0)
 	current_scene.add_child(dummy)
+	current_scene.move_child(dummy, 0)
+	
 	start_combat(Global.player, [dummy.enemy_data])
 
 func _on_entity_died(who) -> void:

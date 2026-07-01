@@ -14,31 +14,29 @@ anchor_right = 1.0
 anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
-size_flags_vertical = 8
+mouse_filter = 2
 script = ExtResource("1_f5gfq")
 enemy_data = SubResource("Resource_f5gfq")
 
-[node name="NameLabel" type="Label" parent="." unique_id=1709609383]
+[node name="VBoxContainer" type="VBoxContainer" parent="." unique_id=833461280]
 layout_mode = 1
 anchors_preset = 10
 anchor_right = 1.0
-offset_bottom = 23.0
+offset_bottom = 54.0
 grow_horizontal = 2
 
-[node name="PortraitRect" type="TextureRect" parent="." unique_id=1505991801]
-layout_mode = 1
-anchors_preset = 8
-anchor_left = 0.5
-anchor_top = 0.5
-anchor_right = 0.5
-anchor_bottom = 0.5
-grow_horizontal = 2
-grow_vertical = 2
+[node name="PortraitRect" type="TextureRect" parent="VBoxContainer" unique_id=1505991801]
+layout_mode = 2
+size_flags_horizontal = 4
 
-[node name="ProgressBar" type="ProgressBar" parent="." unique_id=1299524747]
+[node name="ProgressBar" type="ProgressBar" parent="VBoxContainer" unique_id=1299524747]
 z_index = 2
-layout_mode = 1
-anchors_preset = 10
-anchor_right = 1.0
-offset_bottom = 27.0
-grow_horizontal = 2
+layout_mode = 2
+
+[node name="NameLabel" type="Label" parent="VBoxContainer" unique_id=1709609383]
+layout_mode = 2
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="IntentLabel" type="Label" parent="VBoxContainer" unique_id=1318685146]
+layout_mode = 2

@@ -32,3 +32,6 @@ func _execute_intent() -> void:
 func make_move() -> void:
 	_execute_intent()
 	_choose_intent()
+	
+func get_intent_as_string() -> String:
+	return "Intends to " + intent.type + " for " + str(intent.value)

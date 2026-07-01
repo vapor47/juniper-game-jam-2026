@@ -9,9 +9,10 @@ extends Panel
 			update_ui()
 
 # 2. Get references to your internal UI child nodes
-@onready var name_label := $NameLabel as Label
-@onready var portrait_rect := $PortraitRect as TextureRect
-@onready var health_bar := $ProgressBar as ProgressBar
+@onready var name_label := $VBoxContainer/NameLabel as Label
+@onready var portrait_rect := $VBoxContainer/PortraitRect as TextureRect
+@onready var health_bar := $VBoxContainer/ProgressBar as ProgressBar
+@onready var intent_label := $VBoxContainer/IntentLabel as Label
 
 func _ready() -> void:
 	update_ui()
@@ -24,6 +25,7 @@ func update_ui() -> void:
 		return
 		
 	name_label.text = enemy_data.display_name
+	intent_label.text = enemy_data.get_intent_as_string()
 	portrait_rect.texture = enemy_data.portrait
 	health_bar.max_value = enemy_data.max_health
 	health_bar.value = enemy_data.health
