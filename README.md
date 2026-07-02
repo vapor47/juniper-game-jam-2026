@@ -1,6 +1,5 @@
 Backlog:
 	- create default symbol result modifier functions (add, mult)
-	- Research death screen and implement
 	- perhaps update DGambler to use prefix array, to weigh more on lower attack values.
 
 Bugs:

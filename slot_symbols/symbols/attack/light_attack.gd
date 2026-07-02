@@ -1,7 +1,7 @@
 class_name LightAttack
 extends AttackSlotSymbolBase
 
-const BASE_LIGHT_ATTACK_VALUE = 1
+const BASE_LIGHT_ATTACK_VALUE = 3
 
 func _init() -> void:
 	symbol_name = "Light Attack"

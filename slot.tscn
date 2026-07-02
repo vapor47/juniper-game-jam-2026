@@ -1,7 +1,7 @@
 [gd_scene format=3 uid="uid://b8ijffcnh5eqd"]
 
-[ext_resource type="Script" uid="uid://fm5wa2wkp1nc" path="res://slot.gd" id="1_c24ra"]
-[ext_resource type="Script" uid="uid://c8fepnw8nf3x5" path="res://respin_button.gd" id="2_khion"]
+[ext_resource type="Script" uid="uid://coyw8hpl3comt" path="res://slot.gd" id="1_c24ra"]
+[ext_resource type="Script" uid="uid://bnavqb4ua5gvw" path="res://respin_button.gd" id="2_khion"]
 
 [node name="Slot" type="Button" unique_id=1700477999]
 editor_description = "Slot as Button to enable easy hovering and clicking for slot wheel swapping."

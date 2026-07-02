@@ -3,6 +3,8 @@ class_name DestituteGamblerData
 
 func _init() -> void:
 	display_name = "Destitute Gambler"
+	max_health = 35
+	health = max_health
 	_choose_intent()
 	
 func _choose_intent() -> void:
