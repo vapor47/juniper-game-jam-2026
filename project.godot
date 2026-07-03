@@ -31,6 +31,15 @@ window/size/initial_position_type=0
 window/stretch/mode="canvas_items"
 window/stretch/aspect="expand"
 
+[file_customization]
+
+folder_colors={
+"res://combat/": "red",
+"res://combat/player/": "blue",
+"res://slot_symbols/symbols/attack/": "red",
+"res://slot_symbols/symbols/defend/": "blue"
+}
+
 [gui]
 
 theme/size/mode=2

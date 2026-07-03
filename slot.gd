@@ -68,7 +68,6 @@ func reveal_with_spin(stop: ReelStop, duration: float = 1.0) -> void:
 		func(s):
 			return s.slot_symbol
 	)
-	#var fake_symbols = Global.slot_symbols.values()  # cycle through real symbol names
 	var interval = 0.01  # how fast it cycles
 	
 	while elapsed < duration:

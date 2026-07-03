@@ -2,7 +2,8 @@ extends Control
 
 @onready var side_panel: PanelContainer = %ReelInventorySidePanel
 #@onready var toggle_btn: Button = $ToggleButton
-const DEATH_SCREEN_SCENE = preload("res://death_screen.tscn")
+const DEATH_SCREEN_SCENE = preload("res://screens/death_screen.tscn")
+const BATTLE_VICTORY_SCREEN_SCENE = preload("res://screens/battle_victory_screen.tscn")
 
 func _ready() -> void:
 	#toggle_btn.pressed.connect(side_panel.toggle)
@@ -15,6 +16,8 @@ func _ready() -> void:
 		func(result):
 			if result == "lose":
 				add_child(DEATH_SCREEN_SCENE.instantiate())
+			elif result == "win":
+				add_child(BATTLE_VICTORY_SCREEN_SCENE.instantiate())
 	)
 
 func _unhandled_input(event: InputEvent) -> void:
