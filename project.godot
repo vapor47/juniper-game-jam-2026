@@ -21,6 +21,7 @@ Global="*uid://c608tduws4047"
 EventBus="*uid://rj2vow142o5p"
 CombatManager="*uid://dkituossnmeus"
 SymbolResolver="*uid://c70d3i8ju3pul"
+SceneManager="*uid://dmu08rwlathqs"
 
 [display]
 
