@@ -1,0 +1,69 @@
+[gd_scene format=3 uid="uid://b8ijffcnh5eqd"]
+
+[ext_resource type="Script" uid="uid://coyw8hpl3comt" path="res://slot_machine/slot.gd" id="1_c24ra"]
+[ext_resource type="Script" uid="uid://bnavqb4ua5gvw" path="res://slot_machine/respin_button.gd" id="2_khion"]
+
+[node name="Slot" type="Button" unique_id=1700477999]
+editor_description = "Slot as Button to enable easy hovering and clicking for slot wheel swapping."
+custom_minimum_size = Vector2(160, 320)
+clip_contents = true
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -960.0
+offset_top = -540.0
+offset_right = -800.0
+offset_bottom = -220.0
+grow_horizontal = 2
+grow_vertical = 2
+size_flags_horizontal = 4
+size_flags_vertical = 4
+script = ExtResource("1_c24ra")
+
+[node name="MarginContainer" type="MarginContainer" parent="." unique_id=1574675966]
+clip_contents = true
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = -20.0
+offset_right = 20.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_constants/margin_left = 10
+theme_override_constants/margin_right = 10
+
+[node name="SlotContainer" type="VBoxContainer" parent="MarginContainer" unique_id=1396125190]
+clip_contents = true
+layout_mode = 2
+theme_override_constants/separation = 10
+alignment = 1
+
+[node name="SlotWindow" type="PanelContainer" parent="MarginContainer/SlotContainer" unique_id=1630743562]
+custom_minimum_size = Vector2(120, 120)
+layout_mode = 2
+size_flags_horizontal = 4
+size_flags_vertical = 4
+mouse_filter = 1
+
+[node name="Label" type="Label" parent="MarginContainer/SlotContainer/SlotWindow" unique_id=1582224683]
+layout_mode = 2
+mouse_filter = 1
+text = "SYMBOL PLACEHOLDER"
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="Control" type="Control" parent="MarginContainer/SlotContainer" unique_id=1973840993]
+layout_mode = 2
+
+[node name="RespinButton" type="Button" parent="MarginContainer/SlotContainer" unique_id=708654024]
+layout_mode = 2
+size_flags_horizontal = 4
+size_flags_vertical = 8
+text = "RESPIN"
+script = ExtResource("2_khion")
+
+[connection signal="pressed" from="." to="." method="_on_pressed"]
+[connection signal="pressed" from="MarginContainer/SlotContainer/RespinButton" to="." method="_on_respin_button_pressed"]

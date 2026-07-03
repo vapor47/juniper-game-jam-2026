@@ -1,0 +1,19 @@
+[gd_scene format=3 uid="uid://ck30mje02rhbt"]
+
+[ext_resource type="Script" uid="uid://d18k55dnwvw8d" path="res://inventory/reel_inventory_item.gd" id="1_mj5id"]
+[ext_resource type="Script" uid="uid://dusxmka7ik6lh" path="res://inventory/reel_inventory_item_button.gd" id="2_u4y6c"]
+
+[node name="InventoryReelItem" type="VBoxContainer" unique_id=746304923]
+offset_right = 40.0
+offset_bottom = 40.0
+mouse_filter = 2
+script = ExtResource("1_mj5id")
+
+[node name="Button" type="Button" parent="." unique_id=700518922]
+layout_mode = 2
+script = ExtResource("2_u4y6c")
+
+[node name="Label" type="Label" parent="." unique_id=1472204817]
+layout_mode = 2
+
+[connection signal="pressed" from="Button" to="Button" method="_on_pressed"]

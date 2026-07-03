@@ -1,0 +1,95 @@
+[gd_scene format=3 uid="uid://d1dpv1ojvxj4o"]
+
+[ext_resource type="Script" uid="uid://buhxbaeopqhmm" path="res://slot_machine/slot_machine.gd" id="1_knkoj"]
+[ext_resource type="Script" uid="uid://bh5pt2mvktqve" path="res://slot_machine/respins_remaining_label.gd" id="2_7abct"]
+[ext_resource type="PackedScene" uid="uid://b8ijffcnh5eqd" path="res://slot_machine/slot.tscn" id="2_842tv"]
+[ext_resource type="Script" uid="uid://b0wlqw84eo3yf" path="res://slot_machine/slot_machine_lever.gd" id="3_7abct"]
+[ext_resource type="Script" uid="uid://bosg5mx41nc4t" path="res://slot_machine/lock_in_button.gd" id="4_kpwbf"]
+[ext_resource type="Script" uid="uid://ddwwmq06g4ovn" path="res://player_health_bar.gd" id="5_7abct"]
+
+[sub_resource type="LabelSettings" id="LabelSettings_rwp5n"]
+
+[node name="SlotMachine" type="PanelContainer" unique_id=1382522530]
+anchor_top = 1.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_top = -462.0
+grow_horizontal = 2
+grow_vertical = 0
+mouse_filter = 2
+script = ExtResource("1_knkoj")
+
+[node name="MarginContainer" type="MarginContainer" parent="." unique_id=4123848]
+layout_mode = 2
+theme_override_constants/margin_left = 10
+theme_override_constants/margin_top = 10
+theme_override_constants/margin_right = 10
+theme_override_constants/margin_bottom = 10
+
+[node name="VBodyContainer" type="VBoxContainer" parent="MarginContainer" unique_id=1765779227]
+layout_mode = 2
+
+[node name="HeaderInfoContainer" type="HBoxContainer" parent="MarginContainer/VBodyContainer" unique_id=1328206790]
+editor_description = "Container for info like
+\"SOLO-SPINS REMAINING\""
+layout_mode = 2
+
+[node name="RespinsRemainingLabel" type="Label" parent="MarginContainer/VBodyContainer/HeaderInfoContainer" unique_id=1403732047]
+layout_mode = 2
+label_settings = SubResource("LabelSettings_rwp5n")
+script = ExtResource("2_7abct")
+
+[node name="SlotsBodyContainer" type="HBoxContainer" parent="MarginContainer/VBodyContainer" unique_id=1893252390]
+editor_description = "Container for:
+- Slot Group Container
+- Slot Machine Lever"
+layout_mode = 2
+size_flags_vertical = 4
+theme_override_constants/separation = 20
+
+[node name="PanelContainer" type="PanelContainer" parent="MarginContainer/VBodyContainer/SlotsBodyContainer" unique_id=1538499312]
+custom_minimum_size = Vector2(600, 400)
+layout_mode = 2
+size_flags_horizontal = 3
+mouse_filter = 1
+
+[node name="SlotGroupContainer" type="HBoxContainer" parent="MarginContainer/VBodyContainer/SlotsBodyContainer/PanelContainer" unique_id=658891026]
+layout_mode = 2
+alignment = 1
+
+[node name="Slot1" parent="MarginContainer/VBodyContainer/SlotsBodyContainer/PanelContainer/SlotGroupContainer" unique_id=1700477999 instance=ExtResource("2_842tv")]
+layout_mode = 2
+
+[node name="Slot2" parent="MarginContainer/VBodyContainer/SlotsBodyContainer/PanelContainer/SlotGroupContainer" unique_id=1729340720 instance=ExtResource("2_842tv")]
+layout_mode = 2
+
+[node name="Slot3" parent="MarginContainer/VBodyContainer/SlotsBodyContainer/PanelContainer/SlotGroupContainer" unique_id=816384910 instance=ExtResource("2_842tv")]
+layout_mode = 2
+
+[node name="SlotMachineLever" type="Button" parent="MarginContainer/VBodyContainer/SlotsBodyContainer" unique_id=910737963]
+unique_name_in_owner = true
+layout_mode = 2
+text = "SPIN ALL"
+script = ExtResource("3_7abct")
+
+[node name="FooterContainer" type="HBoxContainer" parent="MarginContainer/VBodyContainer" unique_id=91060055]
+editor_description = "Container for info such as:
+- Player Health / Shield
+- Buffs / Debuffs"
+layout_mode = 2
+alignment = 2
+
+[node name="PlayerHealthBar" type="ProgressBar" parent="MarginContainer/VBodyContainer/FooterContainer" unique_id=281063917]
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 4
+script = ExtResource("5_7abct")
+
+[node name="LockInButton" type="Button" parent="MarginContainer/VBodyContainer/FooterContainer" unique_id=120842889]
+unique_name_in_owner = true
+layout_mode = 2
+text = "LOCK IN"
+script = ExtResource("4_kpwbf")
+
+[connection signal="pressed" from="MarginContainer/VBodyContainer/SlotsBodyContainer/SlotMachineLever" to="MarginContainer/VBodyContainer/SlotsBodyContainer/SlotMachineLever" method="_on_pressed"]
+[connection signal="pressed" from="MarginContainer/VBodyContainer/FooterContainer/LockInButton" to="MarginContainer/VBodyContainer/FooterContainer/LockInButton" method="_on_pressed"]
