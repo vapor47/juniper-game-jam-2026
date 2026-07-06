@@ -2,19 +2,17 @@ class_name Slot
 extends Button
 
 var slot_reel: Reel = null
-var _curr_stop: ReelStop
-@onready var result_label = $MarginContainer/SlotContainer/SlotWindow/Label
-# Called when the node enters the scene tree for the first time.
+var _curr_stop: ReelStop = null
+@onready var result_label: Label = $MarginContainer/SlotContainer/SlotWindow/Label
+
 func _ready() -> void:
-	_insert_reel(Global.reels["Attack"])
+	_insert_reel(Global.reels["Attack"], false)
+	result_label.text = slot_reel.reel_stops.map(func(s): return s.slot_symbol).pick_random().symbol_name
 	add_to_group("slots")
 
-# Called every frame. 'delta' is the elapsed time since the previous frame.
-func _process(delta: float) -> void:
-	pass
+func _exit_tree() -> void:
+	_remove_reel()
 
-# TODO: High Priority: should this be returning a slotsymbol object
-# or just a GDScript?
 func spin() -> ReelStop:
 	"""
 	Check current wheel type
@@ -40,35 +38,50 @@ func _on_respin_button_pressed() -> void:
 	# if has respin tokens
 	spin()
 	# Emit signal to reduce respin count
-	CombatManager.respin_tokens -= 1
+	Global.player.respin_tokens -= 1
 	
-func _insert_reel(reel: Reel):
+func _insert_reel(reel: Reel, should_spin: bool = true):
 	slot_reel = reel
 	Global.reel_inventory[reel.reel_name] -= 1
-	spin()
+	if should_spin:
+		spin()
 
 func _remove_reel():
 	Global.reel_inventory[slot_reel.reel_name] += 1
 	slot_reel = null
 	
-func swap_reel(reel_to_insert: Reel) -> void:
-	if !slot_reel:
-		push_error("Attempted to swap reel with no existing reel.")
-	
+func _swap_reel(reel_to_insert: Reel) -> void:
 	_remove_reel()
 	_insert_reel(reel_to_insert)
 
-	if CombatManager.has_player_spun:
-		CombatManager.respin_tokens -= 1
-
-# In your slot or reel display script
+func attempt_reel_swap(reel_to_insert: Reel, token_cost: int = 0) -> bool:
+	"""
+	Returns True if swap is valid and completed,
+			False if swap is invalid
+			
+	Causes for invalid swap include:
+		- Not enough respin tokens
+	"""
+	if !slot_reel:
+		push_error("Attempted to swap reel with no existing reel.")
+		return false
+	
+	if Global.player.respin_tokens < token_cost:
+		return false
+	
+	_swap_reel(reel_to_insert)
+	if get_tree().current_scene.initial_spin_completed:
+		Global.player.respin_tokens -= 1
+		
+	return true
+	
 func reveal_with_spin(stop: ReelStop, duration: float = 1.0) -> void:
 	var elapsed = 0.0
 	var fake_symbols = slot_reel.reel_stops.map(
 		func(s):
 			return s.slot_symbol
 	)
-	var interval = 0.01  # how fast it cycles
+	var interval := 0.01  # how fast it cycles
 	
 	while elapsed < duration:
 		await get_tree().create_timer(interval).timeout

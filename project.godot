@@ -11,7 +11,7 @@ config_version=5
 [application]
 
 config/name="juniper-game-jam"
-run/main_scene="res://root_control.tscn"
+run/main_scene="res://combat.tscn"
 config/features=PackedStringArray("4.7", "GL Compatibility")
 config/icon="res://icon.svg"
 
@@ -19,9 +19,13 @@ config/icon="res://icon.svg"
 
 Global="*uid://c608tduws4047"
 EventBus="*uid://rj2vow142o5p"
-CombatManager="*uid://dkituossnmeus"
 SymbolResolver="*uid://c70d3i8ju3pul"
 SceneManager="*uid://dmu08rwlathqs"
+RunManager="*uid://bu1kmbs68mdki"
+
+[debug]
+
+gdscript/warnings/untyped_declaration=1
 
 [display]
 

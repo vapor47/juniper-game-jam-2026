@@ -19,11 +19,7 @@ func _ready() -> void:
 	update_ui()
 	EventBus.damage_taken.connect(func(who):
 		if who == enemy_data: update_ui())
-	EventBus.turn_started.connect(
-		func(who):
-			if who == CombatManager.Turn.PLAYER:
-				update_ui()
-	)
+	get_tree().current_scene.player_turn_started.connect(update_ui)
 	health_bar.set_initial_values(enemy_data.max_health)
 
 # 3. Map the resource enemy_data to the visual nodes

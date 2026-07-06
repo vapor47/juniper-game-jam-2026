@@ -30,4 +30,6 @@ func make_move() -> void:
 func get_intent_as_string() -> String:
 	if not intent:
 		return "No thoughts, head empty..."
-	return "Intends to " + intent.get("type") + " for " + str(intent.get("value"))
+	if intent.has("value"):
+		"Intends to " + intent.get("type") + " for " + str(intent.get("value"))
+	return "Intends to " + intent.get("type")

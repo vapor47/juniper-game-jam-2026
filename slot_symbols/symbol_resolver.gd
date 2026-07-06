@@ -13,12 +13,11 @@ func resolve(stops: Array[ReelStop]) -> Array:
 		counts[symbol] = counts.get(symbol, 0) + 1
 	
 	var applied_combos = []
-	var base_attack = 0
-	var base_block = 0
-	var attack_multiplier = 1
-	var block_multiplier = 1
+	var base_attack := 0
+	var base_block := 0
+	var attack_multiplier := 1
+	var block_multiplier := 1
 	
-	#print_debug(counts)
 	# First check for any combos
 	# We need the action type + value, or the action name.
 	# but if we go with action name, we still need the value
@@ -49,10 +48,10 @@ func resolve(stops: Array[ReelStop]) -> Array:
 				else:
 					base_block += symbol.symbol_value
 	
-	var total_attack_damage = base_attack * attack_multiplier
-	var total_block = base_block * block_multiplier
+	var total_attack_damage: int = base_attack * attack_multiplier
+	var total_block: int = base_block * block_multiplier
 	effects.append({ "type": "damage", "value": total_attack_damage})
-	effects.append({ "type": "block", "value": base_block * block_multiplier})
+	effects.append({ "type": "block", "value": total_block})
 	
 	#print_debug(str(base_attack) + " * " + str(attack_multiplier) + " = " + str(total_attack_damage))
 	#print_debug(str(base_block) + " * " + str(block_multiplier) + " = " + str(total_block))

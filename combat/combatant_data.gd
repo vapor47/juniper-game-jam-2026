@@ -1,6 +1,9 @@
 extends Resource
 class_name CombatantData
 
+signal died(who: CombatantData)
+signal damage_taken(who: CombatantData)
+
 @export var display_name: String = "Combatant"
 @export var max_health: int = 100
 @export var health: int = max_health
@@ -14,7 +17,7 @@ func take_damage(amount: int) -> void:
 	# Altho i guess its at make like 5 listeners. not terrible.
 	EventBus.damage_taken.emit(self)
 	if health <= 0:
-		EventBus.entity_died.emit(self)
+		died.emit(self)
 		
 	print_debug(str(display_name) + " Current Health: " + str(health))
 	reset_block()

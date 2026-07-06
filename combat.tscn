@@ -4,7 +4,7 @@
 [ext_resource type="PackedScene" uid="uid://d1dpv1ojvxj4o" path="res://slot_machine/slot_machine.tscn" id="2_shxn1"]
 [ext_resource type="PackedScene" uid="uid://dsxlmk6rkjoo8" path="res://inventory/reel_inventory_side_panel.tscn" id="3_bol2o"]
 
-[node name="RootControl" type="Control" unique_id=1709051279]
+[node name="CombatRoot" type="Control" unique_id=1709051279]
 layout_mode = 3
 anchors_preset = 15
 anchor_right = 1.0
@@ -17,12 +17,18 @@ mouse_filter = 2
 script = ExtResource("1_owcdy")
 
 [node name="VBoxContainer" type="VBoxContainer" parent="." unique_id=506144313]
+editor_description = "Enemy is added dynamically to be above SlotMachine"
 layout_mode = 1
 anchors_preset = 15
 anchor_right = 1.0
 anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
+
+[node name="EnemyContainer" type="HBoxContainer" parent="VBoxContainer" unique_id=1438186330]
+unique_name_in_owner = true
+layout_mode = 2
+alignment = 1
 
 [node name="SlotMachine" parent="VBoxContainer" unique_id=1382522530 instance=ExtResource("2_shxn1")]
 unique_name_in_owner = true
