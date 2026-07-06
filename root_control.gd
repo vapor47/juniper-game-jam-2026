@@ -119,7 +119,7 @@ func _end_enemy_turn() -> void:
 	_start_player_turn()
 	
 func _end_combat(result: CombatResult) -> void:
-	if CombatResult.VICTORY:
+	if result == CombatResult.VICTORY:
 		add_child(BATTLE_VICTORY_SCREEN_SCENE.instantiate())
 		_show_post_combat()
 	else:
@@ -132,7 +132,8 @@ func _continue() -> void:
 #	Signal to sceneManager to move to next combat (for now)
 	pass
 	
-func _on_entity_died(who) -> void:
+func _on_entity_died(who: CombatantData) -> void:
+	print_debug(who.display_name + " died.")
 	if who == Global.player:
 		_end_combat(CombatResult.LOSS)
 	else:

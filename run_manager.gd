@@ -3,7 +3,7 @@ extends Node
 var encounter_queue: Array[Array] = [
 	[DestituteGamblerData],
 	[TwoFacedData],
-	[DestituteGamblerData],
+	[PitBossData],
 ]
 
 var curr_encounter_idx: int = 0

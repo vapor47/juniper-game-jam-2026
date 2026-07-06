@@ -1,7 +1,0 @@
-[gd_resource type="Resource" script_class="DestituteGamblerData" format=3 uid="uid://docxeonoen1jk"]
-
-[ext_resource type="Script" uid="uid://mi8qtkq2igpk" path="res://combat/enemies/destitute_gambler.gd" id="1_0rmqd"]
-
-[resource]
-script = ExtResource("1_0rmqd")
-metadata/_custom_type_script = "uid://mi8qtkq2igpk"
