@@ -1,7 +1,8 @@
 extends PanelContainer
 
 @onready var lever = %SlotMachineLever
-@onready var lock_in_button = %LockInButton
+@onready var lock_in_button: Button = %LockInButton
+@onready var health_bar: HealthBar = %PlayerHealthBar
 
 var selected_slot: Slot = null:
 	set(value):
@@ -15,17 +16,14 @@ func _ready() -> void:
 	lock_in_button.lock_in_pressed.connect(_confirm_slots)
 	EventBus.slot_selected.connect(_on_slot_selected)
 	EventBus.reel_swapped.connect(_on_reel_swapped)
-
-# Called every frame. 'delta' is the elapsed time since the previous frame.
-func _process(delta: float) -> void:
-	pass
-
+	
+	health_bar.setup(Global.player)
 
 func _on_lever_pulled() -> void:
 	get_tree().call_group("slots", "spin")
 
 
-func _confirm_slots():
+func _confirm_slots() -> void:
 	"""
 	Combos:
 		3 regular attacks = 5 dmg

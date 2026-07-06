@@ -11,6 +11,8 @@ signal slots_locked_in(symbols: Array)
 signal lever_pulled
 signal spin_lock_toggled
 signal respin_count_updated(new_value: int)
-signal damage_taken(who: CombatantData)
+
+signal curr_health_updated(who: CombatantData, new_val: int)
+signal max_health_updated(who: CombatantData, new_val: int)
 
 signal post_combat_completed()

@@ -2,20 +2,24 @@ extends Resource
 class_name CombatantData
 
 signal died(who: CombatantData)
-signal damage_taken(who: CombatantData)
 
 @export var display_name: String = "Combatant"
-@export var max_health: int = 100
-@export var health: int = max_health
+@export var max_health: int = 100:
+	set(new_val):
+		max_health = new_val
+		EventBus.max_health_updated.emit(self, new_val)
+		
+@export var health: int = max_health:
+	set(new_val):
+		health = new_val
+		EventBus.curr_health_updated.emit(self, new_val)
+		
 var block: int = 0
 
 func take_damage(amount: int) -> void:
 	var actual = max(0, amount - block)
 	block = max(0, block - amount)
 	health -= actual
-	# TODO: Potential refactor? make this a direct connection, rather than having all entities listen?
-	# Altho i guess its at make like 5 listeners. not terrible.
-	EventBus.damage_taken.emit(self)
 	if health <= 0:
 		died.emit(self)
 		

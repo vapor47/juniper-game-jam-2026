@@ -12,17 +12,14 @@ extends Panel
 # 2. Get references to your internal UI child nodes
 @onready var name_label := $VBoxContainer/NameLabel as Label
 @onready var portrait_rect := $VBoxContainer/PortraitRect as TextureRect
-@onready var health_bar := $VBoxContainer/HealthBar
+@onready var health_bar: HealthBar = $VBoxContainer/HealthBar
 @onready var intent_label := $VBoxContainer/IntentLabel as Label
 
 func _ready() -> void:
 	update_ui()
-	EventBus.damage_taken.connect(func(who):
-		if who == enemy_data: update_ui())
+	health_bar.setup(enemy_data)
 	get_tree().current_scene.player_turn_started.connect(update_ui)
-	health_bar.set_initial_values(enemy_data.max_health)
 
-# 3. Map the resource enemy_data to the visual nodes
 func update_ui() -> void:
 	if not enemy_data:
 		return
@@ -30,6 +27,3 @@ func update_ui() -> void:
 	name_label.text = enemy_data.display_name
 	intent_label.text = enemy_data.get_intent_as_string()
 	portrait_rect.texture = enemy_data.portrait
-	#health_bar.max_value = enemy_data.max_health
-	#health_bar.value = enemy_data.health
-	health_bar.update_value(enemy_data.health)

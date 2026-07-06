@@ -5,11 +5,12 @@
 [ext_resource type="PackedScene" uid="uid://b8ijffcnh5eqd" path="res://slot_machine/slot.tscn" id="2_842tv"]
 [ext_resource type="Script" uid="uid://b0wlqw84eo3yf" path="res://slot_machine/slot_machine_lever.gd" id="3_7abct"]
 [ext_resource type="Script" uid="uid://bosg5mx41nc4t" path="res://slot_machine/lock_in_button.gd" id="4_kpwbf"]
-[ext_resource type="Script" uid="uid://ddwwmq06g4ovn" path="res://player_health_bar.gd" id="5_7abct"]
+[ext_resource type="PackedScene" uid="uid://c3oy8c5mnx4h3" path="res://HealthBar.tscn" id="5_84m6g"]
 
 [sub_resource type="LabelSettings" id="LabelSettings_rwp5n"]
 
 [node name="SlotMachine" type="PanelContainer" unique_id=1382522530]
+anchors_preset = 12
 anchor_top = 1.0
 anchor_right = 1.0
 anchor_bottom = 1.0
@@ -79,11 +80,11 @@ editor_description = "Container for info such as:
 layout_mode = 2
 alignment = 2
 
-[node name="PlayerHealthBar" type="ProgressBar" parent="MarginContainer/VBodyContainer/FooterContainer" unique_id=281063917]
+[node name="PlayerHealthBar" parent="MarginContainer/VBodyContainer/FooterContainer" unique_id=1508007854 instance=ExtResource("5_84m6g")]
+unique_name_in_owner = true
 layout_mode = 2
 size_flags_horizontal = 3
 size_flags_vertical = 4
-script = ExtResource("5_7abct")
 
 [node name="LockInButton" type="Button" parent="MarginContainer/VBodyContainer/FooterContainer" unique_id=120842889]
 unique_name_in_owner = true
