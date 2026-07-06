@@ -21,6 +21,7 @@ func _choose_intent() -> void:
 	"""
 	
 	intent = { "type": "toss a coin" }
+	custom_intent_str = "???"
 	
 
 func _execute_intent() -> void:
@@ -32,7 +33,3 @@ func _execute_intent() -> void:
 		print_debug("Flipped Tails: Attacking for " + str(curr_attack_val))
 		Global.player.take_damage(curr_attack_val)
 		curr_attack_val = BASE_ATTACK_VAL
-		
-	
-#func _toss_coin():
-	

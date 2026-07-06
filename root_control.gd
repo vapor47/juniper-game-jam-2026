@@ -133,7 +133,6 @@ func _continue() -> void:
 	pass
 	
 func _on_entity_died(who: CombatantData) -> void:
-	print_debug(who.display_name + " died.")
 	if who == Global.player:
 		_end_combat(CombatResult.LOSS)
 	else:

@@ -3,6 +3,7 @@ class_name EnemyData
 
 var intent: Dictionary = {}  # { "type": "attack", "value": 10 }
 var portrait: Texture2D = load("res://icon.svg")
+var custom_intent_str: String = ""
 
 func _init() -> void:
 	display_name = "Bad Guy"
@@ -28,6 +29,8 @@ func make_move() -> void:
 	_choose_intent()
 	
 func get_intent_as_string() -> String:
+	if custom_intent_str:
+		return custom_intent_str
 	if not intent:
 		return "No thoughts, head empty..."
 	if intent.has("value"):
