@@ -1,33 +1,66 @@
 class_name Slot
 extends Button
 
+signal started_spinning
+signal stopped_spinning
+
 var slot_reel: Reel = null
 var _curr_stop: ReelStop = null
 @onready var result_label: Label = $MarginContainer/SlotContainer/SlotWindow/Label
 
+var is_spinning: bool = false:
+	set(new_val):
+		if new_val == is_spinning:
+			return
+		is_spinning = new_val
+		if new_val: started_spinning.emit()
+		else: stopped_spinning.emit()
+
+
 func _ready() -> void:
-	_insert_reel(Global.reels["Attack"], false)
-	result_label.text = slot_reel.reel_stops.map(func(s): return s.slot_symbol).pick_random().symbol_name
 	add_to_group("slots")
+	_insert_reel(Global.reels["Attack"], false)
+	result_label.text = slot_reel.reel_stops.map(
+		func(s: ReelStop) -> SlotSymbol:
+			return s.slot_symbol
+	).pick_random().symbol_name
 
 func _exit_tree() -> void:
 	_remove_reel()
 
-func spin() -> ReelStop:
-	"""
-	Check current wheel type
-	Get random result from options array
-	return result / index
-	return type: SlotSymbol
-	"""
+func spin(duration: float = Global.SLOT_SPIN_DURATION) -> ReelStop:
 	_curr_stop = slot_reel.reel_stops.pick_random()
-	reveal_with_spin(_curr_stop)
-	# TODO: After adding art, this below should be updated to result.icon
-	#$MarginContainer/SlotContainer/SlotWindow/Label.text = _curr_stop.slot_symbol.symbol_name
-	return _curr_stop
 	
+	_start_spin_animation()
+	await get_tree().create_timer(duration).timeout
+	_stop_spin_animation(_curr_stop)
+	
+	return _curr_stop
+
 func get_curr_stop() -> ReelStop:
 	return _curr_stop
+
+func _start_spin_animation() -> void:
+	if is_spinning:
+		return
+	is_spinning = true
+	
+	var fake_symbols := slot_reel.reel_stops.map(
+		func(s: ReelStop) -> SlotSymbol:
+			return s.slot_symbol
+	)
+	
+	while is_spinning:
+		await get_tree().create_timer(Global.SLOT_SPIN_INTERVAL).timeout
+		# show random symbol name as placeholder
+		result_label.text = fake_symbols.pick_random().symbol_name
+	
+func _stop_spin_animation(final_stop: ReelStop) -> void:
+	if not is_spinning:
+		return
+		
+	is_spinning = false
+	result_label.text = final_stop.slot_symbol.symbol_name
 
 func _on_pressed() -> void:
 	EventBus.open_side_panel.emit(self)
@@ -40,13 +73,13 @@ func _on_respin_button_pressed() -> void:
 	spin()
 	Global.player.respin_tokens -= 1
 	
-func _insert_reel(reel: Reel, should_spin: bool = true):
+func _insert_reel(reel: Reel, should_spin: bool = true) -> void:
 	slot_reel = reel
 	Global.reel_inventory[reel.reel_name] -= 1
 	if should_spin:
 		spin()
 
-func _remove_reel():
+func _remove_reel() -> void:
 	Global.reel_inventory[slot_reel.reel_name] += 1
 	slot_reel = null
 	
@@ -77,21 +110,3 @@ func attempt_reel_swap(reel_to_insert: Reel, token_cost: int = 0) -> bool:
 		Global.player.respin_tokens -= token_cost
 		
 	return true
-	
-func reveal_with_spin(stop: ReelStop, duration: float = 1.0) -> void:
-	var elapsed = 0.0
-	var fake_symbols = slot_reel.reel_stops.map(
-		func(s):
-			return s.slot_symbol
-	)
-	var interval := 0.01  # how fast it cycles
-	
-	while elapsed < duration:
-		await get_tree().create_timer(interval).timeout
-		# show random symbol name as placeholder
-		result_label.text = fake_symbols[randi() % fake_symbols.size()].symbol_name
-		elapsed += interval
-		#interval = lerp(interval, 0.3, 0.1)  # slow down toward end
-	
-	# Land on actual result
-	result_label.text = stop.slot_symbol.symbol_name

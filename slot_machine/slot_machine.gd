@@ -4,6 +4,11 @@ extends PanelContainer
 @onready var lock_in_button: Button = %LockInButton
 @onready var health_bar: HealthBar = %PlayerHealthBar
 
+var num_slots_spinning: int = 0:
+	set(new_val):
+		%LockInButton.disabled = new_val > 0
+		num_slots_spinning = new_val
+
 var selected_slot: Slot = null:
 	set(value):
 		if value == null:
@@ -16,11 +21,19 @@ func _ready() -> void:
 	EventBus.slot_selected.connect(_on_slot_selected)
 	EventBus.reel_swapped.connect(_on_reel_swapped)
 	
+	var slots: Array[Node] = get_tree().get_nodes_in_group("slots")
+
+	for slot: Slot in slots:
+		slot.started_spinning.connect(func() -> void: num_slots_spinning += 1)
+		slot.stopped_spinning.connect(func() -> void: num_slots_spinning -= 1)
 	health_bar.setup(Global.player)
 
 func _on_lever_pulled() -> void:
-	get_tree().call_group("slots", "spin")
-
+	var slots: Array[Node] = get_tree().get_nodes_in_group("slots")
+	
+	for i in slots.size():
+		slots[i].spin(Global.SLOT_SPIN_DURATION + (i * Global.SLOT_REVEAL_STAGGER))
+		
 
 func _confirm_slots() -> void:
 	"""

@@ -8,8 +8,13 @@ var reel_inventory: Dictionary[String, int] = {
 	"Defend": 3
 }
 
+# Animations
+const SLOT_SPIN_DURATION: float = 1.0
+const SLOT_SPIN_INTERVAL: float = 0.01
+const SLOT_REVEAL_STAGGER: float = 0.33
 
-func _ready():
+
+func _ready() -> void:
 	player = PlayerData.new()
 	_load_symbols("res://slot_symbols/symbols/")
 	_load_reels()
@@ -34,7 +39,7 @@ func _load_symbols(path: String) -> void:
 	
 	dir.list_dir_end()
 
-func _load_reels():
+func _load_reels() -> void:
 	reels = {
 		"Attack": AttackReel.new(),
 		"Defend": DefendReel.new(),
