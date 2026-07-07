@@ -35,9 +35,9 @@ func _on_pressed() -> void:
 
 
 func _on_respin_button_pressed() -> void:
-	# if has respin tokens
+	if Global.player.respin_tokens <= 0:
+		return
 	spin()
-	# Emit signal to reduce respin count
 	Global.player.respin_tokens -= 1
 	
 func _insert_reel(reel: Reel, should_spin: bool = true):
@@ -68,10 +68,13 @@ func attempt_reel_swap(reel_to_insert: Reel, token_cost: int = 0) -> bool:
 	
 	if Global.player.respin_tokens < token_cost:
 		return false
+		
+	if reel_to_insert == slot_reel:
+		return false
 	
 	_swap_reel(reel_to_insert)
 	if get_tree().current_scene.initial_spin_completed:
-		Global.player.respin_tokens -= 1
+		Global.player.respin_tokens -= token_cost
 		
 	return true
 	

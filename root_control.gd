@@ -55,8 +55,8 @@ var enemies: Array[EnemyData]
 const ENEMY_SCENE = preload("res://combat/enemies/enemy.tscn")
 var initial_spin_completed: bool = false:
 	set(new_value):
-		if initial_spin_completed != new_value:
-			EventBus.spin_lock_toggled.emit()
+		#if initial_spin_completed != new_value:
+			#EventBus.spin_lock_toggled.emit()
 		initial_spin_completed = new_value
 
 
@@ -98,6 +98,7 @@ func _start_combat() -> void:
 	pass
 	
 func _start_player_turn() -> void:
+	player_turn_started.emit()
 	initial_spin_completed = false
 #	Enable slot machine controls
 #	Disable LockInButton
@@ -108,11 +109,13 @@ func _end_player_turn() -> void:
 	_start_enemy_turn()
 	
 func _start_enemy_turn() -> void:
+	enemy_turn_started.emit()
 	#EventBus.turn_started.emit(Turn.ENEMY)
 	for enemy in enemies:
 		if is_instance_valid(enemy):
 			await enemy.make_move()
 	#if combat_state != CombatState.ENDED:
+	
 	_start_player_turn()
 	
 func _end_enemy_turn() -> void:

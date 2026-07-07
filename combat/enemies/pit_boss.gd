@@ -6,6 +6,7 @@ func _init() -> void:
 	max_health = 1000
 	health = max_health
 	_choose_intent()
+	custom_intent_str = "Time to die~~~"
 	
 func _choose_intent() -> void:
 	intent = { "type": "attack", "value": 100 }

@@ -10,7 +10,6 @@ var selected_slot: Slot = null:
 			EventBus.close_side_panel.emit()
 		selected_slot = value
 
-# Called when the node enters the scene tree for the first time.
 func _ready() -> void:
 	EventBus.lever_pulled.connect(_on_lever_pulled)
 	lock_in_button.lock_in_pressed.connect(_confirm_slots)

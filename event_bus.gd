@@ -2,10 +2,10 @@ extends Node
 
 @warning_ignore_start("unused_signal")
 
-signal open_side_panel(slot)
+signal open_side_panel(slot: Slot)
 signal close_side_panel
 
-signal slot_selected(slot)
+signal slot_selected(slot: Slot)
 signal reel_swapped(reel: Reel)
 signal slots_locked_in(symbols: Array)
 signal lever_pulled
