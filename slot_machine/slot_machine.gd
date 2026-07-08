@@ -67,7 +67,7 @@ func _confirm_slots() -> void:
 	EventBus.slots_locked_in.emit(reel_stops)
 			
 				
-func _on_slot_selected(slot):
+func _on_slot_selected(slot: Slot) -> void:
 	print_debug("slot selected")
 	if slot == selected_slot:
 		selected_slot = null

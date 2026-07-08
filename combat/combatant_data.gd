@@ -17,13 +17,12 @@ signal died(who: CombatantData)
 var block: int = 0
 
 func take_damage(amount: int) -> void:
-	var actual = max(0, amount - block)
+	var actual: int = max(0, amount - block)
 	block = max(0, block - amount)
 	health -= actual
 	if health <= 0:
 		died.emit(self)
-		
-	print_debug(str(display_name) + " Current Health: " + str(health))
+
 	reset_block()
 
 func add_block(amount: int) -> void:

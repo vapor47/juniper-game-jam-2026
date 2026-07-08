@@ -1,7 +1,7 @@
 class_name MediumDefend
 extends DefendSlotSymbolBase
 
-const BASE_VALUE = 6
+const BASE_VALUE = 8
 
 func _init() -> void:
 	symbol_name = "Medium Defend"

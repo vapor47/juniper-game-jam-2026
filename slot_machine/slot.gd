@@ -5,7 +5,10 @@ signal started_spinning
 signal stopped_spinning
 
 var slot_reel: Reel = null
-var _curr_stop: ReelStop = null
+var _curr_stop: ReelStop = null:
+	set(new):
+		print("curr stop changed")
+		_curr_stop = new
 @onready var result_label: Label = $MarginContainer/SlotContainer/SlotWindow/Label
 
 var is_spinning: bool = false:
@@ -51,16 +54,18 @@ func _start_spin_animation() -> void:
 	)
 	
 	while is_spinning:
-		await get_tree().create_timer(Global.SLOT_SPIN_INTERVAL).timeout
-		# show random symbol name as placeholder
 		result_label.text = fake_symbols.pick_random().symbol_name
-	
+		await get_tree().create_timer(Global.SLOT_SPIN_INTERVAL).timeout
+		#if not is_spinning:
+			#break
+		# show random symbol name as placeholder
+		
 func _stop_spin_animation(final_stop: ReelStop) -> void:
 	if not is_spinning:
 		return
 		
 	is_spinning = false
-	result_label.text = final_stop.slot_symbol.symbol_name
+	result_label.text = get_curr_stop().slot_symbol.symbol_name
 
 func _on_pressed() -> void:
 	EventBus.open_side_panel.emit(self)

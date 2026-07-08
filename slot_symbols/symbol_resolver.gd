@@ -13,8 +13,8 @@ func resolve(stops: Array[ReelStop]) -> Array:
 		counts[symbol] = counts.get(symbol, 0) + 1
 	
 	var applied_combos = []
-	var base_attack := 0
-	var base_block := 0
+	var flat_attack_damage := 0
+	var flat_block := 0
 	var attack_multiplier := 1
 	var block_multiplier := 1
 	
@@ -22,16 +22,16 @@ func resolve(stops: Array[ReelStop]) -> Array:
 	# We need the action type + value, or the action name.
 	# but if we go with action name, we still need the value
 	for symbol: SlotSymbol in counts:
-		if counts[symbol] >= 3:
+		var count: int = counts[symbol]
+		if count >= 3:
 			if symbol.get_symbol_type() == SlotSymbol.SymbolType.ATTACK:
-				base_attack += symbol.symbol_value * 5
+				flat_attack_damage += _get_combo_value(symbol.symbol_value, count)
 			elif symbol.get_symbol_type() == SlotSymbol.SymbolType.DEFEND:
-				base_block += symbol.symbol_value * 5
+				flat_block += _get_combo_value(symbol.symbol_value, count)
 			
 			applied_combos.append(symbol)
 	
 	# Then continue resolving effects for non-combos
-	
 	for stop: ReelStop in stops:
 		var symbol: SlotSymbol = stop.slot_symbol
 		if symbol in applied_combos:
@@ -39,25 +39,24 @@ func resolve(stops: Array[ReelStop]) -> Array:
 		match symbol.get_symbol_type():
 			SlotSymbol.SymbolType.ATTACK:
 				if symbol.symbol_name == "Multiply Attack":
-					attack_multiplier *= symbol.symbol_value
+					attack_multiplier += 1
 				else:
-					base_attack += symbol.symbol_value
+					flat_attack_damage += symbol.symbol_value
 			SlotSymbol.SymbolType.DEFEND:
 				if symbol.symbol_name == "Multiply Defend":
-					block_multiplier *= symbol.symbol_value
+					block_multiplier += 1
 				else:
-					base_block += symbol.symbol_value
+					flat_block += symbol.symbol_value
 	
-	var total_attack_damage: int = base_attack * attack_multiplier
-	var total_block: int = base_block * block_multiplier
+	var total_attack_damage: int = flat_attack_damage * attack_multiplier
+	var total_block: int = flat_block * block_multiplier
 	effects.append({ "type": "damage", "value": total_attack_damage})
 	effects.append({ "type": "block", "value": total_block})
 	
-	#print_debug(str(base_attack) + " * " + str(attack_multiplier) + " = " + str(total_attack_damage))
-	#print_debug(str(base_block) + " * " + str(block_multiplier) + " = " + str(total_block))
-
 	return effects
 
+func _get_combo_value(symbol_value: int, count: int) -> int:
+	return (symbol_value * count) + ((count ** 2) * 4)
 #func _resolve_combos(stops: Array[ReelStop]) -> String:
 	#pass
 """

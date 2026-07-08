@@ -1,7 +1,7 @@
 class_name MediumAttack
 extends AttackSlotSymbolBase
 
-const BASE_MEDIUM_ATTACK_VALUE = 6
+const BASE_MEDIUM_ATTACK_VALUE = 8
 
 func _init() -> void:
 	symbol_name = "Medium Attack"

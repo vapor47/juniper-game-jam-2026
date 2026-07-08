@@ -14,12 +14,10 @@ func _choose_intent() -> void:
 	#_display_intent()
 
 func _execute_intent() -> void:
-	print_debug("enemy executing intent")
 	match intent.get("type"):
 		"attack":
-			print_debug("player taken damage")
 			if not Global.player:
-				print_debug("player is null")
+				push_error("player is null")
 			Global.player.take_damage(intent.get("value"))
 		"block":
 			block += intent.get("value")

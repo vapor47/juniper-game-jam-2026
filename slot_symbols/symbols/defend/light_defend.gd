@@ -1,7 +1,7 @@
 class_name LightDefend
 extends DefendSlotSymbolBase
 
-const BASE_VALUE = 3
+const BASE_VALUE = 4
 
 func _init() -> void:
 	symbol_name = "Light Defend"
