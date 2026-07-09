@@ -32,5 +32,5 @@ func get_intent_as_string() -> String:
 	if not intent:
 		return "No thoughts, head empty..."
 	if intent.has("value"):
-		"Intends to " + intent.get("type") + " for " + str(intent.get("value"))
+		return "Intends to " + intent.get("type") + " for " + str(intent.get("value"))
 	return "Intends to " + intent.get("type")

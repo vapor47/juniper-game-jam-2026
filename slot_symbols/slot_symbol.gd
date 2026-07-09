@@ -2,7 +2,7 @@ class_name SlotSymbol
 extends RefCounted
 
 # TODO: Move elsewhere?
-enum SymbolType { ATTACK, DEFEND }
+enum SymbolType { ATTACK, DEFEND, HEAL }
 
 var symbol_name: String
 var symbol_value: int = 0

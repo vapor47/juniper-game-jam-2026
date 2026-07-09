@@ -11,7 +11,7 @@ config_version=5
 [application]
 
 config/name="juniper-game-jam"
-run/main_scene="res://combat.tscn"
+run/main_scene="res://combat/combat.tscn"
 config/features=PackedStringArray("4.7", "GL Compatibility")
 config/icon="res://icon.svg"
 
@@ -42,7 +42,8 @@ folder_colors={
 "res://combat/": "red",
 "res://combat/player/": "blue",
 "res://slot_symbols/symbols/attack/": "red",
-"res://slot_symbols/symbols/defend/": "blue"
+"res://slot_symbols/symbols/defend/": "blue",
+"res://slot_symbols/symbols/heal/": "green"
 }
 
 [gui]

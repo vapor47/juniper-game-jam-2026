@@ -79,6 +79,8 @@ func _on_respin_button_pressed() -> void:
 	Global.player.respin_tokens -= 1
 	
 func _insert_reel(reel: Reel, should_spin: bool = true) -> void:
+	if Global.reel_inventory[reel.reel_name] <= 0:
+		push_error("Attempted to insert reel with 0 remaining in inventory.")
 	slot_reel = reel
 	Global.reel_inventory[reel.reel_name] -= 1
 	if should_spin:
@@ -108,6 +110,9 @@ func attempt_reel_swap(reel_to_insert: Reel, token_cost: int = 0) -> bool:
 		return false
 		
 	if reel_to_insert == slot_reel:
+		return false
+		
+	if Global.reel_inventory[reel_to_insert.reel_name] <= 0:
 		return false
 	
 	_swap_reel(reel_to_insert)

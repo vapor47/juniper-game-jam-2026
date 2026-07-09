@@ -21,7 +21,6 @@ func _choose_intent() -> void:
 	"""
 	
 	intent = { "type": "toss a coin" }
-	custom_intent_str = "???"
 	
 
 func _execute_intent() -> void:
@@ -29,7 +28,12 @@ func _execute_intent() -> void:
 	if result == CoinTossResult.HEADS:
 		curr_attack_val *= 2
 		print_debug("Flipped Heads: Attack charged")
+		
+		custom_intent_str = "Flipped Heads: Attack charged (" + str(curr_attack_val) +")"
 	else:
 		print_debug("Flipped Tails: Attacking for " + str(curr_attack_val))
+		custom_intent_str = "Flipped Tails: Attacking for " + str(curr_attack_val)
+
 		Global.player.take_damage(curr_attack_val)
 		curr_attack_val = BASE_ATTACK_VAL
+		

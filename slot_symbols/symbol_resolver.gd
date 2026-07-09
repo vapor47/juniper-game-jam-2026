@@ -15,8 +15,10 @@ func resolve(stops: Array[ReelStop]) -> Array:
 	var applied_combos = []
 	var flat_attack_damage := 0
 	var flat_block := 0
+	var flat_heal := 0
 	var attack_multiplier := 1
 	var block_multiplier := 1
+	var heal_multiplier := 1
 	
 	# First check for any combos
 	# We need the action type + value, or the action name.
@@ -47,11 +49,19 @@ func resolve(stops: Array[ReelStop]) -> Array:
 					block_multiplier += 1
 				else:
 					flat_block += symbol.symbol_value
+			SlotSymbol.SymbolType.HEAL:
+				if symbol.symbol_name == "Multiply Heal":
+					heal_multiplier += 1
+				else:
+					flat_heal += symbol.symbol_value
+				
 	
 	var total_attack_damage: int = flat_attack_damage * attack_multiplier
 	var total_block: int = flat_block * block_multiplier
+	var total_heal: int = flat_heal * heal_multiplier
 	effects.append({ "type": "damage", "value": total_attack_damage})
 	effects.append({ "type": "block", "value": total_block})
+	effects.append({ "type": "heal", "value": total_heal})
 	
 	return effects
 

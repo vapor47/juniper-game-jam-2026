@@ -6,7 +6,7 @@ extends PanelContainer
 
 var num_slots_spinning: int = 0:
 	set(new_val):
-		%LockInButton.disabled = new_val > 0
+		%LockInButton.disabled = new_val > 0 or not get_tree().current_scene.initial_spin_completed
 		num_slots_spinning = new_val
 
 var selected_slot: Slot = null:
