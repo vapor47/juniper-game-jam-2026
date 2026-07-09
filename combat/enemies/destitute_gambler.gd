@@ -8,4 +8,4 @@ func _init() -> void:
 	_choose_intent()
 	
 func _choose_intent() -> void:
-	intent = { "type": "attack", "value": randi_range(1, 15) }
+	intent = { "type": "attack", "value": randi_range(5, 15) }

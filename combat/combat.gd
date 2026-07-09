@@ -5,7 +5,7 @@ class_name CombatScene
 #@onready var toggle_btn: Button = $ToggleButton
 const DEATH_SCREEN_SCENE = preload("res://screens/death_screen.tscn")
 const BATTLE_VICTORY_SCREEN_SCENE = preload("res://screens/battle_victory_screen.tscn")
-
+const COMBAT_REWARD_SCREEN_SCENE = preload("res://screens/combat_reward/combat_reward_screen.tscn")
 #func _ready() -> void:
 	##toggle_btn.pressed.connect(side_panel.toggle)
 	##$SidePanel/VBoxContainer/Header/CloseButton.pressed.connect(side_panel.close)
@@ -85,7 +85,9 @@ func _ready() -> void:
 	EventBus.reel_swapped.connect(func(_reel: Reel) -> void: side_panel.populate(_get_reel_inventory_data()))
 	EventBus.lever_pulled.connect(func() -> void: initial_spin_completed = true)
 	EventBus.slots_locked_in.connect(_on_spin_resolved)
-
+	
+	# Insert starting reels
+	
 	_init_enemies()
 	_start_combat()
 		
@@ -120,13 +122,14 @@ func _end_enemy_turn() -> void:
 	
 func _end_combat(result: CombatResult) -> void:
 	if result == CombatResult.VICTORY:
-		add_child(BATTLE_VICTORY_SCREEN_SCENE.instantiate())
+		#add_child(BATTLE_VICTORY_SCREEN_SCENE.instantiate())
 		_show_post_combat()
 	else:
 		add_child(DEATH_SCREEN_SCENE.instantiate())
 	
 func _show_post_combat() -> void:
-	pass
+	add_child(COMBAT_REWARD_SCREEN_SCENE.instantiate())
+
 	
 func _continue() -> void:
 #	Signal to sceneManager to move to next combat (for now)

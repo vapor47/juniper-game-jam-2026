@@ -1,0 +1,13 @@
+[gd_scene format=3 uid="uid://2locvfrtth0t"]
+
+[ext_resource type="Texture2D" uid="uid://domx4xdpapir" path="res://icon.svg" id="1_ktmk7"]
+[ext_resource type="Script" uid="uid://clgkvcte3n3yt" path="res://screens/combat_reward/combat_reward_button.gd" id="2_sni1k"]
+
+[node name="CombatReward" type="Button" unique_id=386257271]
+text = "Reel Name"
+icon = ExtResource("1_ktmk7")
+icon_alignment = 1
+vertical_icon_alignment = 0
+script = ExtResource("2_sni1k")
+
+[connection signal="pressed" from="." to="." method="_on_pressed"]

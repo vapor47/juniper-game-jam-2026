@@ -22,11 +22,11 @@ var is_spinning: bool = false:
 
 func _ready() -> void:
 	add_to_group("slots")
-	_insert_reel(Global.reels["Attack"], false)
-	result_label.text = slot_reel.reel_stops.map(
-		func(s: ReelStop) -> SlotSymbol:
-			return s.slot_symbol
-	).pick_random().symbol_name
+	#_insert_reel(Global.reels["Attack"], false)
+	#result_label.text = slot_reel.reel_stops.map(
+		#func(s: ReelStop) -> SlotSymbol:
+			#return s.slot_symbol
+	#).pick_random().symbol_name
 
 func _exit_tree() -> void:
 	_remove_reel()
@@ -83,6 +83,12 @@ func _insert_reel(reel: Reel, should_spin: bool = true) -> void:
 		push_error("Attempted to insert reel with 0 remaining in inventory.")
 	slot_reel = reel
 	Global.reel_inventory[reel.reel_name] -= 1
+	
+	result_label.text = slot_reel.reel_stops.map(
+		func(s: ReelStop) -> SlotSymbol:
+			return s.slot_symbol
+	).pick_random().symbol_name
+	
 	if should_spin:
 		spin()
 

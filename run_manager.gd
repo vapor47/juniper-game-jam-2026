@@ -2,6 +2,7 @@ extends Node
 
 var encounter_queue: Array[Array] = [
 	[DestituteGamblerData],
+	[ChargeyGuyData],
 	[TwoFacedData],
 	[PitBossData],
 ]

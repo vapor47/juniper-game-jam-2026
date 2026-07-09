@@ -4,9 +4,9 @@ var player: PlayerData
 var slot_symbols: Dictionary[String, SlotSymbol] = {}
 var reels: Dictionary[String, Reel] = {}
 var reel_inventory: Dictionary[String, int] = {
-	"Attack": 3,
-	"Defend": 3,
-	"Heal": 1,
+	"Attack": 2,
+	"Defend": 1,
+	"Heal": 0,
 }
 
 # Animations

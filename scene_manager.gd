@@ -2,8 +2,11 @@ extends Node
 
 const COMBAT_SCENE = preload("res://combat/combat.tscn")
 
+signal combat_reward_chosen
+
 func _ready() -> void:
 	EventBus.post_combat_completed.connect(_on_continue)
+	combat_reward_chosen.connect(_on_continue)
 
 func _on_continue() -> void:
 	get_tree().change_scene_to_packed(COMBAT_SCENE)
