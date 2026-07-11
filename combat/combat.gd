@@ -269,7 +269,7 @@ func _ready() -> void:
 	setup(RunManager.get_next_encounter())
 	
 	side_panel.populate(_get_reel_inventory_data())
-	#EventBus.reel_swapped.connect(func(_reel: Reel) -> void: side_panel.populate(_get_reel_inventory_data()))
+	EventBus.reel_swapped.connect(func(_reel: Reel) -> void: side_panel.populate(_get_reel_inventory_data()))
 	#EventBus.lever_pulled.connect(func() -> void: initial_spin_completed = true)
 	#EventBus.slots_locked_in.connect(_on_spin_resolved)
 	
@@ -284,6 +284,7 @@ func _begin_combat() -> void:
 	
 #	Choose starting reel load out
 	_init_starting_loadout()
+	side_panel.populate(_get_reel_inventory_data())
 	_update_combo_legend()
 	_begin_player_turn()
 
@@ -358,7 +359,7 @@ func _begin_action_resolution_phase() -> void:
 	#var actions: Array[Action] = _get_actions_for_symbols(symbols)
 	
 	var actions: Array[Action] = SymbolResolver.resolve(stops)
-	await _perform_actions(actions)
+	await _perform_actions(actions, Global.player, enemies[0])
 	_end_player_turn()
 
 func _get_selected_stops() -> Array[ReelStop]:
@@ -369,8 +370,8 @@ func _get_selected_stops() -> Array[ReelStop]:
 	
 	return stops
 
-enum ActionType {}
 class Action:
+	enum Type { IDLE, ATTACK, DEFEND, HEAL }
 	var type: SlotSymbol.SymbolType
 	var value: int
 	var display_string: String
@@ -381,21 +382,24 @@ class Action:
 		display_string = p_display_string
 
 
-func _perform_actions(actions: Array[Action]) -> void:
+func _perform_actions(actions: Array[Action], source: CombatantData = Global.player, target: CombatantData = null) -> void:
 	for action in actions:
 		# Don't perform no ops
 		if action.value == 0:
 			continue
 		
-		_display_action(action)
 		match action.type:
 			SlotSymbol.SymbolType.ATTACK:
-				for enemy: EnemyData in enemies:
-					enemy.take_damage(action.value)
+				#for enemy: EnemyData in enemies:
+				var actual_dmg := target.take_damage(action.value)
+				action.display_string = "%s dealt %d damage to %s!" % [source.display_name, actual_dmg, target.display_name]
 			SlotSymbol.SymbolType.DEFEND:
-				Global.player.add_block(action.value)
+				source.add_block(action.value)
 			SlotSymbol.SymbolType.HEAL:
-				Global.player.heal(action.value)
+				source.heal(action.value)
+				
+				
+		_display_action(action)
 		await get_tree().create_timer(1.3).timeout
 
 
@@ -407,6 +411,8 @@ func _end_player_turn() -> void:
 #	Reset selected slots pressed
 	for slot: Slot in selected_slots:
 		slot.unselect()
+		
+	await get_tree().create_timer(2).timeout
 	_start_enemy_turn()
 
 
@@ -415,6 +421,8 @@ func _start_enemy_turn() -> void:
 	#EventBus.turn_started.emit(Turn.ENEMY)
 	for enemy in enemies:
 		if is_instance_valid(enemy):
+			var actions := enemy.get_actions()
+			await _perform_actions(actions, enemy, Global.player)
 			enemy.make_move()
 	#if combat_state != CombatState.ENDED:
 	

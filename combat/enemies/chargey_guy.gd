@@ -16,6 +16,7 @@ func _choose_intent() -> void:
 	if turns_until_attack <= 0:
 		intent = { "type": "attack", "value": 35 }
 		custom_intent_str = "Attacking for " + str(intent.value)
+		turns_until_attack = 2
 	else:
 		intent = { "type": "charge", "value": turns_until_attack }
 		custom_intent_str = "Charging... (%d %s)" % [turns_until_attack, "turn" if turns_until_attack == 1 else "turns"]
