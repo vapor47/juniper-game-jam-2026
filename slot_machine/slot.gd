@@ -4,12 +4,14 @@ extends Button
 signal started_spinning
 signal stopped_spinning
 
+var is_held: bool = false
 var slot_reel: Reel = null
 var _curr_stop: ReelStop = null:
 	set(new):
 		print("curr stop changed")
 		_curr_stop = new
 @onready var result_label: Label = $MarginContainer/SlotContainer/SlotWindow/Label
+@onready var hold_button: HoldButton = %HoldButton
 
 var is_spinning: bool = false:
 	set(new_val):
@@ -19,9 +21,15 @@ var is_spinning: bool = false:
 		if new_val: started_spinning.emit()
 		else: stopped_spinning.emit()
 
-
+func reset_hold() -> void:
+	is_held = false
+	%HoldButton.disabled = false
+	
 func _ready() -> void:
 	add_to_group("slots")
+	print("Slot ", name, " resolved HoldButton: ", %HoldButton.get_instance_id(), " path: ", %HoldButton.get_path())
+
+	%HoldButton.slot_held.connect(func() -> void: is_held = true)
 	#_insert_reel(Global.reels["Attack"], false)
 	#result_label.text = slot_reel.reel_stops.map(
 		#func(s: ReelStop) -> SlotSymbol:
@@ -111,12 +119,6 @@ combat manager now owns what it means to swap and to select, which feels appropr
 slot on press simply calls whatever behavior is passed to it.
 """
 
-
-func _on_respin_button_pressed() -> void:
-	if Global.player.respin_tokens <= 0:
-		return
-	spin()
-	Global.player.respin_tokens -= 1
 	
 func _insert_reel(reel: Reel, should_spin: bool = true) -> void:
 	if Global.reel_inventory[reel.reel_name] <= 0:

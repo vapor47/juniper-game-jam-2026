@@ -279,17 +279,23 @@ func _ready() -> void:
 	_begin_combat()
 
 func _begin_combat() -> void:
+	curr_slot_press_action = SlotPressAction.NONE
 #	Choose starting reel load out
 	_begin_player_turn()
 
 func _begin_player_turn() -> void:
-	_reset_player_turn_values()
+	_reset_player_turn_state()
 	player_turn_started.emit()
 	_begin_swap_phase()
 
-func _reset_player_turn_values() -> void:
+func _reset_player_turn_state() -> void:
 	selected_slots = {}
 	slot_to_swap = null
+	slot_machine.lever.disabled = false
+	
+	for slot: Slot in get_tree().get_nodes_in_group("slots"):
+		slot.hold_button.disabled = true
+		slot.is_held = false
 
 
 func _begin_swap_phase() -> void:
@@ -299,6 +305,9 @@ func _begin_swap_phase() -> void:
 # On lever pulled
 func _end_swap_phase() -> void:
 #	Disable swapping (potentially change what action clicking on slot performs)
+	if curr_slot_press_action != SlotPressAction.SELECT:
+		for slot: Slot in get_tree().get_nodes_in_group("slots"):
+			slot.reset_hold()
 	curr_slot_press_action = SlotPressAction.NONE
 	_begin_slot_select_phase()
 
@@ -321,7 +330,8 @@ func _begin_slot_select_phase() -> void:
 func _end_slot_select_phase() -> void:
 #	Disable confirm button
 	#%LockInButton.disabled = true
-	#%SlotMachineLever.disabled = true
+	slot_machine.lever.disabled = true
+	curr_slot_press_action = SlotPressAction.NONE
 	_begin_action_resolution_phase()
 
 
@@ -490,7 +500,8 @@ func _on_spin_all_completed() -> void:
 	var combo_legend_values := _get_combo_legend_values(slots, max_active_slots)
 	print_debug(combo_legend_values)
 	EventBus.combo_legend_updated.emit(combo_legend_values)
-	
+	slot_machine.lever.disabled = curr_slot_press_action == SlotPressAction.NONE
+
 func _get_combo_legend_values(options: Array[Slot], max_combo_size: int) -> Array[ComboLegendRow]:
 	"""
 	Given an array of available symbols/stops and max_combo_size.

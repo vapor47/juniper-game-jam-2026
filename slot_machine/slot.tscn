@@ -1,7 +1,7 @@
 [gd_scene format=3 uid="uid://b8ijffcnh5eqd"]
 
 [ext_resource type="Script" uid="uid://coyw8hpl3comt" path="res://slot_machine/slot.gd" id="1_c24ra"]
-[ext_resource type="Script" uid="uid://bnavqb4ua5gvw" path="res://slot_machine/respin_button.gd" id="2_khion"]
+[ext_resource type="Script" uid="uid://bnavqb4ua5gvw" path="res://slot_machine/hold_button.gd" id="2_khion"]
 
 [node name="Slot" type="Button" unique_id=1700477999]
 editor_description = "Slot as Button to enable easy hovering and clicking for slot wheel swapping."
@@ -58,12 +58,13 @@ vertical_alignment = 1
 [node name="Control" type="Control" parent="MarginContainer/SlotContainer" unique_id=1973840993]
 layout_mode = 2
 
-[node name="RespinButton" type="Button" parent="MarginContainer/SlotContainer" unique_id=708654024]
+[node name="HoldButton" type="Button" parent="MarginContainer/SlotContainer" unique_id=708654024]
+unique_name_in_owner = true
 layout_mode = 2
 size_flags_horizontal = 4
 size_flags_vertical = 8
-text = "RESPIN"
+text = "HOLD"
 script = ExtResource("2_khion")
 
 [connection signal="pressed" from="." to="." method="_on_pressed"]
-[connection signal="pressed" from="MarginContainer/SlotContainer/RespinButton" to="." method="_on_respin_button_pressed"]
+[connection signal="pressed" from="MarginContainer/SlotContainer/HoldButton" to="MarginContainer/SlotContainer/HoldButton" method="_on_pressed"]

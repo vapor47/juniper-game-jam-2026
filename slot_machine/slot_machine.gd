@@ -44,9 +44,10 @@ func _ready() -> void:
 
 func _on_lever_pulled() -> void:
 	var slots: Array[Node] = get_tree().get_nodes_in_group("slots")
+	var unheld_slots := slots.filter(func(s: Slot) -> bool: return not s.is_held)
 	
-	for i in slots.size():
-		slots[i].spin(Global.SLOT_SPIN_DURATION + (i * Global.SLOT_REVEAL_STAGGER))
+	for i in unheld_slots.size():
+		unheld_slots[i].spin(Global.SLOT_SPIN_DURATION + (i * Global.SLOT_REVEAL_STAGGER))
 		
 	# Emit spin completed (hacky)
 	var last_slot_duration := Global.SLOT_SPIN_DURATION + (slots.size() * Global.SLOT_REVEAL_STAGGER)

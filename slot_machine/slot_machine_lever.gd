@@ -3,8 +3,11 @@ extends Button
 
 func _ready() -> void:
 	disabled = false
-	get_tree().current_scene.player_turn_started.connect(func() -> void: disabled = false)
+	#get_tree().current_scene.player_turn_started.connect(func() -> void: disabled = false)
 	#EventBus.spin_lock_toggled.connect(func(): disabled = !disabled)
+	#EventBus.spin_all_completed.connect(
+		#func() -> void: disabled = false and CombatManager.curr_slot_press_action == CombatManager.SlotPressAction.SELECT
+	#)
 	
 	
 func _on_pressed() -> void:
