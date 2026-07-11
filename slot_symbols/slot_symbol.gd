@@ -20,4 +20,4 @@ func get_symbol_type() -> SymbolType:
 
 func get_symbol_icon() -> Texture2D:
 	push_error("CRITICAL: get_symbol_icon() was called on a base class without being overridden!")
-	return preload("res://assets/icons/icon.svg")
+	return preload("res://at-icons_v1.3.0/addons/at-icons/node3d/cutlass.svg")

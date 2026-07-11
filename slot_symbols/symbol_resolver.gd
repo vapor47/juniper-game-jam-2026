@@ -30,6 +30,8 @@ func resolve(stops: Array[ReelStop]) -> Array[CombatManager.Action]:
 				attack_flat += _get_combo_value(symbol.symbol_value, count)
 			elif symbol.get_symbol_type() == SlotSymbol.SymbolType.DEFEND and not symbol.symbol_name.contains("Multiply"):
 				block_flat += _get_combo_value(symbol.symbol_value, count)
+			elif symbol.get_symbol_type() == SlotSymbol.SymbolType.HEAL and not symbol.symbol_name.contains("Multiply"):
+				heal_flat += _get_combo_value(symbol.symbol_value, count)
 			
 			applied_combos.append(symbol)
 	
@@ -118,15 +120,15 @@ func _consolidate_symbols(symbol_count: Dictionary[SlotSymbol, int]) -> Array[Co
 	return actions
 
 func _get_combo_value(symbol_value: int, count: int) -> int:
-	if count == 0:
-		return 0
-	
-	if count == 1:
-		return symbol_value
-	
-	return (symbol_value * count) + ((count ** 2) * 4)
+	if count <= 1:
+		return symbol_value * count
+	var flat_sum := symbol_value * count
+	var scale := pow(count - 1, 1.3)
+	return roundi(flat_sum + (flat_sum * 0.12 * scale) + scale)
+
 #func _resolve_combos(stops: Array[ReelStop]) -> String:
 	#pass
+
 """
 input:
 	SlotSymbols with name, type, and modifier

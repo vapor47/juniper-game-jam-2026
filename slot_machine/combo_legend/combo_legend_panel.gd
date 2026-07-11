@@ -112,11 +112,13 @@ func _build_row(row: ComboLegendRow, symbols_area_width: int) -> Control:
 func _get_result_texture(type: SlotSymbol.SymbolType) -> Texture2D:
 	match type:
 		SlotSymbol.SymbolType.ATTACK:
-			return preload("res://assets/icons/attack_icon.svg")
+			return preload("res://at-icons_v1.3.0/addons/at-icons/node3d/cutlass.svg")
 		SlotSymbol.SymbolType.DEFEND:
-			return preload("res://assets/icons/defend_icon.svg")
+			return preload("res://at-icons_v1.3.0/addons/at-icons/node2d/shield.svg")
+		SlotSymbol.SymbolType.HEAL:
+			return preload("res://at-icons_v1.3.0/addons/at-icons/control/plus_sign_in_square.svg")
 		_:
-			return null
+			return preload("res://assets/icons/icon.svg")
 
 
 func build_legend(rows: Array[ComboLegendRow] = _rows) -> VBoxContainer:

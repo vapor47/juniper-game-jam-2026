@@ -8,3 +8,6 @@ func _init() -> void:
 
 func get_symbol_type() -> SymbolType:
 	return SymbolType.DEFEND
+
+func get_symbol_icon() -> Texture2D:
+	return preload("res://at-icons_v1.3.0/addons/at-icons/node2d/shield.svg")
