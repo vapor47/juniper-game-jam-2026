@@ -172,6 +172,12 @@ func _build_category_column(category: SlotSymbol.SymbolType, category_rows: Arra
 		max_symbols = max(max_symbols, row.required_symbols.size())
 	var symbols_area_width := (max_symbols * ICON_SIZE) + ((max_symbols - 1) * ICON_SPACING)
 
+	category_rows.sort_custom(func(a: ComboLegendRow, b: ComboLegendRow) -> bool:
+		if a.symbol.symbol_name.contains("Multiply"):
+			return false
+		return a.symbol.symbol_value < b.symbol.symbol_value
+	)
+
 	for row in category_rows:
 		var row_control := _build_row(row, symbols_area_width)
 		column.add_child(row_control)

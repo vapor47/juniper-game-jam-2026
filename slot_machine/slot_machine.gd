@@ -28,17 +28,6 @@ func _ready() -> void:
 	for slot: Slot in slots:
 		slot.started_spinning.connect(func() -> void: num_slots_spinning += 1)
 		slot.stopped_spinning.connect(func() -> void: num_slots_spinning -= 1)
-		#for reel_name: String in Global.reel_inventory:
-			#var count: int = Global.reel_inventory[reel_name]
-			#if count <= 0:
-				#continue
-			#slot._insert_reel(Global.reels[reel_name], false)
-	
-	slots[0]._insert_reel(Global.reels.get("Attack"), false)
-	slots[1]._insert_reel(Global.reels.get("Attack"), false)
-	slots[2]._insert_reel(Global.reels.get("Attack"), false)
-	slots[3]._insert_reel(Global.reels.get("Defend"), false)
-	slots[4]._insert_reel(Global.reels.get("Defend"), false)
 	
 	health_bar.setup(Global.player)
 

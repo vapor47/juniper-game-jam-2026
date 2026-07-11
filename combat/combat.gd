@@ -222,7 +222,7 @@ var curr_slot_press_action: SlotPressAction = SlotPressAction.NONE:
 				pass
 			SlotPressAction.SELECT:
 				print_debug("Switching slot press to slot select mode.")
-				slot_machine.phase_label.text = "SELECT — Choose %d results • Hold desired slots & respin the rest • LOCK IT IN" % max_active_slots
+				slot_machine.phase_label.text = "SELECT — Hold desired slots & respin the rest • Choose %d results • LOCK IT IN" % max_active_slots
 				# Set Slot press action to select
 				pass
 			SlotPressAction.NONE:
@@ -281,8 +281,20 @@ func _ready() -> void:
 func _begin_combat() -> void:
 	curr_slot_press_action = SlotPressAction.NONE
 	Global.player.replenish_tokens()
+	
 #	Choose starting reel load out
+	_init_starting_loadout()
+	_update_combo_legend()
 	_begin_player_turn()
+
+func _init_starting_loadout() -> void:
+	var slots: Array[Node] = get_tree().get_nodes_in_group("slots")
+
+	slots[0]._insert_reel(Global.reels.get("Attack"), false)
+	slots[1]._insert_reel(Global.reels.get("Attack"), false)
+	slots[2]._insert_reel(Global.reels.get("Attack"), false)
+	slots[3]._insert_reel(Global.reels.get("Defend"), false)
+	slots[4]._insert_reel(Global.reels.get("Defend"), false)
 
 func _begin_player_turn() -> void:
 	_reset_player_turn_state()
@@ -384,7 +396,7 @@ func _perform_actions(actions: Array[Action]) -> void:
 				Global.player.add_block(action.value)
 			SlotSymbol.SymbolType.HEAL:
 				Global.player.heal(action.value)
-		await get_tree().create_timer(2).timeout
+		await get_tree().create_timer(1.3).timeout
 
 
 func _display_action(action: Action) -> void:
@@ -495,14 +507,16 @@ Next up:
 """
 
 func _on_spin_all_completed() -> void:
+	_update_combo_legend()
+	slot_machine.lever.disabled = curr_slot_press_action == SlotPressAction.NONE or Global.player.tokens <= 0
+
+func _update_combo_legend() -> void:
 	var slots: Array[Slot] = []
 	for slot: Slot in get_tree().get_nodes_in_group("slots"):
 		slots.append(slot)
 
 	var combo_legend_values := _get_combo_legend_values(slots, max_active_slots)
-	print_debug(combo_legend_values)
 	EventBus.combo_legend_updated.emit(combo_legend_values)
-	slot_machine.lever.disabled = curr_slot_press_action == SlotPressAction.NONE or Global.player.tokens <= 0
 
 func _get_combo_legend_values(options: Array[Slot], max_combo_size: int) -> Array[ComboLegendRow]:
 	"""

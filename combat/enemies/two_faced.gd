@@ -32,7 +32,7 @@ func _execute_intent() -> void:
 		custom_intent_str = "Flipped Heads: Attack charged (" + str(curr_attack_val) +")"
 	else:
 		print_debug("Flipped Tails: Attacking for " + str(curr_attack_val))
-		custom_intent_str = "Flipped Tails: Attacking for " + str(curr_attack_val)
+		custom_intent_str = "Flipped Tails: Attacked for " + str(curr_attack_val)
 
 		Global.player.take_damage(curr_attack_val)
 		curr_attack_val = BASE_ATTACK_VAL

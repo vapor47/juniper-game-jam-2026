@@ -121,10 +121,12 @@ func _insert_reel(reel: Reel, should_spin: bool = true) -> void:
 	slot_reel = reel
 	Global.reel_inventory[reel.reel_name] -= 1
 	
-	result_label.text = slot_reel.reel_stops.map(
-		func(s: ReelStop) -> SlotSymbol:
-			return s.slot_symbol
-	).pick_random().symbol_name
+	_curr_stop = slot_reel.reel_stops.pick_random()
+	result_label.text = _curr_stop.slot_symbol.symbol_name
+	#result_label.text = slot_reel.reel_stops.map(
+		#func(s: ReelStop) -> SlotSymbol:
+			#return s.slot_symbol
+	#).pick_random().symbol_name
 	
 	if should_spin:
 		spin()
