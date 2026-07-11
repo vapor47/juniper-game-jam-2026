@@ -22,7 +22,7 @@ func _ready() -> void:
 	# TODO: investigate why i have to add
 	position.x = _get_screen_width() + size.x
 	
-	EventBus.slot_selected.connect(_on_open_requested)
+	#EventBus.slot_selected.connect(_on_open_requested)
 	EventBus.close_side_panel.connect(close)
 
 func populate(inventory_data) -> void:
@@ -66,6 +66,7 @@ func close() -> void:
 	is_open_for_swap = false
 	curr_selected_slot = null
 	_animate_to(_get_screen_width())
+	EventBus.side_panel_closed.emit()
 
 func _animate_to(target_x: float) -> void:
 	if tween:

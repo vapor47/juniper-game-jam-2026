@@ -6,7 +6,7 @@ extends PanelContainer
 
 var num_slots_spinning: int = 0:
 	set(new_val):
-		%LockInButton.disabled = new_val > 0 or not get_tree().current_scene.initial_spin_completed
+		%LockInButton.disabled = new_val > 0
 		num_slots_spinning = new_val
 
 var selected_slot: Slot = null:
@@ -34,7 +34,9 @@ func _ready() -> void:
 	
 	slots[0]._insert_reel(Global.reels.get("Attack"), false)
 	slots[1]._insert_reel(Global.reels.get("Attack"), false)
-	slots[2]._insert_reel(Global.reels.get("Defend"), false)
+	slots[2]._insert_reel(Global.reels.get("Attack"), false)
+	slots[3]._insert_reel(Global.reels.get("Defend"), false)
+	slots[4]._insert_reel(Global.reels.get("Defend"), false)
 	
 	health_bar.setup(Global.player)
 

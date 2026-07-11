@@ -67,6 +67,12 @@ layout_mode = 2
 [node name="Slot3" parent="MarginContainer/VBodyContainer/SlotsBodyContainer/PanelContainer/SlotGroupContainer" unique_id=816384910 instance=ExtResource("2_842tv")]
 layout_mode = 2
 
+[node name="Slot4" parent="MarginContainer/VBodyContainer/SlotsBodyContainer/PanelContainer/SlotGroupContainer" unique_id=1574252330 instance=ExtResource("2_842tv")]
+layout_mode = 2
+
+[node name="Slot5" parent="MarginContainer/VBodyContainer/SlotsBodyContainer/PanelContainer/SlotGroupContainer" unique_id=1904504209 instance=ExtResource("2_842tv")]
+layout_mode = 2
+
 [node name="SlotMachineLever" type="Button" parent="MarginContainer/VBodyContainer/SlotsBodyContainer" unique_id=910737963]
 unique_name_in_owner = true
 layout_mode = 2

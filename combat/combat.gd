@@ -92,22 +92,22 @@ func _start_player_turn() -> void:
 	curr_swap_cost = 0
 
 # To be called once the player hits the lock in button
-func _end_player_turn() -> void:
+#func _end_player_turn() -> void:
 #	Disable slot machine controls
 	_start_enemy_turn()
-	
-func _start_enemy_turn() -> void:
-	enemy_turn_started.emit()
-	#EventBus.turn_started.emit(Turn.ENEMY)
-	for enemy in enemies:
-		if is_instance_valid(enemy):
-			enemy.make_move()
-	#if combat_state != CombatState.ENDED:
-	
-	_start_player_turn()
-	
-func _end_enemy_turn() -> void:
-	_start_player_turn()
+	#
+#func _start_enemy_turn() -> void:
+	#enemy_turn_started.emit()
+	##EventBus.turn_started.emit(Turn.ENEMY)
+	#for enemy in enemies:
+		#if is_instance_valid(enemy):
+			#enemy.make_move()
+	##if combat_state != CombatState.ENDED:
+	#
+	#_start_player_turn()
+	#
+#func _end_enemy_turn() -> void:
+	#_start_player_turn()
 	
 func _end_combat(result: CombatResult) -> void:
 	if result == CombatResult.VICTORY:
@@ -193,6 +193,7 @@ Perhapssss along individual respins? I think the idea of locking slots in place 
 - Repeat this locking / re-spin phase. (Decide whether or not player should be able to unlock already locked slots. I feel like it’s more interesting to not allow)
 - User finally confirms their X chosen slots, and the player actions are calculated and resolved.
 """
+var max_active_slots: int = 3
 var selected_slots: Dictionary = {}:
 	set(new_val):
 		selected_slots = new_val
@@ -211,23 +212,40 @@ var curr_slot_press_action: SlotPressAction = SlotPressAction.NONE:
 		match new_val:
 			SlotPressAction.SWAP:
 				# Set Slot press action to reel swap
+				print_debug("Switching slot press to reel swap mode.")
 				pass
 			SlotPressAction.SELECT:
+				print_debug("Switching slot press to slot select mode.")
 				# Set Slot press action to select
 				pass
 			SlotPressAction.NONE:
 				# Disable Slot press action
+				print_debug("Disabling slot press.")
 				pass
 	
-var slot_to_swap: Slot = null
+var slot_to_swap: Slot = null:
+	set(new_val):
+		if not new_val or new_val == slot_to_swap:
+			if slot_to_swap:
+				slot_to_swap.button_pressed = false
+				slot_to_swap = null
+		else:
+			slot_to_swap = new_val
 
-func _rrready() -> void:
-	EventBus.lever_pulled.connect(_begin_slot_select_phase)
+
+func _on_side_panel_closed() -> void:
+	slot_to_swap = null
+
+func _ready() -> void:
+	EventBus.lever_pulled.connect(_end_swap_phase)
+	#EventBus.lever_pulled.connect(_begin_slot_select_phase)
 	EventBus.slot_selection_confirmed.connect(_end_slot_select_phase)
 	EventBus.swap_reel_selected.connect(_swap_slot_reels)
+	EventBus.slot_selected.connect(_on_slot_pressed)
+	EventBus.side_panel_closed.connect(_on_side_panel_closed)
 	
-#	TODO: implement
-	EventBus.reel_swaps_completed.connect(_end_swap_phase)
+#	TODO: implement (maybe?)
+	#EventBus.reel_swaps_completed.connect(_end_swap_phase)
 	
 	### Existing code
 	set_process_unhandled_input(true)
@@ -244,16 +262,23 @@ func _rrready() -> void:
 	# Insert starting reels
 	
 	_init_enemies()
-	_begin_player_turn()
+	_begin_combat()
 
+func _begin_combat() -> void:
+#	Choose starting reel load out
+	_begin_player_turn()
 
 func _begin_player_turn() -> void:
 	_reset_player_turn_values()
+	player_turn_started.emit()
 	_begin_swap_phase()
 
 func _reset_player_turn_values() -> void:
 	selected_slots = {}
 	slot_to_swap = null
+	
+	#enable lever
+	#%SlotMachineLever.disabled = false
 
 
 func _begin_swap_phase() -> void:
@@ -287,7 +312,8 @@ func _begin_slot_select_phase() -> void:
 # On confirm button press
 func _end_slot_select_phase() -> void:
 #	Disable confirm button
-	
+	#%LockInButton.disabled = true
+	#%SlotMachineLever.disabled = true
 	_begin_action_resolution_phase()
 
 
@@ -297,7 +323,6 @@ func _begin_action_resolution_phase() -> void:
 		perform actions
 	"""
 	var symbols: Array[SlotSymbol] = _get_selected_symbols()
-	#TODO define Action class
 	var actions: Array[Action] = _get_actions_for_symbols(symbols)
 	_perform_actions(actions)
 	_end_player_turn()
@@ -374,11 +399,30 @@ func _display_action(action: Action) -> void:
 	spawn_popup(action.display_string)
 	print_debug(action.display_string)
 
-func _endddddd_player_turn() -> void:
-	pass
+func _end_player_turn() -> void:
+#	Reset selected slots pressed
+	for slot: Slot in selected_slots:
+		slot.unselect()
+	_start_enemy_turn()
 
 
+func _start_enemy_turn() -> void:
+	enemy_turn_started.emit()
+	#EventBus.turn_started.emit(Turn.ENEMY)
+	for enemy in enemies:
+		if is_instance_valid(enemy):
+			enemy.make_move()
+	#if combat_state != CombatState.ENDED:
+	
+	#_start_player_turn()
+	_end_enemy_turn()
 
+
+func _end_enemy_turn() -> void:
+	_begin_player_turn()
+
+
+# On slot press
 func _on_slot_pressed(slot: Slot) -> void:
 	match curr_slot_press_action:
 		SlotPressAction.SWAP:
@@ -389,24 +433,31 @@ func _on_slot_pressed(slot: Slot) -> void:
 			pass # no op
 
 func _start_swap(slot: Slot) -> void:
-#	Open reel inventory
-	side_panel.open_for_swap()
-	slot_to_swap = slot
+	if slot == slot_to_swap:
+		side_panel.close()
+		slot_to_swap = null
+		return
 	
-	#reel inventory button looks at curr_swapping_slot, or we pass it
-#	to see which reel its swapping with.
-	pass
+	slot_to_swap = slot
+	side_panel.open_for_swap()
 
+# On swap_reel_selected
 func _swap_slot_reels(reel_to_insert: Reel) -> void:
+	if not slot_to_swap:
+		return
 	slot_to_swap.attempt_reel_swap(reel_to_insert)
 
 func _select_slot(slot: Slot) -> void:
-	if slot.selected:
-		slot.selected = false
+	if slot in selected_slots:
 		selected_slots.erase(slot)
+		slot.unselect()
 	else:
-		slot.selected = true
-		selected_slots[slot] = true
+		if len(selected_slots) < max_active_slots:
+			selected_slots[slot] = true
+			slot.select()
+		else:
+#			Block selection and notify user
+			pass
 
 """
 that could be funny, if the lock-in/confirm button just changed text all the time

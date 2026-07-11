@@ -5,6 +5,8 @@ extends Node
 signal open_side_panel(slot: Slot)
 signal close_side_panel
 
+signal side_panel_closed
+
 signal slot_selected(slot: Slot)
 signal reel_swapped(reel: Reel)
 signal slots_locked_in(symbols: Array)

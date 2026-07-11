@@ -67,12 +67,40 @@ func _stop_spin_animation(final_stop: ReelStop) -> void:
 	is_spinning = false
 	result_label.text = get_curr_stop().slot_symbol.symbol_name
 
+var is_selected: bool = false
+
+func _make_selected_stylebox() -> StyleBoxFlat:
+	var style = StyleBoxFlat.new()
+	style.bg_color = Color(0.2, 0.5, 0.9, 0.3)  # light blue tint, semi-transparent
+	style.border_color = Color(0.2, 0.5, 0.9)   # solid blue border
+	style.border_width_left = 3
+	style.border_width_right = 3
+	style.border_width_top = 3
+	style.border_width_bottom = 3
+	style.corner_radius_top_left = 4
+	style.corner_radius_top_right = 4
+	style.corner_radius_bottom_left = 4
+	style.corner_radius_bottom_right = 4
+	return style
+	
+func select() -> void:
+	is_selected = true
+	add_theme_stylebox_override("normal", _make_selected_stylebox())
+	
+func unselect() -> void:
+	is_selected = false
+	remove_theme_stylebox_override("normal")
+	
 func _on_pressed() -> void:
-	EventBus.open_side_panel.emit(self)
+	#EventBus.open_side_panel.emit(self)
 	EventBus.slot_selected.emit(self)
 	
 #	EITHER SWAP OR SELECT
 	#CombatManager.curr_slot_press_action
+	#if in select mode and >= than max active slots selected:
+	# ignore button press
+	# notify user, or send signal to.
+	is_selected = not is_selected
 	
 """
 combat manager updates slot behavior
