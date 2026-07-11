@@ -21,10 +21,10 @@ func _on_pressed() -> void:
 	_attempt_lever_pull()
 
 func _attempt_lever_pull(cost: int = 1) -> void:
-	if Global.player.respin_tokens < cost:
+	if Global.player.tokens < cost:
 		push_error("Not enough tokens to pull lever!")
 		return
 	
-	Global.player.respin_tokens -= cost
+	Global.player.tokens -= cost
 	EventBus.lever_pulled.emit()
 	

@@ -154,7 +154,7 @@ func attempt_reel_swap(reel_to_insert: Reel, token_cost: int = 0) -> bool:
 		push_error("Attempted to swap reel with no existing reel.")
 		return false
 	
-	if Global.player.respin_tokens < token_cost:
+	if Global.player.tokens < token_cost:
 		return false
 		
 	if reel_to_insert == slot_reel:
@@ -165,6 +165,6 @@ func attempt_reel_swap(reel_to_insert: Reel, token_cost: int = 0) -> bool:
 	
 	_swap_reel(reel_to_insert)
 	#if get_tree().current_scene.initial_spin_completed:
-	Global.player.respin_tokens -= token_cost
+	Global.player.tokens -= token_cost
 		
 	return true
