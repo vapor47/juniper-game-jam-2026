@@ -280,11 +280,13 @@ func _ready() -> void:
 
 func _begin_combat() -> void:
 	curr_slot_press_action = SlotPressAction.NONE
+	Global.player.replenish_tokens()
 #	Choose starting reel load out
 	_begin_player_turn()
 
 func _begin_player_turn() -> void:
 	_reset_player_turn_state()
+	Global.player.regen_tokens()
 	player_turn_started.emit()
 	_begin_swap_phase()
 
@@ -500,7 +502,7 @@ func _on_spin_all_completed() -> void:
 	var combo_legend_values := _get_combo_legend_values(slots, max_active_slots)
 	print_debug(combo_legend_values)
 	EventBus.combo_legend_updated.emit(combo_legend_values)
-	slot_machine.lever.disabled = curr_slot_press_action == SlotPressAction.NONE
+	slot_machine.lever.disabled = curr_slot_press_action == SlotPressAction.NONE or Global.player.respin_tokens <= 0
 
 func _get_combo_legend_values(options: Array[Slot], max_combo_size: int) -> Array[ComboLegendRow]:
 	"""

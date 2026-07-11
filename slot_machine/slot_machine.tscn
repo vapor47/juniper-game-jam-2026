@@ -114,6 +114,10 @@ layout_mode = 2
 size_flags_horizontal = 3
 size_flags_vertical = 4
 
+[node name="Spacer" type="Control" parent="MarginContainer/VBodyContainer/FooterContainer" unique_id=1793981044]
+layout_mode = 2
+size_flags_horizontal = 3
+
 [node name="LockInButton" type="Button" parent="MarginContainer/VBodyContainer/FooterContainer" unique_id=120842889]
 unique_name_in_owner = true
 layout_mode = 2

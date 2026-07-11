@@ -18,4 +18,13 @@ func _on_pressed() -> void:
 	disabled = true
 	# Play your lever animation or sprite frames here...
 	
+	_attempt_lever_pull()
+
+func _attempt_lever_pull(cost: int = 1) -> void:
+	if Global.player.respin_tokens < cost:
+		push_error("Not enough tokens to pull lever!")
+		return
+	
+	Global.player.respin_tokens -= cost
 	EventBus.lever_pulled.emit()
+	
