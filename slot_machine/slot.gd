@@ -27,14 +27,7 @@ func reset_hold() -> void:
 	
 func _ready() -> void:
 	add_to_group("slots")
-	print("Slot ", name, " resolved HoldButton: ", %HoldButton.get_instance_id(), " path: ", %HoldButton.get_path())
-
 	%HoldButton.slot_held.connect(func() -> void: is_held = true)
-	#_insert_reel(Global.reels["Attack"], false)
-	#result_label.text = slot_reel.reel_stops.map(
-		#func(s: ReelStop) -> SlotSymbol:
-			#return s.slot_symbol
-	#).pick_random().symbol_name
 
 func _exit_tree() -> void:
 	_remove_reel()
@@ -121,6 +114,8 @@ slot on press simply calls whatever behavior is passed to it.
 
 	
 func _insert_reel(reel: Reel, should_spin: bool = true) -> void:
+	if not reel:
+		return
 	if Global.reel_inventory[reel.reel_name] <= 0:
 		push_error("Attempted to insert reel with 0 remaining in inventory.")
 	slot_reel = reel
@@ -135,6 +130,8 @@ func _insert_reel(reel: Reel, should_spin: bool = true) -> void:
 		spin()
 
 func _remove_reel() -> void:
+	if not slot_reel:
+		return
 	Global.reel_inventory[slot_reel.reel_name] += 1
 	slot_reel = null
 	
@@ -164,7 +161,6 @@ func attempt_reel_swap(reel_to_insert: Reel, token_cost: int = 0) -> bool:
 		return false
 	
 	_swap_reel(reel_to_insert)
-	#if get_tree().current_scene.initial_spin_completed:
 	Global.player.tokens -= token_cost
 		
 	return true
