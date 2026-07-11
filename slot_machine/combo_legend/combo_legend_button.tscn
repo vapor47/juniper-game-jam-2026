@@ -1,0 +1,21 @@
+[gd_scene format=3 uid="uid://b6jd2c8y5spjl"]
+
+[ext_resource type="Script" uid="uid://bhniiksirvf7o" path="res://slot_machine/combo_legend/combo_legend_button.gd" id="1_v5arv"]
+[ext_resource type="PackedScene" uid="uid://j01ufv6wtk0l" path="res://slot_machine/combo_legend/combo_legend_panel.tscn" id="2_ty8fa"]
+
+[node name="ComboLegendButton" type="Button" unique_id=462314338]
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+text = "COMBO LEGEND"
+script = ExtResource("1_v5arv")
+
+[node name="ComboLegendPanel" parent="." unique_id=1939974062 instance=ExtResource("2_ty8fa")]
+layout_mode = 0
+anchors_preset = 0
+anchor_right = 0.0
+anchor_bottom = 0.0
+grow_horizontal = 1
+grow_vertical = 1

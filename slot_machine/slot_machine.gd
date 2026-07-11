@@ -1,4 +1,5 @@
 extends PanelContainer
+class_name SlotMachine
 
 @onready var lever = %SlotMachineLever
 @onready var lock_in_button: Button = %LockInButton
@@ -45,6 +46,11 @@ func _on_lever_pulled() -> void:
 	
 	for i in slots.size():
 		slots[i].spin(Global.SLOT_SPIN_DURATION + (i * Global.SLOT_REVEAL_STAGGER))
+		
+	# Emit spin completed (hacky)
+	var last_slot_duration := Global.SLOT_SPIN_DURATION + (slots.size() * Global.SLOT_REVEAL_STAGGER)
+	await get_tree().create_timer(last_slot_duration).timeout
+	EventBus.spin_all_completed.emit()
 
 
 func _confirm_slots() -> void:
@@ -77,8 +83,6 @@ func _on_reel_swapped(reel_to_insert: Reel) -> void:
 	
 func _get_slots() -> Array[Node]:
 	return get_tree().get_nodes_in_group("slots")
-	
-
 
 """
 onSpin: trigger onSpin for all child slots

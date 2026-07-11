@@ -118,6 +118,12 @@ func _consolidate_symbols(symbol_count: Dictionary[SlotSymbol, int]) -> Array[Co
 	return actions
 
 func _get_combo_value(symbol_value: int, count: int) -> int:
+	if count == 0:
+		return 0
+	
+	if count == 1:
+		return symbol_value
+	
 	return (symbol_value * count) + ((count ** 2) * 4)
 #func _resolve_combos(stops: Array[ReelStop]) -> String:
 	#pass

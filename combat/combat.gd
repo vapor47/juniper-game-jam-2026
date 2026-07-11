@@ -195,6 +195,8 @@ Perhapssss along individual respins? I think the idea of locking slots in place 
 - Repeat this locking / re-spin phase. (Decide whether or not player should be able to unlock already locked slots. I feel like it’s more interesting to not allow)
 - User finally confirms their X chosen slots, and the player actions are calculated and resolved.
 """
+#@onready var slot_machine: SlotMachine = %SlotMachine
+
 var max_active_slots: int = 3
 var selected_slots: Dictionary[Slot, bool] = {}:
 	set(new_val):
@@ -250,6 +252,7 @@ func _ready() -> void:
 	EventBus.inventory_reel_pressed.connect(_on_inventory_reel_pressed)
 	EventBus.slot_selected.connect(_on_slot_pressed)
 	EventBus.side_panel_closed.connect(_on_side_panel_closed)
+	EventBus.spin_all_completed.connect(_on_spin_all_completed)
 	
 #	TODO: implement (maybe?)
 	#EventBus.reel_swaps_completed.connect(_end_swap_phase)
@@ -289,10 +292,8 @@ func _begin_swap_phase() -> void:
 	curr_slot_press_action = SlotPressAction.SWAP
 
 
-# On reel swaps completed button press
+# On lever pulled
 func _end_swap_phase() -> void:
-#	set selected_slots somewhere so get_selected_symbols can reference
-
 #	Disable swapping (potentially change what action clicking on slot performs)
 	curr_slot_press_action = SlotPressAction.NONE
 	_begin_slot_select_phase()
@@ -311,7 +312,6 @@ func _begin_slot_select_phase() -> void:
 	else continue
 	"""
 	curr_slot_press_action = SlotPressAction.SELECT
-
 
 # On confirm button press
 func _end_slot_select_phase() -> void:
@@ -471,5 +471,57 @@ THUMBS UP EMOJI
 CHECKMARK
 
 Next up:
-	fix combos by using symbol resolver.
+	create combo legend
+	think about combo values.
+		need to create decision points on when/which to lock slots.
+		do i lock a heavy in hopes for a heavy combo (less likely to hit)? or do i lock in a light
+		for higher chance of light combo?
 """
+
+func _on_spin_all_completed() -> void:
+	var slots: Array[Slot] = []
+	for slot: Slot in get_tree().get_nodes_in_group("slots"):
+		slots.append(slot)
+
+	var combo_legend_values := _get_combo_legend_values(slots, max_active_slots)
+	print_debug(combo_legend_values)
+	EventBus.combo_legend_updated.emit(combo_legend_values)
+	
+func _get_combo_legend_values(options: Array[Slot], max_combo_size: int) -> Array[ComboLegendRow]:
+	"""
+	Given an array of available symbols/stops and max_combo_size.
+	Do we want to account for specific stop/modifiers?
+	That might make things complicated??
+	Let's just do symbols for now, since modifiers don't exist yet, and we can reconsider later
+	
+	what exactly do we want to return? how to populate legend?
+	required symbols: Array[SlotSymbol]
+	result: (e.g. HEAL 5)
+			result type
+			value
+	"""
+	"""
+	impl:
+		count frequencies
+		for symbol:
+			for i in range(count[symbol]):
+				add row (get combo value)
+				SymbolResolver._get_combo_value()
+	"""
+	var legend_rows: Array[ComboLegendRow] = []
+	var symbol_count: Dictionary[SlotSymbol, int]
+	print_debug("Options: %s" % [options])
+	
+	for option: Slot in options:
+		var symbol: SlotSymbol = option.get_curr_stop().slot_symbol
+		symbol_count[symbol] = symbol_count.get(symbol, 0) + 1
+		
+	for symbol: SlotSymbol in symbol_count.keys():
+		var max_symbol_combo: int = min(symbol_count[symbol], max_combo_size)
+		for i: int in max_symbol_combo:
+			legend_rows.append(ComboLegendRow.new(symbol, i + 1))
+			
+	return legend_rows
+	
+	
+	

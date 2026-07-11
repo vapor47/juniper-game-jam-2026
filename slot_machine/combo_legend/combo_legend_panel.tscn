@@ -1,0 +1,18 @@
+[gd_scene format=3 uid="uid://j01ufv6wtk0l"]
+
+[ext_resource type="Script" uid="uid://ps8vsas7eb6p" path="res://slot_machine/combo_legend/combo_legend_panel.gd" id="1_ln654"]
+
+[node name="ComboLegendPanel" type="PanelContainer" unique_id=321421242]
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+script = ExtResource("1_ln654")
+
+[node name="ComboContainer" type="MarginContainer" parent="." unique_id=1499701411]
+layout_mode = 2
+theme_override_constants/margin_left = 8
+theme_override_constants/margin_top = 8
+theme_override_constants/margin_right = 8
+theme_override_constants/margin_bottom = 8

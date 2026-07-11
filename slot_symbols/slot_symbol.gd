@@ -17,3 +17,7 @@ func _init() -> void:
 func get_symbol_type() -> SymbolType:
 	push_error("CRITICAL: get_symbol_type() was called on a base class without being overridden!")
 	return SymbolType.ATTACK 
+
+func get_symbol_icon() -> Texture2D:
+	push_error("CRITICAL: get_symbol_icon() was called on a base class without being overridden!")
+	return preload("res://assets/icons/icon.svg")
