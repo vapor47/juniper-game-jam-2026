@@ -8,3 +8,4 @@ func _ready() -> void:
 
 func _on_pressed() -> void:
 	lock_in_pressed.emit()
+	EventBus.slot_selection_confirmed.emit()

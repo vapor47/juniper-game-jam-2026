@@ -68,7 +68,7 @@ func _on_reel_swapped(reel_to_insert: Reel) -> void:
 		push_error("Error: no selected slot on reel swap")
 		return
 	
-	selected_slot.attempt_reel_swap(reel_to_insert, 1)
+	selected_slot.attempt_reel_swap(reel_to_insert, $"../..".curr_swap_cost)
 	
 	# Auto close Side Panel after swap
 	selected_slot = null

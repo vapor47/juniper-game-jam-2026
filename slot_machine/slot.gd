@@ -122,7 +122,7 @@ func attempt_reel_swap(reel_to_insert: Reel, token_cost: int = 0) -> bool:
 		return false
 	
 	_swap_reel(reel_to_insert)
-	if get_tree().current_scene.initial_spin_completed:
-		Global.player.respin_tokens -= token_cost
+	#if get_tree().current_scene.initial_spin_completed:
+	Global.player.respin_tokens -= token_cost
 		
 	return true
