@@ -86,10 +86,12 @@ func _make_selected_stylebox() -> StyleBoxFlat:
 func select() -> void:
 	is_selected = true
 	add_theme_stylebox_override("normal", _make_selected_stylebox())
+	add_theme_stylebox_override("hover", _make_selected_stylebox())
 	
 func unselect() -> void:
 	is_selected = false
 	remove_theme_stylebox_override("normal")
+	remove_theme_stylebox_override("hover")
 	
 func _on_pressed() -> void:
 	#EventBus.open_side_panel.emit(self)

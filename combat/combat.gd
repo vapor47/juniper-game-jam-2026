@@ -16,6 +16,8 @@ func _unhandled_input(event: InputEvent) -> void:
 	if event is InputEventMouseButton and event.pressed:
 		if not side_panel.get_global_rect().has_point(event.position):
 			side_panel.close()
+			slot_to_swap = null
+			
 
 
 func _on_item_pressed(item_data: Dictionary) -> void:
@@ -194,7 +196,7 @@ Perhapssss along individual respins? I think the idea of locking slots in place 
 - User finally confirms their X chosen slots, and the player actions are calculated and resolved.
 """
 var max_active_slots: int = 3
-var selected_slots: Dictionary = {}:
+var selected_slots: Dictionary[Slot, bool] = {}:
 	set(new_val):
 		selected_slots = new_val
 		#if len(selected_slots) == num_active_slots:
@@ -222,25 +224,30 @@ var curr_slot_press_action: SlotPressAction = SlotPressAction.NONE:
 				# Disable Slot press action
 				print_debug("Disabling slot press.")
 				pass
-	
+
 var slot_to_swap: Slot = null:
 	set(new_val):
 		if not new_val or new_val == slot_to_swap:
 			if slot_to_swap:
-				slot_to_swap.button_pressed = false
+				slot_to_swap.unselect()
 				slot_to_swap = null
+				side_panel.close()
 		else:
+			if slot_to_swap:
+				slot_to_swap.unselect()
 			slot_to_swap = new_val
+			new_val.select()
 
 
 func _on_side_panel_closed() -> void:
-	slot_to_swap = null
+	#slot_to_swap = null
+	pass
 
 func _ready() -> void:
 	EventBus.lever_pulled.connect(_end_swap_phase)
 	#EventBus.lever_pulled.connect(_begin_slot_select_phase)
 	EventBus.slot_selection_confirmed.connect(_end_slot_select_phase)
-	EventBus.swap_reel_selected.connect(_swap_slot_reels)
+	EventBus.inventory_reel_pressed.connect(_on_inventory_reel_pressed)
 	EventBus.slot_selected.connect(_on_slot_pressed)
 	EventBus.side_panel_closed.connect(_on_side_panel_closed)
 	
@@ -276,9 +283,6 @@ func _begin_player_turn() -> void:
 func _reset_player_turn_values() -> void:
 	selected_slots = {}
 	slot_to_swap = null
-	
-	#enable lever
-	#%SlotMachineLever.disabled = false
 
 
 func _begin_swap_phase() -> void:
@@ -322,18 +326,20 @@ func _begin_action_resolution_phase() -> void:
 	Calculate result of player's finalized symbols and
 		perform actions
 	"""
-	var symbols: Array[SlotSymbol] = _get_selected_symbols()
-	var actions: Array[Action] = _get_actions_for_symbols(symbols)
+	var stops: Array[ReelStop] = _get_selected_stops()
+	#var actions: Array[Action] = _get_actions_for_symbols(symbols)
+	
+	var actions: Array[Action] = SymbolResolver.resolve(stops)
 	_perform_actions(actions)
 	_end_player_turn()
 
-func _get_selected_symbols() -> Array[SlotSymbol]:
+func _get_selected_stops() -> Array[ReelStop]:
 #	TODO: if we don't care about order, and more about quantity - update to dictionary of counts
-	var symbols: Array[SlotSymbol] = []
+	var stops: Array[ReelStop] = []
 	for slot: Slot in selected_slots.keys():
-		symbols.append(slot.get_curr_stop().slot_symbol)
+		stops.append(slot.get_curr_stop())
 	
-	return symbols
+	return stops
 
 enum ActionType {}
 class Action:
@@ -347,57 +353,27 @@ class Action:
 		display_string = p_display_string
 
 
-func _get_actions_for_symbols(symbols: Array[SlotSymbol]) -> Array[Action]:
-	var symbol_count: Dictionary[SlotSymbol, int] = {}
-	for symbol in symbols:
-		symbol_count[symbol] = symbol_count.get(symbol, 0) + 1
-	var actions: Array[Action] = _consolidate_symbols(symbol_count)
-	return actions
-
-func _consolidate_symbols(symbol_count: Dictionary[SlotSymbol, int]) -> Array[Action]:
-	var actions: Array[Action]
-	
-#	How do we take our symbol count and get back a list of action
-	var attack_flat: int = 0
-	var attack_mult: int = 1
-	
-	var block_flat: int = 0
-	var block_mult: int = 1
-	
-	var heal_flat: int = 0
-	var heal_mult: int = 1
-	
-	for symbol: SlotSymbol in symbol_count.keys():
-		match symbol.get_symbol_type():
-			SlotSymbol.SymbolType.ATTACK:
-				if "Multiply" in symbol.symbol_name:
-					attack_mult += 1
-				else:
-					attack_flat += symbol.symbol_value
-			SlotSymbol.SymbolType.DEFEND:
-				if "Multiply" in symbol.symbol_name:
-					block_mult += 1
-				else:
-					block_flat += symbol.symbol_value
-			SlotSymbol.SymbolType.HEAL:
-				if "Multiply" in symbol.symbol_name:
-					heal_mult += 1
-				else:
-					heal_flat += symbol.symbol_value
-	
-	actions = [
-		Action.new(SlotSymbol.SymbolType.ATTACK, attack_flat * attack_mult, "Attacked enemy for %d!" % (attack_flat * attack_mult))
-	]
-#	from which we need a unique display string for each action
-	return actions
-
 func _perform_actions(actions: Array[Action]) -> void:
 	for action in actions:
+		# Don't perform no ops
+		if action.value == 0:
+			continue
+		
 		_display_action(action)
+		match action.type:
+			SlotSymbol.SymbolType.ATTACK:
+				for enemy: EnemyData in enemies:
+					enemy.take_damage(action.value)
+			SlotSymbol.SymbolType.DEFEND:
+				Global.player.add_block(action.value)
+			SlotSymbol.SymbolType.HEAL:
+				Global.player.heal(action.value)
+		await get_tree().create_timer(3).timeout
+
 
 func _display_action(action: Action) -> void:
 	spawn_popup(action.display_string)
-	print_debug(action.display_string)
+	
 
 func _end_player_turn() -> void:
 #	Reset selected slots pressed
@@ -433,6 +409,9 @@ func _on_slot_pressed(slot: Slot) -> void:
 			pass # no op
 
 func _start_swap(slot: Slot) -> void:
+	if curr_slot_press_action != SlotPressAction.SWAP:
+		return
+	
 	if slot == slot_to_swap:
 		side_panel.close()
 		slot_to_swap = null
@@ -441,13 +420,23 @@ func _start_swap(slot: Slot) -> void:
 	slot_to_swap = slot
 	side_panel.open_for_swap()
 
-# On swap_reel_selected
+# On inventory reel press
+func _on_inventory_reel_pressed(reel: Reel) -> void:
+	if slot_to_swap:
+		_swap_slot_reels(reel)
+
 func _swap_slot_reels(reel_to_insert: Reel) -> void:
 	if not slot_to_swap:
 		return
-	slot_to_swap.attempt_reel_swap(reel_to_insert)
+	
+	if slot_to_swap.attempt_reel_swap(reel_to_insert) == true:
+		side_panel.populate(_get_reel_inventory_data())
+		slot_to_swap = null
 
 func _select_slot(slot: Slot) -> void:
+	if curr_slot_press_action != SlotPressAction.SELECT:
+		return
+	
 	if slot in selected_slots:
 		selected_slots.erase(slot)
 		slot.unselect()
@@ -481,4 +470,6 @@ GOOD ENOUGH
 THUMBS UP EMOJI
 CHECKMARK
 
+Next up:
+	fix combos by using symbol resolver.
 """

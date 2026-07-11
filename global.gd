@@ -6,7 +6,7 @@ var reels: Dictionary[String, Reel] = {}
 var reel_inventory: Dictionary[String, int] = {
 	"Attack": 3,
 	"Defend": 3,
-	"Heal": 0,
+	"Heal": 3,
 }
 
 # Animations

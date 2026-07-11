@@ -15,9 +15,9 @@ func _ready() -> void:
 	)
 
 func _on_pressed() -> void:
-	print_debug("emitting reel_swapped")
-	EventBus.reel_swapped.emit($"..".reel_data["reel"])
-	
-	EventBus.swap_reel_selected.emit()
+	#EventBus.reel_swapped.emit($"..".reel_data["reel"])
+	if get_tree().current_scene.slot_to_swap:
+		print_debug("emitting reel_swapped")
+		EventBus.inventory_reel_pressed.emit($"..".reel_data["reel"])
 	
 #	Otherwise do...? What happens when we click on a reel inventory item in a non swap context

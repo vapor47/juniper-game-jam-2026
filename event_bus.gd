@@ -12,7 +12,7 @@ signal reel_swapped(reel: Reel)
 signal slots_locked_in(symbols: Array)
 signal lever_pulled
 signal slot_selection_confirmed
-signal swap_reel_selected(reel_to_insert: Reel)
+signal inventory_reel_pressed(reel: Reel)
 signal spin_completed
 signal spin_lock_toggled
 signal respin_count_updated(new_value: int)
