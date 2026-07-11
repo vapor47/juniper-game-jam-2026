@@ -195,7 +195,7 @@ Perhapssss along individual respins? I think the idea of locking slots in place 
 - Repeat this locking / re-spin phase. (Decide whether or not player should be able to unlock already locked slots. I feel like it’s more interesting to not allow)
 - User finally confirms their X chosen slots, and the player actions are calculated and resolved.
 """
-#@onready var slot_machine: SlotMachine = %SlotMachine
+@onready var slot_machine: SlotMachine = %SlotMachine
 
 var max_active_slots: int = 3
 var selected_slots: Dictionary[Slot, bool] = {}:
@@ -213,18 +213,22 @@ var curr_slot_press_action: SlotPressAction = SlotPressAction.NONE:
 		if new_val == curr_slot_press_action:
 			return
 		curr_slot_press_action = new_val
+		#slot_machine.phase_label
 		match new_val:
 			SlotPressAction.SWAP:
 				# Set Slot press action to reel swap
 				print_debug("Switching slot press to reel swap mode.")
+				slot_machine.phase_label.text = "PREPARE — Swap reels, then pull the lever when ready"
 				pass
 			SlotPressAction.SELECT:
 				print_debug("Switching slot press to slot select mode.")
+				slot_machine.phase_label.text = "SELECT — Choose %d results • Hold desired slots & respin the rest • LOCK IT IN" % max_active_slots
 				# Set Slot press action to select
 				pass
 			SlotPressAction.NONE:
 				# Disable Slot press action
 				print_debug("Disabling slot press.")
+				slot_machine.phase_label.text = ""
 				pass
 
 var slot_to_swap: Slot = null:

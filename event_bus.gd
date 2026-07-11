@@ -15,6 +15,7 @@ signal slot_selection_confirmed
 signal inventory_reel_pressed(reel: Reel)
 signal spin_all_completed
 signal combo_legend_updated(new_rows: Array[ComboLegendRow])
+signal slot_press_action_changed(new_action: CombatManager.SlotPressAction)
 signal spin_lock_toggled
 signal respin_count_updated(new_value: int)
 

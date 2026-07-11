@@ -4,6 +4,7 @@ class_name SlotMachine
 @onready var lever = %SlotMachineLever
 @onready var lock_in_button: Button = %LockInButton
 @onready var health_bar: HealthBar = %PlayerHealthBar
+@onready var phase_label: Label = %PhaseLabel
 
 var num_slots_spinning: int = 0:
 	set(new_val):

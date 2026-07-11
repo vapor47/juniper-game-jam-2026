@@ -10,6 +10,10 @@
 
 [sub_resource type="LabelSettings" id="LabelSettings_rwp5n"]
 
+[sub_resource type="GDScript" id="GDScript_84m6g"]
+script/source = "extends Label
+"
+
 [node name="SlotMachine" type="PanelContainer" unique_id=1382522530]
 anchors_preset = 12
 anchor_top = 1.0
@@ -42,6 +46,15 @@ label_settings = SubResource("LabelSettings_rwp5n")
 script = ExtResource("2_7abct")
 
 [node name="Spacer" type="Control" parent="MarginContainer/VBodyContainer/HeaderInfoContainer" unique_id=1710048313]
+layout_mode = 2
+size_flags_horizontal = 3
+
+[node name="PhaseLabel" type="Label" parent="MarginContainer/VBodyContainer/HeaderInfoContainer" unique_id=1542645782]
+unique_name_in_owner = true
+layout_mode = 2
+script = SubResource("GDScript_84m6g")
+
+[node name="Spacer2" type="Control" parent="MarginContainer/VBodyContainer/HeaderInfoContainer" unique_id=86918402]
 layout_mode = 2
 size_flags_horizontal = 3
 
