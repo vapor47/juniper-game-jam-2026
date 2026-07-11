@@ -1,4 +1,5 @@
 extends PanelContainer
+class_name SidePanel
 
 @export var panel_width: float = 300.0
 @export var slide_duration: float = 0.3
@@ -6,6 +7,7 @@ extends PanelContainer
 var is_open: bool = false
 var tween: Tween
 var curr_selected_slot = null
+var is_open_for_swap: bool = false
 
 @onready var grid = $MarginContainer/VBoxContainer/GridContainer
 
@@ -40,7 +42,7 @@ func toggle() -> void:
 	else:
 		open()
 
-func _on_open_requested(slot):
+func _on_open_requested(slot: Slot) -> void:
 	if curr_selected_slot == slot:
 		close()
 	else:
@@ -53,10 +55,15 @@ func open() -> void:
 	is_open = true
 	_animate_to(_get_screen_width() - size.x)
 
+func open_for_swap() -> void:
+	is_open_for_swap = true
+	open()
+	
 func close() -> void:
 	if !is_open: return
 
 	is_open = false
+	is_open_for_swap = false
 	curr_selected_slot = null
 	_animate_to(_get_screen_width())
 

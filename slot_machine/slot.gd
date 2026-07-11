@@ -70,6 +70,16 @@ func _stop_spin_animation(final_stop: ReelStop) -> void:
 func _on_pressed() -> void:
 	EventBus.open_side_panel.emit(self)
 	EventBus.slot_selected.emit(self)
+	
+#	EITHER SWAP OR SELECT
+	#CombatManager.curr_slot_press_action
+	
+"""
+combat manager updates slot behavior
+combat manager now owns what it means to swap and to select, which feels appropriate
+
+slot on press simply calls whatever behavior is passed to it.
+"""
 
 
 func _on_respin_button_pressed() -> void:

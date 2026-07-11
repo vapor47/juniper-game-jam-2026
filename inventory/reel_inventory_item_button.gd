@@ -2,6 +2,9 @@ extends Button
 
 signal item_pressed(item_data)
 
+@onready var inventory: SidePanel = %ReelInventorySidePanel
+
+
 func _ready() -> void:
 	pressed.connect(func(): item_pressed.emit($"..".reel_data))
 	EventBus.respin_count_updated.connect(
@@ -15,3 +18,9 @@ func _ready() -> void:
 func _on_pressed() -> void:
 	print_debug("emitting reel_swapped")
 	EventBus.reel_swapped.emit($"..".reel_data["reel"])
+	
+	if inventory.is_open_for_swap:
+#		emit swap request
+		pass
+	
+#	Otherwise do...? What happens when we click on a reel inventory item in a non swap context

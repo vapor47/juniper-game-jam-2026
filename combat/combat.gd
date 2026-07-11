@@ -1,7 +1,7 @@
 extends Control
-class_name CombatScene
+class_name CombatManager
 
-@onready var side_panel: PanelContainer = %ReelInventorySidePanel
+@onready var side_panel: SidePanel = %ReelInventorySidePanel
 #@onready var toggle_btn: Button = $ToggleButton
 const DEATH_SCREEN_SCENE = preload("res://screens/death_screen.tscn")
 const BATTLE_VICTORY_SCREEN_SCENE = preload("res://screens/battle_victory_screen.tscn")
@@ -62,22 +62,22 @@ func _init_enemies() -> void:
 		enemy_ui.enemy_data = enemy_data
 		enemy_container.add_child(enemy_ui)
 
-func _ready() -> void:
-	set_process_unhandled_input(true)
-	
-#	TODO: This should eventually be moved out once a Mainscreen is implemented
-# 	Mainly for testing purposes. I think. idr at the time of writing this comment.
-	setup(RunManager.get_next_encounter())
-	
-	side_panel.populate(_get_reel_inventory_data())
-	EventBus.reel_swapped.connect(func(_reel: Reel) -> void: side_panel.populate(_get_reel_inventory_data()))
-	EventBus.lever_pulled.connect(func() -> void: initial_spin_completed = true)
-	EventBus.slots_locked_in.connect(_on_spin_resolved)
-	
-	# Insert starting reels
-	
-	_init_enemies()
-	_start_combat()
+#func _ready() -> void:
+	#set_process_unhandled_input(true)
+	#
+##	TODO: This should eventually be moved out once a Mainscreen is implemented
+## 	Mainly for testing purposes. I think. idr at the time of writing this comment.
+	#setup(RunManager.get_next_encounter())
+	#
+	#side_panel.populate(_get_reel_inventory_data())
+	#EventBus.reel_swapped.connect(func(_reel: Reel) -> void: side_panel.populate(_get_reel_inventory_data()))
+	#EventBus.lever_pulled.connect(func() -> void: initial_spin_completed = true)
+	#EventBus.slots_locked_in.connect(_on_spin_resolved)
+	#
+	## Insert starting reels
+	#
+	#_init_enemies()
+	#_start_combat()
 		
 func _start_combat() -> void:
 #	(Actually this should be handled by enemy itself): Get initial enemy intent 
@@ -193,10 +193,10 @@ Perhapssss along individual respins? I think the idea of locking slots in place 
 - Repeat this locking / re-spin phase. (Decide whether or not player should be able to unlock already locked slots. I feel like it’s more interesting to not allow)
 - User finally confirms their X chosen slots, and the player actions are calculated and resolved.
 """
-var num_selected_slots: int = 0:
+var selected_slots: Dictionary = {}:
 	set(new_val):
-		num_selected_slots = new_val
-		#if num_selected_slots == num_active_slots:
+		selected_slots = new_val
+		#if len(selected_slots) == num_active_slots:
 			#emit signal to enable confirm button
 
 # SWAP for reel swapping phase
@@ -205,6 +205,8 @@ var num_selected_slots: int = 0:
 enum SlotPressAction { SWAP, SELECT, NONE }
 var curr_slot_press_action: SlotPressAction = SlotPressAction.NONE:
 	set(new_val):
+		if new_val == curr_slot_press_action:
+			return
 		curr_slot_press_action = new_val
 		match new_val:
 			SlotPressAction.SWAP:
@@ -216,10 +218,33 @@ var curr_slot_press_action: SlotPressAction = SlotPressAction.NONE:
 			SlotPressAction.NONE:
 				# Disable Slot press action
 				pass
+	
+var slot_to_swap: Slot = null
 
 func _rrready() -> void:
 	EventBus.lever_pulled.connect(_begin_slot_select_phase)
 	EventBus.slot_selection_confirmed.connect(_end_slot_select_phase)
+	EventBus.swap_reel_selected.connect(_swap_slot_reels)
+	
+#	TODO: implement
+	EventBus.reel_swaps_completed.connect(_end_swap_phase)
+	
+	### Existing code
+	set_process_unhandled_input(true)
+	
+#	TODO: This should eventually be moved out once a Mainscreen is implemented
+# 	Mainly for testing purposes. I think. idr at the time of writing this comment.
+	setup(RunManager.get_next_encounter())
+	
+	side_panel.populate(_get_reel_inventory_data())
+	#EventBus.reel_swapped.connect(func(_reel: Reel) -> void: side_panel.populate(_get_reel_inventory_data()))
+	#EventBus.lever_pulled.connect(func() -> void: initial_spin_completed = true)
+	#EventBus.slots_locked_in.connect(_on_spin_resolved)
+	
+	# Insert starting reels
+	
+	_init_enemies()
+	_begin_player_turn()
 
 
 func _begin_player_turn() -> void:
@@ -227,17 +252,21 @@ func _begin_player_turn() -> void:
 	_begin_swap_phase()
 
 func _reset_player_turn_values() -> void:
-	num_selected_slots = 0
+	selected_slots = {}
+	slot_to_swap = null
 
 
 func _begin_swap_phase() -> void:
-#	Allow swapping
-	pass
+	curr_slot_press_action = SlotPressAction.SWAP
 
 
+# On reel swaps completed button press
 func _end_swap_phase() -> void:
+#	set selected_slots somewhere so get_selected_symbols can reference
+
 #	Disable swapping (potentially change what action clicking on slot performs)
-	pass
+	curr_slot_press_action = SlotPressAction.NONE
+	_begin_slot_select_phase()
 
 #on first spin emit
 #func _begin_phase
@@ -252,12 +281,13 @@ func _begin_slot_select_phase() -> void:
 	If lever, repeat phase
 	else continue
 	"""
-	
-	pass
+	curr_slot_press_action = SlotPressAction.SELECT
 
 
+# On confirm button press
 func _end_slot_select_phase() -> void:
 #	Disable confirm button
+	
 	_begin_action_resolution_phase()
 
 
@@ -268,24 +298,115 @@ func _begin_action_resolution_phase() -> void:
 	"""
 	var symbols: Array[SlotSymbol] = _get_selected_symbols()
 	#TODO define Action class
-	var actions: ActionResults = _calculate_action_results(symbols)
+	var actions: Array[Action] = _get_actions_for_symbols(symbols)
 	_perform_actions(actions)
 	_end_player_turn()
 
 func _get_selected_symbols() -> Array[SlotSymbol]:
-	pass
-class ActionResults:
-	pass
-#TODO define ActionResults
-func _calculate_action_results(symbols: Array[SlotSymbol]) -> ActionResults:
-	pass
+#	TODO: if we don't care about order, and more about quantity - update to dictionary of counts
+	var symbols: Array[SlotSymbol] = []
+	for slot: Slot in selected_slots.keys():
+		symbols.append(slot.get_curr_stop().slot_symbol)
 	
-func _perform_actions(actions: ActionResults) -> void:
-	pass
+	return symbols
 
+enum ActionType {}
+class Action:
+	var type: SlotSymbol.SymbolType
+	var value: int
+	var display_string: String
+	
+	func _init(p_type: SlotSymbol.SymbolType, p_value: int, p_display_string: String) -> void:
+		type = p_type
+		value = p_value
+		display_string = p_display_string
+
+
+func _get_actions_for_symbols(symbols: Array[SlotSymbol]) -> Array[Action]:
+	var symbol_count: Dictionary[SlotSymbol, int] = {}
+	for symbol in symbols:
+		symbol_count[symbol] = symbol_count.get(symbol, 0) + 1
+	var actions: Array[Action] = _consolidate_symbols(symbol_count)
+	return actions
+
+func _consolidate_symbols(symbol_count: Dictionary[SlotSymbol, int]) -> Array[Action]:
+	var actions: Array[Action]
+	
+#	How do we take our symbol count and get back a list of action
+	var attack_flat: int = 0
+	var attack_mult: int = 1
+	
+	var block_flat: int = 0
+	var block_mult: int = 1
+	
+	var heal_flat: int = 0
+	var heal_mult: int = 1
+	
+	for symbol: SlotSymbol in symbol_count.keys():
+		match symbol.get_symbol_type():
+			SlotSymbol.SymbolType.ATTACK:
+				if "Multiply" in symbol.symbol_name:
+					attack_mult += 1
+				else:
+					attack_flat += symbol.symbol_value
+			SlotSymbol.SymbolType.DEFEND:
+				if "Multiply" in symbol.symbol_name:
+					block_mult += 1
+				else:
+					block_flat += symbol.symbol_value
+			SlotSymbol.SymbolType.HEAL:
+				if "Multiply" in symbol.symbol_name:
+					heal_mult += 1
+				else:
+					heal_flat += symbol.symbol_value
+	
+	actions = [
+		Action.new(SlotSymbol.SymbolType.ATTACK, attack_flat * attack_mult, "Attacked enemy for %d!" % (attack_flat * attack_mult))
+	]
+#	from which we need a unique display string for each action
+	return actions
+
+func _perform_actions(actions: Array[Action]) -> void:
+	for action in actions:
+		_display_action(action)
+
+func _display_action(action: Action) -> void:
+	spawn_popup(action.display_string)
+	print_debug(action.display_string)
 
 func _endddddd_player_turn() -> void:
 	pass
+
+
+
+func _on_slot_pressed(slot: Slot) -> void:
+	match curr_slot_press_action:
+		SlotPressAction.SWAP:
+			_start_swap(slot)
+		SlotPressAction.SELECT:
+			_select_slot(slot)
+		SlotPressAction.NONE:
+			pass # no op
+
+func _start_swap(slot: Slot) -> void:
+#	Open reel inventory
+	side_panel.open_for_swap()
+	slot_to_swap = slot
+	
+	#reel inventory button looks at curr_swapping_slot, or we pass it
+#	to see which reel its swapping with.
+	pass
+
+func _swap_slot_reels(reel_to_insert: Reel) -> void:
+	slot_to_swap.attempt_reel_swap(reel_to_insert)
+
+func _select_slot(slot: Slot) -> void:
+	if slot.selected:
+		slot.selected = false
+		selected_slots.erase(slot)
+	else:
+		slot.selected = true
+		selected_slots[slot] = true
 
 """
 that could be funny, if the lock-in/confirm button just changed text all the time
