@@ -147,7 +147,7 @@ func attempt_reel_swap(reel_to_insert: Reel, token_cost: int = 0) -> bool:
 			False if swap is invalid
 			
 	Causes for invalid swap include:
-		- Not enough respin tokens
+		- Not enough tokens
 	"""
 	if !slot_reel:
 		push_error("Attempted to swap reel with no existing reel.")

@@ -6,7 +6,7 @@ signal item_pressed(item_data)
 
 func _ready() -> void:
 	pressed.connect(func(): item_pressed.emit($"..".reel_data))
-	EventBus.respin_count_updated.connect(
+	EventBus.token_count_updated.connect(
 		func(): 
 			disabled = %CombatManager.initial_spin_completed and Global.player.tokens <= 0
 	)

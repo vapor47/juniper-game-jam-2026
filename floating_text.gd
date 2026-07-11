@@ -3,6 +3,8 @@
 extends Label
 
 func _ready() -> void:
+	horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	vertical_alignment = VERTICAL_ALIGNMENT_CENTER
 	modulate.a = 1.0
 	
 	# Fade sequence

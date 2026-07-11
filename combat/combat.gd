@@ -160,6 +160,9 @@ const FLOATING_TEXT_SCENE = preload("res://floating_text.tscn")
 func spawn_popup(text: String) -> void:
 	var popup := FLOATING_TEXT_SCENE.instantiate()
 	popup.text = text
+	add_child(popup)
+	
+	await get_tree().process_frame
 	
 	var screen_center := get_viewport().get_visible_rect().size / 2
 	
@@ -167,7 +170,6 @@ func spawn_popup(text: String) -> void:
 	popup.global_position = screen_center - (popup.size / 2)
 	
 	# Add it to the scene tree so it renders
-	add_child(popup)
 
 
 ############ COMBAT MIGRATION ################
