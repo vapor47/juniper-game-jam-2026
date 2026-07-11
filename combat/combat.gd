@@ -330,7 +330,7 @@ func _begin_action_resolution_phase() -> void:
 	#var actions: Array[Action] = _get_actions_for_symbols(symbols)
 	
 	var actions: Array[Action] = SymbolResolver.resolve(stops)
-	_perform_actions(actions)
+	await _perform_actions(actions)
 	_end_player_turn()
 
 func _get_selected_stops() -> Array[ReelStop]:
@@ -368,7 +368,7 @@ func _perform_actions(actions: Array[Action]) -> void:
 				Global.player.add_block(action.value)
 			SlotSymbol.SymbolType.HEAL:
 				Global.player.heal(action.value)
-		await get_tree().create_timer(3).timeout
+		await get_tree().create_timer(2).timeout
 
 
 func _display_action(action: Action) -> void:
