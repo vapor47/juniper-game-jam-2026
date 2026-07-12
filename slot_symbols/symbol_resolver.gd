@@ -1,9 +1,83 @@
 extends Node
 
+# symbol_resolver.gd (reworked core — adapt names to your current structure)
+static func resolve(ctx: ResolutionContext) -> Array:
+	var selected_stops := ctx.selected_stops
+
+	# ---- Phase 1: per-stop values through HOOK A
+	var stop_values: Dictionary = {}   # ReelStop -> int
+	for stop in selected_stops:
+		var v := stop.slot_symbol.symbol_value
+		for mod: StopModifier in stop.modifiers:
+			v = mod.modify_stop_value(v, ctx, stop)
+		stop_values[stop] = v
+
+	# ---- Phase 2: combo counting with HOOK C bonuses
+	# effective count per symbol = actual count + sum of combo_count_bonus on those stops
+	var by_symbol: Dictionary = {}     # SlotSymbol -> Array[ReelStop]
+	for stop in selected_stops:
+		by_symbol.get_or_add(stop.slot_symbol, []).append(stop)
+
+	var totals: Dictionary[SlotSymbol.SymbolType, int]= {
+		SlotSymbol.SymbolType.ATTACK: 0,
+		SlotSymbol.SymbolType.DEFEND: 0,
+		SlotSymbol.SymbolType.HEAL: 0
+	}
+	
+	for symbol: SlotSymbol in by_symbol:
+		var stops: Array = by_symbol[symbol]
+		var eff_count := stops.size()
+		var value_sum := 0
+		for stop: ReelStop in stops:
+			value_sum += stop_values[stop]
+			for mod: StopModifier in stop.modifiers:
+				eff_count += mod.combo_count_bonus()
+
+		var contribution: int
+		if eff_count >= 2:
+			contribution = _combo_value_from_sum(value_sum, eff_count)
+			ctx.combo_symbols.append(symbol)
+		else:
+			contribution = value_sum
+		_add_to_type_total(totals, symbol, contribution)
+
+	# ---- Phase 3: result totals through HOOK B
+	for stop in selected_stops:
+		for mod: StopModifier in stop.modifiers:
+			totals[stop.slot_symbol.get_symbol_type()] = mod.modify_result_total(
+					totals[stop.slot_symbol.get_symbol_type()], ctx, stop)
+
+	# ---- Phase 4: side effects, HOOK D
+	for stop in selected_stops:
+		for mod: StopModifier in stop.modifiers:
+			mod.on_resolved(ctx, stop)
+
+	return _totals_to_actions(totals)
+	
+## Locked combo formula, sum-based variant (Phase 1 already individualized stop
+## values, so this takes the modified sum rather than symbol_value * count).
+## combo = sum + (sum * 0.12 * scale) + scale, scale = (eff_count - 1)^1.3
+static func _combo_value_from_sum(value_sum: int, eff_count: int) -> int:
+	if eff_count <= 1:
+		return value_sum
+	var scale := pow(eff_count - 1, 1.3)
+	return roundi(value_sum + (value_sum * 0.12 * scale) + scale)
+
+static func _add_to_type_total(totals: Dictionary, symbol: SlotSymbol, contribution: int) -> void:
+	var t := symbol.get_symbol_type()
+	totals[t] = totals.get(t, 0) + contribution
+
+static func _totals_to_actions(totals: Dictionary) -> Array[CombatManager.Action]:
+	var actions: Array[CombatManager.Action] = []
+	for type: SlotSymbol.SymbolType in totals:
+		if totals[type] != 0:
+			actions.append(CombatManager.Action.new(type, totals[type], ""))
+	return actions
+
 # Takes in ReelStops to account for ReelStop modifiers
 # TODO: this whole function will eventually need to be redone
 # 		to account for modifiers
-func resolve(stops: Array[ReelStop]) -> Array[CombatManager.Action]:
+func resolve_old(stops: Array[ReelStop]) -> Array[CombatManager.Action]:
 	print_debug("Resolving Symbols...")
 	var effects = []
 	

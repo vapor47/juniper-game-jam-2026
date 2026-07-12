@@ -135,13 +135,13 @@ func _on_entity_died(who: CombatantData) -> void:
 			_end_combat(CombatResult.VICTORY)
 	
 	
-func _on_spin_resolved(stops: Array[ReelStop]) -> void:
-	var effects: Array = SymbolResolver.resolve(stops)
-	for effect in effects:
-		_apply_effect(effect)
-		
-	spawn_popup(effects[0].type + ": " + str(effects[0].value) + "\n" + effects[1].type + ": " + str(effects[1].value))
-	_end_player_turn()
+#func _on_spin_resolved(stops: Array[ReelStop]) -> void:
+	#var effects: Array = SymbolResolver.resolve(stops)
+	#for effect in effects:
+		#_apply_effect(effect)
+		#
+	#spawn_popup(effects[0].type + ": " + str(effects[0].value) + "\n" + effects[1].type + ": " + str(effects[1].value))
+	#_end_player_turn()
 
 func _apply_effect(effect: Dictionary) -> void:
 	match effect.type:
@@ -358,20 +358,20 @@ func _begin_action_resolution_phase() -> void:
 	Calculate result of player's finalized symbols and
 		perform actions
 	"""
-	var stops: Array[ReelStop] = _get_selected_stops()
+	#var stops: Array[ReelStop] = _get_selected_stops()
 	#var actions: Array[Action] = _get_actions_for_symbols(symbols)
-	
-	var actions: Array[Action] = SymbolResolver.resolve(stops)
+	var res_context: ResolutionContext = ResolutionContext.build(Global.player, enemies, initial_spin_completed, selected_slots)
+	var actions: Array[Action] = SymbolResolver.resolve(res_context)
 	await _perform_actions(actions, Global.player, enemies[0])
 	_end_player_turn()
 
-func _get_selected_stops() -> Array[ReelStop]:
-#	TODO: if we don't care about order, and more about quantity - update to dictionary of counts
-	var stops: Array[ReelStop] = []
-	for slot: Slot in selected_slots.keys():
-		stops.append(slot.get_curr_stop())
-	
-	return stops
+#func _get_selected_stops() -> Array[ReelStop]:
+##	TODO: if we don't care about order, and more about quantity - update to dictionary of counts
+	#var stops: Array[ReelStop] = []
+	#for slot: Slot in selected_slots.keys():
+		#stops.append(slot.get_curr_stop())
+	#
+	#return stops
 
 class Action:
 	enum Type { IDLE, ATTACK, DEFEND, HEAL }
@@ -552,7 +552,6 @@ func _get_combo_legend_values(options: Array[Slot], max_combo_size: int) -> Arra
 	"""
 	var legend_rows: Array[ComboLegendRow] = []
 	var symbol_count: Dictionary[SlotSymbol, int]
-	print_debug("Options: %s" % [options])
 	
 	for option: Slot in options:
 		var symbol: SlotSymbol = option.get_curr_stop().slot_symbol
