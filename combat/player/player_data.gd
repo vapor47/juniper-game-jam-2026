@@ -15,6 +15,8 @@ var tokens: int = max_tokens:
 
 var token_regen_per_turn: int = 1
 
+var gold: int = 100
+
 
 func _init() -> void:
 	display_name = "Player"

@@ -3,6 +3,7 @@ extends Node
 var player: PlayerData
 var slot_symbols: Dictionary[String, SlotSymbol] = {}
 var reels: Dictionary[String, Reel] = {}
+# TODO: this should live on the player data
 var reel_inventory: Dictionary[String, int] = {
 	"Attack": 3,
 	"Defend": 3,

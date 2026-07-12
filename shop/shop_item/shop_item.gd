@@ -31,7 +31,15 @@ func setup(p_item_data: ShopItemData) -> void:
 	item_data = p_item_data
 
 func _ready() -> void:
-	pass
+	text = item_data.display_name
 
 func _on_pressed() -> void:
-	pass
+	if Global.player.gold < item_data.price:
+		# TODO: play animation, cannot afford.
+		return
+	item_data.on_purchase(Global.player)
+	_mark_purchased()
+
+func _mark_purchased() -> void:
+	Global.player.gold -= item_data.price
+	disabled = true

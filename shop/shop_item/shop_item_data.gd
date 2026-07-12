@@ -27,10 +27,8 @@ Possible Item Actions:
 
 
 @export var display_name: String
-@export var description: String
 @export var price: int
 @export var icon: Texture2D
-var on_press: Callable
 
 func on_purchase(player: PlayerData) -> void:
 	pass  # override
