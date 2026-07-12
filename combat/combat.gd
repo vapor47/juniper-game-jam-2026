@@ -113,7 +113,6 @@ func _start_player_turn() -> void:
 	
 func _end_combat(result: CombatResult) -> void:
 	if result == CombatResult.VICTORY:
-		#add_child(BATTLE_VICTORY_SCREEN_SCENE.instantiate())
 		_show_post_combat()
 	else:
 		add_child(DEATH_SCREEN_SCENE.instantiate())
@@ -302,13 +301,14 @@ func _init_starting_loadout() -> void:
 func _begin_player_turn() -> void:
 	_reset_player_turn_state()
 	Global.player.regen_tokens()
-	player_turn_started.emit()
+	#player_turn_started.emit()
 	_begin_swap_phase()
 
 func _reset_player_turn_state() -> void:
 	selected_slots = {}
 	slot_to_swap = null
 	slot_machine.lever.disabled = false
+	slot_machine.lock_in_button.disabled = true
 	max_active_slots = Global.player.max_active_slots
 	
 	for slot: Slot in get_tree().get_nodes_in_group("slots"):

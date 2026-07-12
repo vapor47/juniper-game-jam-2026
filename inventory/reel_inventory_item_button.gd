@@ -10,9 +10,9 @@ func _ready() -> void:
 		func(): 
 			disabled = %CombatManager.initial_spin_completed and Global.player.tokens <= 0
 	)
-	get_tree().current_scene.player_turn_started.connect(
-		func() -> void: disabled = false
-	)
+	#get_tree().current_scene.player_turn_started.connect(
+		#func() -> void: disabled = false
+	#)
 
 func _on_pressed() -> void:
 	#EventBus.reel_swapped.emit($"..".reel_data["reel"])

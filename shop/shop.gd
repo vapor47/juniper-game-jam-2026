@@ -1,4 +1,5 @@
 extends Control
+class_name Shop
 
 @onready var reel_modification_flow: ReelModificationFlow = $ReelModificationFlow
 @onready var reels_container := %ReelsContainer
@@ -86,7 +87,6 @@ func _get_reels_for_sale(num_reels: int = 2) -> Array[ShopItemData]:
 	for i in num_reels:
 		# Get (semi)random reel
 		# Create ShopItemData
-		print_debug("Get random reel")
 		var random_reel: Reel = Global.reels.values().pick_random()
 		reels.append(ReelShopItemData.create(random_reel))
 	return reels
@@ -206,3 +206,7 @@ func _get_cocktails_for_sale(num_cocktails: int = 3) -> Array[ShopItemData]:
 	
 func _populate_emergency_heal() -> void:
 	_populate_container(emergency_heal_container, [EmergencyHealShopItemData.create()])
+
+
+func _on_continue_button_pressed() -> void:
+	EventBus.shop_exited.emit()

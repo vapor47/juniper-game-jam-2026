@@ -23,3 +23,6 @@ func get_next_encounter() -> Array[EnemyData]:
 	for enemy_class in pool:
 		enemies.append(enemy_class.new())
 	return enemies
+
+func is_run_complete() -> bool:
+	return curr_encounter_idx >= encounter_queue.size()

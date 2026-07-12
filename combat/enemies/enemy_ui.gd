@@ -18,7 +18,7 @@ extends Panel
 func _ready() -> void:
 	update_ui()
 	health_bar.setup(enemy_data)
-	get_tree().current_scene.player_turn_started.connect(update_ui)
+	#EventBus.player_turn_started.connect(update_ui)
 
 func update_ui() -> void:
 	if not enemy_data:

@@ -21,6 +21,8 @@ signal token_count_updated(new_value: int)
 
 signal reel_modified(reel: Reel)
 
+signal shop_exited
+
 signal curr_health_updated(who: CombatantData, new_val: int)
 signal max_health_updated(who: CombatantData, new_val: int)
 
