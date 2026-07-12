@@ -70,6 +70,7 @@ size_flags_vertical = 3
 alignment = 1
 
 [node name="StatUpgradesContainer" type="VBoxContainer" parent="MarginContainer/VBoxContainer/ShopContents/MiscUpgradesContainer" unique_id=1140299182]
+unique_name_in_owner = true
 layout_mode = 2
 size_flags_horizontal = 3
 

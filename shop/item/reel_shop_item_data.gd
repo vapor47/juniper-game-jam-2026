@@ -1,7 +1,12 @@
 extends ShopItemData
 class_name ReelShopItemData
 
-const BASE_REEL_PRICE := 50
+"""
+	Add reel to inventory
+		Global inventory[reel_type] += 1
+"""
+
+const BASE_REEL_PRICE: int = 50
 
 @export var reel: Reel
 

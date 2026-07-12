@@ -1,6 +1,6 @@
 [gd_scene format=3 uid="uid://7dj1rp08srte"]
 
-[ext_resource type="Script" uid="uid://b1o0018d1dscv" path="res://shop/shop_item/shop_item.gd" id="1_kca3u"]
+[ext_resource type="Script" uid="uid://b1o0018d1dscv" path="res://shop/item/shop_item.gd" id="1_kca3u"]
 
 [node name="ShopItem" type="Button" unique_id=1907754077]
 anchors_preset = 15

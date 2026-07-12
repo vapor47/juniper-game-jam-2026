@@ -309,6 +309,7 @@ func _reset_player_turn_state() -> void:
 	selected_slots = {}
 	slot_to_swap = null
 	slot_machine.lever.disabled = false
+	max_active_slots = Global.player.max_active_slots
 	
 	for slot: Slot in get_tree().get_nodes_in_group("slots"):
 		slot.hold_button.disabled = true

@@ -1,0 +1,9 @@
+[gd_resource type="Resource" script_class="StatUpgradeShopItemData" format=3 uid="uid://cs6nhvsx0ybds"]
+
+[ext_resource type="Script" uid="uid://bhphjbf5nyek7" path="res://shop/item/upgrades/stat_upgrade_shop_item_data.gd" id="1_8hcpq"]
+
+[resource]
+script = ExtResource("1_8hcpq")
+stat_type = 1
+display_name = "Increase Total Slots"
+metadata/_custom_type_script = "uid://bhphjbf5nyek7"

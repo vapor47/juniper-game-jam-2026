@@ -1,8 +1,16 @@
 extends Control
 
 @onready var reels_container := %ReelsContainer
+@onready var stat_upgrades_container := %StatUpgradesContainer
 
-const SHOP_ITEM_SCENE = preload("res://shop/shop_item/shop_item.tscn")
+const SHOP_ITEM_SCENE = preload("res://shop/item/shop_item.tscn")
+
+const UPGRADE_POOL: Array[ShopItemData] = [
+	preload("res://shop/item/upgrades/increase_active_slots.tres"),
+	preload("res://shop/item/upgrades/increase_total_slots.tres"),
+	preload("res://shop/item/upgrades/increase_token_cap.tres"),
+	preload("res://shop/item/upgrades/increase_token_regen.tres"),
+]
 
 func _ready() -> void:
 	_populate_shop()
@@ -74,8 +82,19 @@ func _populate_misc_upgrades() -> void:
 	_populate_consumables()
 
 func _populate_stat_upgrades() -> void:
-	pass
-	
+	var upgrades_for_sale := _get_upgrades_for_sale()
+	_populate_container(stat_upgrades_container, upgrades_for_sale)
+
+func _get_upgrades_for_sale(num_upgrades: int = 2) -> Array[ShopItemData]:
+	var upgrades: Array[ShopItemData] = []
+	# TODO: prevent picking irrelevant / non-applicable upgrades
+	for i in num_upgrades:
+		var upgrade: ShopItemData = UPGRADE_POOL.pick_random()
+		while upgrade in upgrades:
+			upgrade = UPGRADE_POOL.pick_random()
+		upgrades.append(upgrade)
+	return upgrades
+
 func _populate_charms() -> void:
 	pass
 

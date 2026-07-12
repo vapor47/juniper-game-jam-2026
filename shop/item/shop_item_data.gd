@@ -25,6 +25,7 @@ Possible Item Actions:
 	Add reel, Increase stats, Heal are all simple adjustments
 """
 
+const BASE_PRICE: int = 1
 
 @export var display_name: String
 @export var price: int
