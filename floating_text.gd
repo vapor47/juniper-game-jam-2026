@@ -1,5 +1,5 @@
 # FloatingText.gd
-# Created for testing purposes. Delete later (unless used for prod)
+# Created for testing purposes.
 extends Label
 
 func _ready() -> void:
@@ -13,7 +13,7 @@ func _ready() -> void:
 	fade_tween.tween_property(self, "modulate:a", 0.0, 1.0)
 	fade_tween.tween_callback(queue_free)
 	
-	# Float upward (new, runs simultaneously with the fade sequence)
+	# Float upward
 	var float_tween := create_tween()
 	float_tween.tween_property(self, "global_position:y", global_position.y - 80, 3.0)\
 		.set_ease(Tween.EASE_OUT).set_trans(Tween.TRANS_CUBIC)

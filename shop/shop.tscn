@@ -1,0 +1,95 @@
+[gd_scene format=3 uid="uid://cg0la2w4b0efw"]
+
+[ext_resource type="Script" uid="uid://x5ggvgyj1oud" path="res://shop/shop.gd" id="1_r2p71"]
+
+[node name="Shop" type="Control" unique_id=11112363]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+size_flags_horizontal = 3
+size_flags_vertical = 3
+script = ExtResource("1_r2p71")
+
+[node name="MarginContainer" type="MarginContainer" parent="." unique_id=1336712898]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_constants/margin_left = 24
+theme_override_constants/margin_top = 24
+theme_override_constants/margin_right = 24
+theme_override_constants/margin_bottom = 24
+
+[node name="VBoxContainer" type="VBoxContainer" parent="MarginContainer" unique_id=55145351]
+layout_mode = 2
+
+[node name="ShopTitleLabel" type="Label" parent="MarginContainer/VBoxContainer" unique_id=1137000424]
+layout_mode = 2
+theme_override_font_sizes/font_size = 48
+text = "THE GIFT SHOP"
+horizontal_alignment = 1
+
+[node name="ShopContents" type="VBoxContainer" parent="MarginContainer/VBoxContainer" unique_id=1162039531]
+layout_mode = 2
+size_flags_vertical = 3
+
+[node name="MachineModificationsContainer" type="HBoxContainer" parent="MarginContainer/VBoxContainer/ShopContents" unique_id=819597984]
+layout_mode = 2
+size_flags_vertical = 3
+
+[node name="ReelsContainer" type="HBoxContainer" parent="MarginContainer/VBoxContainer/ShopContents/MachineModificationsContainer" unique_id=323650037]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_horizontal = 3
+
+[node name="ReelModificationsContainer" type="HBoxContainer" parent="MarginContainer/VBoxContainer/ShopContents/MachineModificationsContainer" unique_id=1350528776]
+layout_mode = 2
+size_flags_horizontal = 3
+alignment = 1
+
+[node name="ReelStopModifiersContainer" type="HBoxContainer" parent="MarginContainer/VBoxContainer/ShopContents/MachineModificationsContainer/ReelModificationsContainer" unique_id=294764069]
+layout_mode = 2
+size_flags_horizontal = 3
+
+[node name="ReelStopContainer" type="HBoxContainer" parent="MarginContainer/VBoxContainer/ShopContents/MachineModificationsContainer/ReelModificationsContainer" unique_id=1467011792]
+layout_mode = 2
+size_flags_horizontal = 3
+
+[node name="RemoveReelStopContainer" type="BoxContainer" parent="MarginContainer/VBoxContainer/ShopContents/MachineModificationsContainer/ReelModificationsContainer" unique_id=1178141984]
+layout_mode = 2
+size_flags_horizontal = 3
+
+[node name="MiscUpgradesContainer" type="HBoxContainer" parent="MarginContainer/VBoxContainer/ShopContents" unique_id=2032720724]
+layout_mode = 2
+size_flags_vertical = 3
+alignment = 1
+
+[node name="StatUpgradesContainer" type="VBoxContainer" parent="MarginContainer/VBoxContainer/ShopContents/MiscUpgradesContainer" unique_id=1140299182]
+layout_mode = 2
+size_flags_horizontal = 3
+
+[node name="CharmsContainer" type="HBoxContainer" parent="MarginContainer/VBoxContainer/ShopContents/MiscUpgradesContainer" unique_id=123195714]
+layout_mode = 2
+size_flags_horizontal = 3
+
+[node name="ConsumablesContainer" type="VBoxContainer" parent="MarginContainer/VBoxContainer/ShopContents/MiscUpgradesContainer" unique_id=1365441088]
+layout_mode = 2
+size_flags_horizontal = 3
+
+[node name="CocktailsContainer" type="HBoxContainer" parent="MarginContainer/VBoxContainer/ShopContents/MiscUpgradesContainer/ConsumablesContainer" unique_id=1460704069]
+layout_mode = 2
+size_flags_vertical = 3
+
+[node name="EmergencyHealContainer" type="BoxContainer" parent="MarginContainer/VBoxContainer/ShopContents/MiscUpgradesContainer/ConsumablesContainer" unique_id=1503516428]
+layout_mode = 2
+size_flags_vertical = 3
+
+[node name="ContinueButton" type="Button" parent="MarginContainer/VBoxContainer" unique_id=1263404146]
+layout_mode = 2
+size_flags_horizontal = 8
+text = "Back to the tables!"

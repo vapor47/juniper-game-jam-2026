@@ -1,0 +1,13 @@
+[gd_scene format=3 uid="uid://7dj1rp08srte"]
+
+[ext_resource type="Script" uid="uid://b1o0018d1dscv" path="res://shop/shop_item/shop_item.gd" id="1_kca3u"]
+
+[node name="ShopItem" type="Button" unique_id=1907754077]
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+script = ExtResource("1_kca3u")
+
+[connection signal="pressed" from="." to="." method="_on_pressed"]
