@@ -27,7 +27,7 @@ func start(action: ModAction, payload = null) -> void:
 
 func _open_select_modal() -> void:
 	_select_modal = REEL_SELECT_MODAL_SCENE.instantiate()
-	_select_modal.setup(_action)
+	_select_modal.setup(_action, _payload)
 	_select_modal.reel_selected.connect(_on_reel_selected)
 	_select_modal.cancelled.connect(_abort)
 	get_tree().current_scene.add_child(_select_modal)

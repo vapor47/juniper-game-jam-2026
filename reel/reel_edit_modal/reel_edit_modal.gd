@@ -42,12 +42,13 @@ func _ready() -> void:
 
 
 func _on_wedge_clicked(stop_index: int) -> void:
+	print_debug(action)
 	match action:
 		ReelModificationFlow.ModAction.ADD_MODIFIER:
 			reel.reel_stops[stop_index].modifiers.append(payload)
 		ReelModificationFlow.ModAction.REMOVE_STOP:
 			if reel.reel_stops.size() <= 1:
-				return  # belt-and-suspenders; select modal already filters
+				return
 			reel.reel_stops.remove_at(stop_index)
 	_complete()
 

@@ -5,15 +5,16 @@ signal reel_selected(reel: Reel)
 signal cancelled
 
 var action: ReelModificationFlow.ModAction
+var payload
 
 @onready var title_label: Label = %TitleLabel
 @onready var reel_grid: GridContainer = %ReelGrid
 @onready var cancel_button: Button = %CancelButton
 
 
-func setup(p_action: ReelModificationFlow.ModAction) -> void:
+func setup(p_action: ReelModificationFlow.ModAction, p_payload = null) -> void:
 	action = p_action
-
+	payload = p_payload
 
 func _ready() -> void:
 	cancel_button.pressed.connect(func() -> void: cancelled.emit())
@@ -35,6 +36,10 @@ func _populate() -> void:
 		if action == ReelModificationFlow.ModAction.REMOVE_STOP and reel.reel_stops.size() <= 1:
 			card.disabled = true
 			card.tooltip_text = "Can't remove the last stop"
+			
+		if action == ReelModificationFlow.ModAction.ADD_STOP and payload.get_symbol_type() not in reel.allowed_symbol_types:
+			card.disabled = true
+			card.tooltip_text = "Cannot add stop of this type to this reel"
 
 		card.pressed.connect(func() -> void: reel_selected.emit(reel))
 		reel_grid.add_child(card)

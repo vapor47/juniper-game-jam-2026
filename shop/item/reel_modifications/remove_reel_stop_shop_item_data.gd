@@ -12,8 +12,8 @@ func on_purchase(player: PlayerData) -> void:
 func _init() -> void:
 	mod_action = ReelModificationFlow.ModAction.REMOVE_STOP
 
-static func create() -> ReelModifierShopItemData:
-	var item := ReelModifierShopItemData.new()
+static func create() -> RemoveReelStopShopItemData:
+	var item := RemoveReelStopShopItemData.new()
 	item.display_name = "Remove Reel Stop"
 	item.resource_name = item.display_name  # optional, debugger nicety only
 	item.price = BASE_MODIFIER_PRICE
