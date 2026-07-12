@@ -3,9 +3,11 @@ extends RefCounted
 
 # TODO: Move elsewhere?
 enum SymbolType { ATTACK, DEFEND, HEAL }
+enum ValueType { FLAT, MULT }
 
 var symbol_name: String
 var symbol_value: int = 0
+var value_type: ValueType = ValueType.FLAT
 var result_modifier: Callable
 var icon: Texture2D
 	

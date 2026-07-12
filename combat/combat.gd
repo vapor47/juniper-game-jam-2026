@@ -346,9 +346,8 @@ func _begin_slot_select_phase() -> void:
 
 # On confirm button press
 func _end_slot_select_phase() -> void:
-#	Disable confirm button
-	#%LockInButton.disabled = true
 	slot_machine.lever.disabled = true
+	slot_machine.lock_in_button.disabled = true
 	curr_slot_press_action = SlotPressAction.NONE
 	_begin_action_resolution_phase()
 

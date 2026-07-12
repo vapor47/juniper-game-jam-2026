@@ -5,8 +5,8 @@ static func resolve(ctx: ResolutionContext) -> Array:
 	var selected_stops := ctx.selected_stops
 
 	# ---- Phase 1: per-stop values through HOOK A
-	var stop_values: Dictionary = {}   # ReelStop -> int
-	for stop in selected_stops:
+	var stop_values: Dictionary[ReelStop, int] = {}
+	for stop: ReelStop in selected_stops:
 		var v := stop.slot_symbol.symbol_value
 		for mod: StopModifier in stop.modifiers:
 			v = mod.modify_stop_value(v, ctx, stop)
@@ -18,10 +18,10 @@ static func resolve(ctx: ResolutionContext) -> Array:
 	for stop in selected_stops:
 		by_symbol.get_or_add(stop.slot_symbol, []).append(stop)
 
-	var totals: Dictionary[SlotSymbol.SymbolType, int]= {
-		SlotSymbol.SymbolType.ATTACK: 0,
-		SlotSymbol.SymbolType.DEFEND: 0,
-		SlotSymbol.SymbolType.HEAL: 0
+	var totals: Dictionary[SlotSymbol.SymbolType, int] = {
+		#SlotSymbol.SymbolType.ATTACK: 0,
+		#SlotSymbol.SymbolType.DEFEND: 0,
+		#SlotSymbol.SymbolType.HEAL: 0
 	}
 	
 	for symbol: SlotSymbol in by_symbol:
@@ -39,6 +39,10 @@ static func resolve(ctx: ResolutionContext) -> Array:
 			ctx.combo_symbols.append(symbol)
 		else:
 			contribution = value_sum
+			
+		# TODO: Move up?
+		if symbol.value_type == SlotSymbol.ValueType.MULT:
+			continue
 		_add_to_type_total(totals, symbol, contribution)
 
 	# ---- Phase 3: result totals through HOOK B
@@ -46,6 +50,9 @@ static func resolve(ctx: ResolutionContext) -> Array:
 		for mod: StopModifier in stop.modifiers:
 			totals[stop.slot_symbol.get_symbol_type()] = mod.modify_result_total(
 					totals[stop.slot_symbol.get_symbol_type()], ctx, stop)
+		
+		if stop.slot_symbol.value_type == SlotSymbol.ValueType.MULT:
+			totals[stop.slot_symbol.get_symbol_type()] = int(ceil(totals[stop.slot_symbol.get_symbol_type()] * (1 + float(stop_values[stop]) / 4)))
 
 	# ---- Phase 4: side effects, HOOK D
 	for stop in selected_stops:
@@ -63,7 +70,7 @@ static func _combo_value_from_sum(value_sum: int, eff_count: int) -> int:
 	var scale := pow(eff_count - 1, 1.3)
 	return roundi(value_sum + (value_sum * 0.12 * scale) + scale)
 
-static func _add_to_type_total(totals: Dictionary, symbol: SlotSymbol, contribution: int) -> void:
+static func _add_to_type_total(totals: Dictionary[SlotSymbol.SymbolType, int], symbol: SlotSymbol, contribution: int) -> void:
 	var t := symbol.get_symbol_type()
 	totals[t] = totals.get(t, 0) + contribution
 
