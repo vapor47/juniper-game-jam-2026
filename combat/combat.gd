@@ -290,7 +290,7 @@ func _begin_combat() -> void:
 	_begin_player_turn()
 
 func _init_starting_loadout() -> void:
-	var slots: Array[Node] = get_tree().get_nodes_in_group("slots")
+	var slots: Array[Node] = slot_machine.get_slots()
 
 	slots[0]._insert_reel(Global.reels.get("Attack"), false)
 	slots[1]._insert_reel(Global.reels.get("Attack"), false)
@@ -522,7 +522,8 @@ func _on_spin_all_completed() -> void:
 
 func _update_combo_legend() -> void:
 	var slots: Array[Slot] = []
-	for slot: Slot in get_tree().get_nodes_in_group("slots"):
+	
+	for slot: Slot in slot_machine.get_slots():
 		slots.append(slot)
 
 	var combo_legend_values := _get_combo_legend_values(slots, max_active_slots)
@@ -553,6 +554,9 @@ func _get_combo_legend_values(options: Array[Slot], max_combo_size: int) -> Arra
 	var symbol_count: Dictionary[SlotSymbol, int]
 	
 	for option: Slot in options:
+		print_debug(options)
+		if not option.get_curr_stop():
+			continue
 		var symbol: SlotSymbol = option.get_curr_stop().slot_symbol
 		symbol_count[symbol] = symbol_count.get(symbol, 0) + 1
 		

@@ -31,6 +31,11 @@ const SYMBOL_SCRIPTS := [
 	preload("res://slot_symbols/symbols/heal/multiply_heal.gd"),
 ]
 
+func reset() -> void:
+	player = PlayerData.new()
+	_load_symbols()
+	_load_reels()
+
 
 func _ready() -> void:
 	player = PlayerData.new()

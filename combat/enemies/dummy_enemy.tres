@@ -1,0 +1,10 @@
+[gd_resource type="Resource" script_class="EnemyData" format=3 uid="uid://dcpvh8ucfsw8o"]
+
+[ext_resource type="Script" uid="uid://chrfkcuftv0ng" path="res://combat/enemies/enemy_data.gd" id="1_0qxnx"]
+
+[resource]
+script = ExtResource("1_0qxnx")
+display_name = "Dummy"
+max_health = 10
+health = null
+metadata/_custom_type_script = "uid://chrfkcuftv0ng"

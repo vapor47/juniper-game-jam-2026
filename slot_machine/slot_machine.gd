@@ -46,7 +46,7 @@ func _on_lever_pulled() -> void:
 
 func _confirm_slots() -> void:
 	var reel_stops: Array[ReelStop] = []
-	for s in _get_slots():
+	for s in get_slots():
 		reel_stops.append(s.get_curr_stop())
 
 	EventBus.slots_locked_in.emit(reel_stops)
@@ -72,8 +72,8 @@ func _on_reel_swapped(reel_to_insert: Reel) -> void:
 	# Auto close Side Panel after swap
 	selected_slot = null
 	
-func _get_slots() -> Array[Node]:
-	return get_tree().get_nodes_in_group("slots")
+func get_slots() -> Array[Node]:
+	return %SlotGroupContainer.get_children()
 
 """
 onSpin: trigger onSpin for all child slots

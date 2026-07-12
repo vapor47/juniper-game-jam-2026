@@ -8,7 +8,8 @@ var is_held: bool = false
 var slot_reel: Reel = null
 var _curr_stop: ReelStop = null:
 	set(new):
-		print("curr stop changed")
+		print_debug("curr stop changed" + str(self))
+		print_debug(new.slot_symbol.symbol_name)
 		_curr_stop = new
 @onready var result_label: Label = $MarginContainer/SlotContainer/SlotWindow/Label
 @onready var hold_button: HoldButton = %HoldButton
@@ -31,6 +32,7 @@ func _ready() -> void:
 
 func _exit_tree() -> void:
 	_remove_reel()
+	remove_from_group("slots")
 
 func spin(duration: float = Global.SLOT_SPIN_DURATION) -> ReelStop:
 	_curr_stop = slot_reel.reel_stops.pick_random()
@@ -118,6 +120,7 @@ func _insert_reel(reel: Reel, should_spin: bool = true) -> void:
 		return
 	if Global.reel_inventory[reel.reel_name] <= 0:
 		push_error("Attempted to insert reel with 0 remaining in inventory.")
+	print_debug("Reel inserted")
 	slot_reel = reel
 	Global.reel_inventory[reel.reel_name] -= 1
 	

@@ -4,12 +4,12 @@ class_name CombatantData
 signal died(who: CombatantData)
 
 @export var display_name: String = "Combatant"
-@export var max_health: int = 100:
+var max_health: int = 100:
 	set(new_val):
 		max_health = new_val
 		EventBus.max_health_updated.emit(self, new_val)
 		
-@export var health: int = max_health:
+var health: int = max_health:
 	set(new_val):
 		health = new_val
 		EventBus.curr_health_updated.emit(self, new_val)

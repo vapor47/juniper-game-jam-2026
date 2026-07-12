@@ -1,9 +1,17 @@
 extends CombatantData
 class_name PlayerData
 
+# BASE STATE
+const BASE_TOKEN_REGEN_PER_TURN = 1
+const BASE_MAX_TOKENS = 1
+const BASE_TOTAL_SLOTS = 5
+const BASE_MAX_ACTIVE_SLOTS = 3
+const BASE_GOLD = 1000
+
+
 # Tokens
-var token_regen_per_turn: int = 1
-var max_tokens: int = 3
+var token_regen_per_turn: int = BASE_TOKEN_REGEN_PER_TURN
+var max_tokens: int = BASE_MAX_TOKENS
 var tokens: int = max_tokens:
 	set(new_value):
 		if new_value < 0:
@@ -16,7 +24,7 @@ var tokens: int = max_tokens:
 
 # Slots
 const MAX_TOTAL_SLOTS: int = 8
-var total_slots: int = 5:
+var total_slots: int = BASE_TOTAL_SLOTS:
 	set(new_value):
 		if new_value < 1:
 			push_error("Total slots should never go below 1")
@@ -26,7 +34,7 @@ var total_slots: int = 5:
 			push_error("Cannot exceed max slots")
 		total_slots = min(new_value, MAX_TOTAL_SLOTS)
 
-var max_active_slots: int = 3:
+var max_active_slots: int = BASE_MAX_ACTIVE_SLOTS:
 	set(new_value):
 		if new_value < 1:
 			push_error("Active slots should never go below 1")
@@ -37,7 +45,7 @@ var max_active_slots: int = 3:
 		max_active_slots = min(new_value, total_slots)
 
 
-var gold: int = 1000
+var gold: int = BASE_GOLD
 
 
 func _init() -> void:
@@ -51,3 +59,9 @@ func regen_tokens() -> void:
 
 func can_afford(item: ShopItemData) -> bool:
 	return item.price <= gold
+
+#func reset_state():
+	#token_regen_per_turn = BASE_TOKEN_REGEN_PER_TURN
+	#max_tokens = BASE_MAX_TOKENS
+	#tokens = max_tokens
+	#
