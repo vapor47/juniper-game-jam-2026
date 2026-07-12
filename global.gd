@@ -63,7 +63,9 @@ func _load_symbols_dynamic(path: String) -> void:
 			var script := load(path + file_name) as GDScript
 			var instance = script.new()
 			if instance is SlotSymbol:
-				slot_symbols[instance.symbol_name] = instance
+				# TODO: Find a more consistent way of doing this
+				if not file_name.contains("base"):
+					slot_symbols[instance.symbol_name] = instance
 		file_name = dir.get_next()
 	
 	dir.list_dir_end()
