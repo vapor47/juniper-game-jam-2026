@@ -41,6 +41,3 @@ func _ready() -> void:
 
 func _on_pressed() -> void:
 	purchase_requested.emit(item_data)
-	
-func requires_flow() -> bool:
-	return false

@@ -37,6 +37,9 @@ func _on_item_purchased(item: ShopItemData) -> void:
 	if not Global.player.can_afford(item):
 		# TODO: play animation, cannot afford.
 		return
+	if item.purchased:
+		return
+	
 	if item.requires_flow():
 		reel_modification_flow.start(item.mod_action, item.get_flow_payload())
 		reel_modification_flow.flow_finished.connect(_commit_purchase.bind(item), CONNECT_ONE_SHOT)
@@ -57,6 +60,7 @@ func _cancel_purchase(_item: ShopItemData) -> void:
 
 func _mark_sold(item: ShopItemData) -> void:
 	item.purchased = true
+
 
 # ---------- MACHINE MODIFICATIONS ---------- #
 

@@ -34,3 +34,6 @@ var purchased: bool = false
 
 func on_purchase(player: PlayerData) -> void:
 	pass  # override
+
+func requires_flow() -> bool:
+	return false
