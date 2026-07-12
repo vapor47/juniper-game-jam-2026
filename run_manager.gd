@@ -8,6 +8,7 @@ var encounter_queue: Array[Array] = [
 ]
 
 var curr_encounter_idx: int = 0
+var emergency_heal_used: bool = false
 
 # Create Encounter object? that can be either combat, shop, etc
 func get_next_encounter() -> Array[EnemyData]:

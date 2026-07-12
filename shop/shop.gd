@@ -2,6 +2,7 @@ extends Control
 
 @onready var reels_container := %ReelsContainer
 @onready var stat_upgrades_container := %StatUpgradesContainer
+@onready var emergency_heal_container := %EmergencyHealContainer
 
 const SHOP_ITEM_SCENE = preload("res://shop/item/shop_item.tscn")
 
@@ -106,4 +107,4 @@ func _populate_cocktails() -> void:
 	pass
 	
 func _populate_emergency_heal() -> void:
-	pass
+	_populate_container(emergency_heal_container, [EmergencyHealShopItemData.create()])

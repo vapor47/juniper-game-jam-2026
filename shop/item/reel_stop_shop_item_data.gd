@@ -1,7 +1,7 @@
 extends ShopItemData
 class_name ReelStopShopItemData
 
-const BASE_PRICE := 50
+const BASE_REEL_STOP_PRICE := 50
 
 @export var reel: Reel
 
@@ -14,5 +14,5 @@ static func create(p_reel: Reel) -> ReelShopItemData:
 	item.reel = p_reel
 	item.display_name = p_reel.reel_name + " Reel"
 	item.resource_name = item.display_name  # optional, debugger nicety only
-	item.price = BASE_PRICE
+	item.price = BASE_REEL_STOP_PRICE
 	return item

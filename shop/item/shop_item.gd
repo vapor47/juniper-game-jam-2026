@@ -26,15 +26,20 @@ Possible Item Actions:
 """
 
 var item_data: ShopItemData
+var purchased: bool = false
 
 func setup(p_item_data: ShopItemData) -> void:
 	item_data = p_item_data
 
+
+func is_available() -> bool:
+	return not purchased
+
 func _ready() -> void:
-	text = item_data.display_name
+	text = item_data.display_name + "\n $" + str(item_data.price) 
 
 func _on_pressed() -> void:
-	if Global.player.gold < item_data.price:
+	if not Global.player.can_afford(item_data):
 		# TODO: play animation, cannot afford.
 		return
 	item_data.on_purchase(Global.player)
@@ -42,4 +47,5 @@ func _on_pressed() -> void:
 
 func _mark_purchased() -> void:
 	Global.player.gold -= item_data.price
+	purchased = true
 	disabled = true

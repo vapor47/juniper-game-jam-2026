@@ -1,4 +1,3 @@
-# stat_upgrade_shop_item_data.gd
 extends ShopItemData
 class_name StatUpgradeShopItemData
 

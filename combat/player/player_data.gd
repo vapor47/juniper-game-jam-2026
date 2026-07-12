@@ -37,7 +37,7 @@ var max_active_slots: int = 3:
 		max_active_slots = min(new_value, total_slots)
 
 
-var gold: int = 100
+var gold: int = 1000
 
 
 func _init() -> void:
@@ -48,3 +48,6 @@ func replenish_tokens() -> void:
 
 func regen_tokens() -> void:
 	tokens += token_regen_per_turn
+
+func can_afford(item: ShopItemData) -> bool:
+	return item.price <= gold
