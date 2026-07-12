@@ -102,8 +102,10 @@ func _populate_reel_stop_modifiers() -> void:
 	_populate_container(reel_stop_modifiers_container, modifiers_for_sale)
 
 func _get_reel_stop_modifiers_for_sale(num_modifiers: int = 3) -> Array[ShopItemData]:
-	var modifiers: Array[ShopItemData] = []
-	return modifiers
+	var items: Array[ShopItemData] = []
+	for m: StopModifier in ModifierPool.roll(num_modifiers):
+		items.append(ReelStopModifierShopItemData.create(m))
+	return items
 
 func _populate_reel_stops() -> void:
 	var reel_stops_for_sale := _get_reel_stops_for_sale()
