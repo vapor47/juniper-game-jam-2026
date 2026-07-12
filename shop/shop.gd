@@ -1,8 +1,11 @@
 extends Control
 
+@onready var reel_modification_flow: ReelModificationFlow = $ReelModificationFlow
 @onready var reels_container := %ReelsContainer
 @onready var stat_upgrades_container := %StatUpgradesContainer
 @onready var emergency_heal_container := %EmergencyHealContainer
+@onready var reel_stop_modifiers_container := %ReelStopModifiersContainer
+@onready var remove_reel_stop_container := %RemoveReelStopContainer
 
 const SHOP_ITEM_SCENE = preload("res://shop/item/shop_item.tscn")
 
@@ -25,10 +28,35 @@ func _populate_shop() -> void:
 
 func _populate_container(container: BoxContainer, items: Array[ShopItemData]) -> void:
 	for item_data: ShopItemData in items:
-		var item := SHOP_ITEM_SCENE.instantiate()
+		var item: ShopItem= SHOP_ITEM_SCENE.instantiate()
 		item.setup(item_data)
+		item.purchase_requested.connect(_on_item_purchased)
 		container.add_child(item)
 
+func _on_item_purchased(item: ShopItemData) -> void:
+	if not Global.player.can_afford(item):
+		# TODO: play animation, cannot afford.
+		return
+	if item.requires_flow():
+		reel_modification_flow.start(item.mod_action, item.get_flow_payload())
+		reel_modification_flow.flow_finished.connect(_commit_purchase.bind(item), CONNECT_ONE_SHOT)
+		reel_modification_flow.flow_aborted.connect(_cancel_purchase.bind(item), CONNECT_ONE_SHOT)
+	else:
+		item.on_purchase(Global.player)
+		_commit_purchase(item)
+
+func _commit_purchase(item: ShopItemData) -> void:
+	Global.player.gold -= item.price
+	_mark_sold(item)              # remove from stock / gray out the card
+	#_refresh_shop_ui()            # gold display, affordability graying on remaining items
+	# run-scoped bookkeeping where relevant, e.g. removal count increments,
+	# though that arguably belongs in the removal item/flow itself
+
+func _cancel_purchase(_item: ShopItemData) -> void:
+	pass
+
+func _mark_sold(item: ShopItemData) -> void:
+	item.purchased = true
 
 # ---------- MACHINE MODIFICATIONS ---------- #
 
@@ -50,7 +78,7 @@ func _get_reels_for_sale(num_reels: int = 2) -> Array[ShopItemData]:
 			Can they benefit from more than max slots?
 				Selling, sacrificing, gambling, etc
 	"""
-	var reels: Array[ShopItemData]
+	var reels: Array[ShopItemData] = []
 	for i in num_reels:
 		# Get (semi)random reel
 		# Create ShopItemData
@@ -66,14 +94,66 @@ func _populate_reel_modifications() -> void:
 	_populate_remove_reel_stop()
 
 func _populate_reel_stop_modifiers() -> void:
-	pass
+	var modifiers_for_sale := _get_reel_stop_modifiers_for_sale()
+	_populate_container(reel_stop_modifiers_container, modifiers_for_sale)
+
+func _get_reel_stop_modifiers_for_sale(num_modifiers: int = 3) -> Array[ShopItemData]:
+	var modifiers: Array[ShopItemData] = []
+	return modifiers
 
 func _populate_reel_stops() -> void:
-	pass
+	var reel_stops_for_sale := _get_reel_stops_for_sale()
+	_populate_container(reel_stop_modifiers_container, reel_stops_for_sale)
+
+func _get_reel_stops_for_sale(num_stops: int = 3) -> Array[ShopItemData]:
+	var stops: Array[ShopItemData] = []
+	# Allow duplicate stops(?), but stop must belong to a reel that player currently owns
+	# Get eligible symbol types
+	var eligible_symbol_types_for_sale := _get_eligible_symbol_types()
+	
+	for i in num_stops:
+		var random_symbol: SlotSymbol = Global.slot_symbols.values().pick_random()
+		while random_symbol.get_symbol_type() not in eligible_symbol_types_for_sale:
+			random_symbol = Global.slot_symbols.values().pick_random()
+		
+		stops.append(ReelStopShopItemData.create(random_symbol))
+	
+	return stops
+
+func _get_eligible_symbol_types() -> Dictionary[SlotSymbol.SymbolType, bool]:
+	var types: Dictionary[SlotSymbol.SymbolType, bool] = {}
+	for reel_name: String in Global.reel_inventory:
+		if Global.reel_inventory[reel_name] <= 0:
+			continue
+		var reel: Reel = Global.reels.get(reel_name)
+		for type in reel.allowed_symbol_types:
+			types[type] = true
+	return types
 	
 func _populate_remove_reel_stop() -> void:
-	pass
+	_populate_container(remove_reel_stop_container, [RemoveReelStopShopItemData.create()])
 
+"""
+In all 3 cases, we need to open a modal.
+With add modifier, we need to pass the modifier
+With add stop, we need to pass the stop
+With remove, we don't need to pass anything.
+	We do need to prevent player from selecting a reel with only 1 stop
+
+Open Reel Select Modal for action -> Reel Selected (returns reel) ->
+Start specific flow with provided reel (can return to reel selection screen) ->
+
+For add modifier and remove stop, we need to highlight the stops themselves.
+	Each stop is a pie slice / wedge shaped button. Upon selection, we perform appropriate action
+		(either add modifier to stop, or remove stop)
+
+For add stop, we need to highlight inbetween (insertion point)
+	This can just be the index to insert at.
+	Buttons are lines between stops?
+
+
+Upon action completion, we exit all modals and return to shop screen.
+"""
 
 # ------------ MISC UPGRADES ------------ #
 
@@ -97,14 +177,26 @@ func _get_upgrades_for_sale(num_upgrades: int = 2) -> Array[ShopItemData]:
 	return upgrades
 
 func _populate_charms() -> void:
-	pass
+	var charms_for_sale := _get_charms_for_sale()
+	_populate_container(reels_container, charms_for_sale)
+
+func _get_charms_for_sale(num_charms: int = 2) -> Array[ShopItemData]:
+	# TODO: implement
+	var charms: Array[ShopItemData] = []
+	return charms
 
 func _populate_consumables() -> void:
 	_populate_cocktails()
 	_populate_emergency_heal()
 	
 func _populate_cocktails() -> void:
-	pass
+	var cocktails_for_sale := _get_cocktails_for_sale()
+	_populate_container(reels_container, cocktails_for_sale)
+
+func _get_cocktails_for_sale(num_cocktails: int = 3) -> Array[ShopItemData]:
+	# TODO: implement
+	var cocktails: Array[ShopItemData] = []
+	return cocktails
 	
 func _populate_emergency_heal() -> void:
 	_populate_container(emergency_heal_container, [EmergencyHealShopItemData.create()])

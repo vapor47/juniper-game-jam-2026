@@ -1,6 +1,7 @@
 [gd_scene format=3 uid="uid://cg0la2w4b0efw"]
 
 [ext_resource type="Script" uid="uid://x5ggvgyj1oud" path="res://shop/shop.gd" id="1_r2p71"]
+[ext_resource type="Script" uid="uid://bsrk42cuc78ks" path="res://reel/reel_modification_flow.gd" id="2_sxvro"]
 
 [node name="Shop" type="Control" unique_id=11112363]
 layout_mode = 3
@@ -12,6 +13,9 @@ grow_vertical = 2
 size_flags_horizontal = 3
 size_flags_vertical = 3
 script = ExtResource("1_r2p71")
+
+[node name="ReelModificationFlow" type="Node" parent="." unique_id=1910293472]
+script = ExtResource("2_sxvro")
 
 [node name="MarginContainer" type="MarginContainer" parent="." unique_id=1336712898]
 layout_mode = 1
@@ -53,6 +57,7 @@ size_flags_horizontal = 3
 alignment = 1
 
 [node name="ReelStopModifiersContainer" type="HBoxContainer" parent="MarginContainer/VBoxContainer/ShopContents/MachineModificationsContainer/ReelModificationsContainer" unique_id=294764069]
+unique_name_in_owner = true
 layout_mode = 2
 size_flags_horizontal = 3
 
@@ -61,6 +66,7 @@ layout_mode = 2
 size_flags_horizontal = 3
 
 [node name="RemoveReelStopContainer" type="BoxContainer" parent="MarginContainer/VBoxContainer/ShopContents/MachineModificationsContainer/ReelModificationsContainer" unique_id=1178141984]
+unique_name_in_owner = true
 layout_mode = 2
 size_flags_horizontal = 3
 
@@ -94,4 +100,5 @@ size_flags_vertical = 3
 [node name="ContinueButton" type="Button" parent="MarginContainer/VBoxContainer" unique_id=1263404146]
 layout_mode = 2
 size_flags_horizontal = 8
+theme_override_font_sizes/font_size = 20
 text = "Back to the tables!"

@@ -6,4 +6,5 @@
 script = ExtResource("1_8hcpq")
 stat_type = 1
 display_name = "Increase Total Slots"
+price = 100
 metadata/_custom_type_script = "uid://bhphjbf5nyek7"

@@ -18,3 +18,4 @@ func _init() -> void:
 		]
 	#icon:
 	description = "Reel containing defends"
+	allowed_symbol_types = [SlotSymbol.SymbolType.DEFEND]

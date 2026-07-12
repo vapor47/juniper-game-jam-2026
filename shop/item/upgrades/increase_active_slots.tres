@@ -5,4 +5,5 @@
 [resource]
 script = ExtResource("1_tiyig")
 display_name = "Increase Active Slots"
+price = 100
 metadata/_custom_type_script = "uid://bhphjbf5nyek7"

@@ -1,0 +1,56 @@
+[gd_scene format=3 uid="uid://bm2m83mopmffu"]
+
+[ext_resource type="Script" uid="uid://d00e2sii3nxwn" path="res://reel/reel_edit_modal/reel_edit_modal.gd" id="1_i8jvr"]
+[ext_resource type="Script" uid="uid://ucs6byuw65qc" path="res://reel/reel_wheel_display.gd" id="2_dt0hr"]
+
+[node name="ReelEditModal" type="Control" unique_id=1492747129]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+size_flags_horizontal = 3
+size_flags_vertical = 3
+script = ExtResource("1_i8jvr")
+
+[node name="Dimmer" type="ColorRect" parent="." unique_id=1645256047]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+color = Color(0, 0, 0, 0)
+
+[node name="PanelContainer" type="PanelContainer" parent="." unique_id=479079773]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="VBoxContainer" type="VBoxContainer" parent="PanelContainer" unique_id=161427354]
+layout_mode = 2
+
+[node name="InstructionLabel" type="Label" parent="PanelContainer/VBoxContainer" unique_id=2006595927]
+unique_name_in_owner = true
+layout_mode = 2
+horizontal_alignment = 1
+
+[node name="Wheel" type="Control" parent="PanelContainer/VBoxContainer" unique_id=1718502691]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(420, 420)
+layout_mode = 2
+script = ExtResource("2_dt0hr")
+metadata/_custom_type_script = "uid://ucs6byuw65qc"
+
+[node name="HoverInfoLabel" type="Label" parent="PanelContainer/VBoxContainer" unique_id=776955422]
+unique_name_in_owner = true
+layout_mode = 2
+
+[node name="BackButton" type="Button" parent="PanelContainer/VBoxContainer" unique_id=454083268]
+unique_name_in_owner = true
+layout_mode = 2
+text = "Back"

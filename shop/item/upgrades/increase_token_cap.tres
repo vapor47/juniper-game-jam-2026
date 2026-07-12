@@ -6,4 +6,5 @@
 script = ExtResource("1_h0myu")
 stat_type = 2
 display_name = "Increase Token Cap"
+price = 100
 metadata/_custom_type_script = "uid://bhphjbf5nyek7"

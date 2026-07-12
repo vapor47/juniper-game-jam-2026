@@ -25,27 +25,22 @@ Possible Item Actions:
 	Add reel, Increase stats, Heal are all simple adjustments
 """
 
+signal purchase_requested(item: ShopItemData)
+
 var item_data: ShopItemData
-var purchased: bool = false
 
 func setup(p_item_data: ShopItemData) -> void:
 	item_data = p_item_data
 
 
 func is_available() -> bool:
-	return not purchased
+	return true
 
 func _ready() -> void:
 	text = item_data.display_name + "\n $" + str(item_data.price) 
 
 func _on_pressed() -> void:
-	if not Global.player.can_afford(item_data):
-		# TODO: play animation, cannot afford.
-		return
-	item_data.on_purchase(Global.player)
-	_mark_purchased()
-
-func _mark_purchased() -> void:
-	Global.player.gold -= item_data.price
-	purchased = true
-	disabled = true
+	purchase_requested.emit(item_data)
+	
+func requires_flow() -> bool:
+	return false
