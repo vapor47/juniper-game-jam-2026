@@ -52,7 +52,7 @@ static func resolve(ctx: ResolutionContext) -> Array:
 					totals[stop.slot_symbol.get_symbol_type()], ctx, stop)
 		
 		if stop.slot_symbol.value_type == SlotSymbol.ValueType.MULT:
-			totals[stop.slot_symbol.get_symbol_type()] = int(ceil(totals[stop.slot_symbol.get_symbol_type()] * (1 + float(stop_values[stop]) / 4)))
+			totals[stop.slot_symbol.get_symbol_type()] = int(ceil(totals.get(stop.slot_symbol.get_symbol_type(), 0) * (1 + float(stop_values[stop]) / 4)))
 
 	# ---- Phase 4: side effects, HOOK D
 	for stop in selected_stops:

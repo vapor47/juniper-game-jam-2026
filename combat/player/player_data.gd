@@ -47,6 +47,17 @@ var max_active_slots: int = BASE_MAX_ACTIVE_SLOTS:
 
 var gold: int = BASE_GOLD
 
+var owned_charms: Array[Charm] = []
+var active_drinks: Array[Drink] = []
+var expired_drinks: Array[Drink] = []
+var drinks_consumed: int = 0
+
+func get_active_effects() -> Array[RunEffect]:
+	return owned_charms + active_drinks
+
+func get_num_drinks_consumed() -> int:
+	return active_drinks.size() + expired_drinks.size()
+
 
 func _init() -> void:
 	display_name = "Player"
@@ -60,8 +71,18 @@ func regen_tokens() -> void:
 func can_afford(item: ShopItemData) -> bool:
 	return item.price <= gold
 
-#func reset():
-	#token_regen_per_turn = BASE_TOKEN_REGEN_PER_TURN
-	#max_tokens = BASE_MAX_TOKENS
-	#tokens = max_tokens
+
+func consume_drink(d: Drink) -> void:
+	active_drinks.append(d)
+	EventBus.run_effect_added.emit(d)
 	
+func add_charm(c: Charm) -> void:
+	owned_charms.append(c)
+	EventBus.run_effect_added.emit(c)
+
+func broadcast(method: StringName, args: Array = []) -> void:
+	for e: RunEffect in get_active_effects():
+		e.callv(method, args)
+	# sweep expirations after combat-end broadcasts
+	#active_drinks = active_drinks.filter(func(e): return not e.is_expired())
+	# (emit run_effect_removed for UI as needed)

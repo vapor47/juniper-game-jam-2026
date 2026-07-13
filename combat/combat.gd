@@ -6,6 +6,7 @@ class_name CombatManager
 const DEATH_SCREEN_SCENE = preload("res://screens/death_screen.tscn")
 const BATTLE_VICTORY_SCREEN_SCENE = preload("res://screens/battle_victory_screen.tscn")
 const COMBAT_REWARD_SCREEN_SCENE = preload("res://screens/combat_reward/combat_reward_screen.tscn")
+const FLOATING_TEXT_SCENE = preload("res://floating_text.tscn")
 
 var curr_swap_cost: int = 0
 
@@ -65,67 +66,6 @@ func _init_enemies() -> void:
 		enemy_ui.enemy_data = enemy_data
 		enemy_container.add_child(enemy_ui)
 
-#func _ready() -> void:
-	#set_process_unhandled_input(true)
-	#
-##	TODO: This should eventually be moved out once a Mainscreen is implemented
-## 	Mainly for testing purposes. I think. idr at the time of writing this comment.
-	#setup(RunManager.get_next_encounter())
-	#
-	#side_panel.populate(_get_reel_inventory_data())
-	#EventBus.reel_swapped.connect(func(_reel: Reel) -> void: side_panel.populate(_get_reel_inventory_data()))
-	#EventBus.lever_pulled.connect(func() -> void: initial_spin_completed = true)
-	#EventBus.slots_locked_in.connect(_on_spin_resolved)
-	#
-	## Insert starting reels
-	#
-	#_init_enemies()
-	#_start_combat()
-		
-func _start_combat() -> void:
-#	(Actually this should be handled by enemy itself): Get initial enemy intent 
-
-#	Perform any pre-combat setup (token replenishing, etc)
-	_start_player_turn()
-	pass
-	
-func _start_player_turn() -> void:
-	player_turn_started.emit()
-	initial_spin_completed = false
-	curr_swap_cost = 0
-
-# To be called once the player hits the lock in button
-#func _end_player_turn() -> void:
-#	Disable slot machine controls
-	_start_enemy_turn()
-	#
-#func _start_enemy_turn() -> void:
-	#enemy_turn_started.emit()
-	##EventBus.turn_started.emit(Turn.ENEMY)
-	#for enemy in enemies:
-		#if is_instance_valid(enemy):
-			#enemy.make_move()
-	##if combat_state != CombatState.ENDED:
-	#
-	#_start_player_turn()
-	#
-#func _end_enemy_turn() -> void:
-	#_start_player_turn()
-	
-func _end_combat(result: CombatResult) -> void:
-	if result == CombatResult.VICTORY:
-		_show_post_combat()
-	else:
-		add_child(DEATH_SCREEN_SCENE.instantiate())
-	
-func _show_post_combat() -> void:
-	add_child(COMBAT_REWARD_SCREEN_SCENE.instantiate())
-
-	
-func _continue() -> void:
-#	Signal to sceneManager to move to next combat (for now)
-	pass
-	
 func _on_entity_died(who: CombatantData) -> void:
 	if who == Global.player:
 		_end_combat(CombatResult.LOSS)
@@ -134,27 +74,6 @@ func _on_entity_died(who: CombatantData) -> void:
 		if enemies.is_empty():
 			_end_combat(CombatResult.VICTORY)
 	
-	
-#func _on_spin_resolved(stops: Array[ReelStop]) -> void:
-	#var effects: Array = SymbolResolver.resolve(stops)
-	#for effect in effects:
-		#_apply_effect(effect)
-		#
-	#spawn_popup(effects[0].type + ": " + str(effects[0].value) + "\n" + effects[1].type + ": " + str(effects[1].value))
-	#_end_player_turn()
-
-func _apply_effect(effect: Dictionary) -> void:
-	match effect.type:
-		"damage":
-			for enemy: EnemyData in enemies:
-				enemy.take_damage(effect.value)
-				print_debug("Dealt " + str(effect.value) + " damage!")
-		"block":
-			Global.player.add_block(effect.value)
-		"heal":
-			Global.player.heal(effect.value)
-
-const FLOATING_TEXT_SCENE = preload("res://floating_text.tscn")
 
 #Testing
 func spawn_popup(text: String) -> void:
@@ -246,6 +165,7 @@ var slot_to_swap: Slot = null:
 			slot_to_swap = new_val
 			new_val.select()
 
+var context: CombatContext
 
 func _on_side_panel_closed() -> void:
 	#slot_to_swap = null
@@ -268,10 +188,7 @@ func _ready() -> void:
 	
 	side_panel.populate(_get_reel_inventory_data())
 	EventBus.reel_swapped.connect(func(_reel: Reel) -> void: side_panel.populate(_get_reel_inventory_data()))
-	#EventBus.lever_pulled.connect(func() -> void: initial_spin_completed = true)
 	#EventBus.slots_locked_in.connect(_on_spin_resolved)
-	
-	# Insert starting reels
 	
 	_init_enemies()
 	_begin_combat()
@@ -279,11 +196,13 @@ func _ready() -> void:
 func _begin_combat() -> void:
 	curr_slot_press_action = SlotPressAction.NONE
 	Global.player.replenish_tokens()
+	context = CombatContext.new()
 	
 #	Choose starting reel load out
 	_init_starting_loadout()
 	side_panel.populate(_get_reel_inventory_data())
 	_update_combo_legend()
+	Global.player.broadcast("on_combat_started", [context])
 	_begin_player_turn()
 
 func _init_starting_loadout() -> void:
@@ -299,6 +218,8 @@ func _begin_player_turn() -> void:
 	_reset_player_turn_state()
 	Global.player.regen_tokens()
 	player_turn_started.emit()
+	Global.player.broadcast("on_player_turn_started", [context])
+	
 	_begin_swap_phase()
 
 func _reset_player_turn_state() -> void:
@@ -407,6 +328,7 @@ func _display_action(action: Action) -> void:
 	
 
 func _end_player_turn() -> void:
+	Global.player.broadcast("on_turn_ended", [context])
 #	Reset selected slots pressed
 	for slot: Slot in selected_slots:
 		slot.unselect()
@@ -431,6 +353,18 @@ func _start_enemy_turn() -> void:
 func _end_enemy_turn() -> void:
 	_begin_player_turn()
 
+
+# TODO: these should emit signals and let scene manager handle
+func _end_combat(result: CombatResult) -> void:
+	Global.player.broadcast("on_combat_ended", [context])
+	
+	if result == CombatResult.VICTORY:
+		_show_post_combat()
+	else:
+		add_child(DEATH_SCREEN_SCENE.instantiate())
+	
+func _show_post_combat() -> void:
+	add_child(COMBAT_REWARD_SCREEN_SCENE.instantiate())
 
 # On slot press
 func _on_slot_pressed(slot: Slot) -> void:
@@ -564,4 +498,12 @@ func _get_combo_legend_values(options: Array[Slot], max_combo_size: int) -> Arra
 	return legend_rows
 	
 	
+"""
+accessibility:
+	Hold Slot: space bar
+	Select/deselect slot:
+	confirm
+	Next slot: tab, right arrow
+	prev slot: shift tab
 	
+"""
