@@ -1,7 +1,13 @@
 extends CombatantData
 class_name EnemyData
 
-var intent: Dictionary = {}  # { "type": "attack", "value": 10 }
+signal intent_updated
+
+var intent: Dictionary = {}:  # { "type": "attack", "value": 10 }
+	set(new_intent):
+		intent = new_intent
+		intent_updated.emit()
+
 var portrait: Texture2D = load("res://icon.svg")
 var custom_intent_str: String = ""
 

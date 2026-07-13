@@ -7,7 +7,10 @@ extends Panel
 		enemy_data = new_enemy_data
 		print("Enemy is now: " + enemy_data.display_name)
 		if is_inside_tree():
-			update_ui()
+			_update_ui()
+		
+		if enemy_data:
+			enemy_data.intent_updated.connect(_update_ui)
 
 # 2. Get references to your internal UI child nodes
 @onready var name_label := $VBoxContainer/NameLabel as Label
@@ -16,11 +19,13 @@ extends Panel
 @onready var intent_label := $VBoxContainer/IntentLabel as Label
 
 func _ready() -> void:
-	update_ui()
+	_update_ui()
 	health_bar.setup(enemy_data)
-	#EventBus.player_turn_started.connect(update_ui)
 
-func update_ui() -> void:
+#func _on_player_turn_started() -> void:
+	#_update_ui()
+
+func _update_ui() -> void:
 	if not enemy_data:
 		return
 		
