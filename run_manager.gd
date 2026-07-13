@@ -32,15 +32,14 @@ func is_run_complete() -> bool:
 	return curr_encounter_idx >= encounter_queue.size()
 
 func _on_restart() -> void:
+	Global.reset()
 	_reset_run_state()
-	Global.player.reset_state()
+	#Global.player.reset_state()
 	#Global.reel_inventory = {
 		#"Attack": 3,
 		#"Defend": 3,
 		#"Heal": 0,
 	#}
-	Global.reset()
-	SceneManager.go_to_combat(get_next_encounter())
 
 func _reset_run_state() -> void:
 	curr_encounter_idx = 0

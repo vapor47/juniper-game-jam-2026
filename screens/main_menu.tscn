@@ -1,0 +1,41 @@
+[gd_scene format=3 uid="uid://b46c1iitebeyd"]
+
+[ext_resource type="Script" uid="uid://drpvjd4j0xitg" path="res://screens/main_menu.gd" id="1_ocono"]
+
+[node name="MainMenu" type="Control" unique_id=1458053681]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+size_flags_horizontal = 3
+size_flags_vertical = 3
+script = ExtResource("1_ocono")
+
+[node name="VBoxContainer" type="VBoxContainer" parent="." unique_id=1591704606]
+layout_mode = 1
+anchors_preset = 13
+anchor_left = 0.5
+anchor_right = 0.5
+anchor_bottom = 1.0
+offset_left = -362.5
+offset_right = 362.5
+grow_horizontal = 2
+grow_vertical = 2
+alignment = 1
+
+[node name="TitleLabel" type="Label" parent="VBoxContainer" unique_id=561180954]
+layout_mode = 2
+size_flags_vertical = 1
+theme_override_font_sizes/font_size = 64
+text = "The House Always Wins
+"
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="StartButton" type="Button" parent="VBoxContainer" unique_id=1832189554]
+layout_mode = 2
+text = "Enter"
+
+[connection signal="pressed" from="VBoxContainer/StartButton" to="." method="_on_start_button_pressed"]

@@ -3,7 +3,7 @@ class_name PlayerData
 
 # BASE STATE
 const BASE_TOKEN_REGEN_PER_TURN = 1
-const BASE_MAX_TOKENS = 1
+const BASE_MAX_TOKENS = 3
 const BASE_TOTAL_SLOTS = 5
 const BASE_MAX_ACTIVE_SLOTS = 3
 const BASE_GOLD = 1000
@@ -60,8 +60,8 @@ func regen_tokens() -> void:
 func can_afford(item: ShopItemData) -> bool:
 	return item.price <= gold
 
-#func reset_state():
+#func reset():
 	#token_regen_per_turn = BASE_TOKEN_REGEN_PER_TURN
 	#max_tokens = BASE_MAX_TOKENS
 	#tokens = max_tokens
-	#
+	

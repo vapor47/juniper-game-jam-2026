@@ -265,10 +265,6 @@ func _ready() -> void:
 	### Existing code
 	set_process_unhandled_input(true)
 	
-#	TODO: This should eventually be moved out once a Mainscreen is implemented
-# 	Mainly for testing purposes. I think. idr at the time of writing this comment.
-	setup(RunManager.get_next_encounter())
-	
 	side_panel.populate(_get_reel_inventory_data())
 	EventBus.reel_swapped.connect(func(_reel: Reel) -> void: side_panel.populate(_get_reel_inventory_data()))
 	#EventBus.lever_pulled.connect(func() -> void: initial_spin_completed = true)
