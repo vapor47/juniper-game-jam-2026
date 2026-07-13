@@ -6,12 +6,11 @@ var display_name: String
 var description: String
 var icon: Texture2D
 
+@warning_ignore_start("unused_parameter")
 # -- resolution hooks (called by SymbolResolver, mirrors StopModifier) --
 func modify_stop_value(v: int, ctx: ResolutionContext, stop: ReelStop) -> int: return v
 func modify_result_total(total: int, type: CombatManager.Action.Type, ctx: ResolutionContext) -> int: return total
 func combo_count_bonus() -> int: return 0
-
-func on_purchase() -> void: pass
 
 # -- lifecycle hooks (called by CombatManager/RunManager at the right seams) --
 func on_combat_started(ctx: CombatContext) -> void: pass

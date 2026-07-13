@@ -7,7 +7,6 @@ var charm: Charm
 
 func on_purchase(_player: PlayerData) -> void:
 	Global.player.add_charm(charm)
-	charm.on_purchase()
 
 static func create(p_charm: Charm) -> CharmShopItemData:
 	var item := CharmShopItemData.new()
