@@ -81,6 +81,7 @@ layout_mode = 2
 size_flags_horizontal = 3
 
 [node name="CharmsContainer" type="HBoxContainer" parent="MarginContainer/VBoxContainer/ShopContents/MiscUpgradesContainer" unique_id=123195714]
+unique_name_in_owner = true
 layout_mode = 2
 size_flags_horizontal = 3
 
@@ -88,7 +89,17 @@ size_flags_horizontal = 3
 layout_mode = 2
 size_flags_horizontal = 3
 
-[node name="CocktailsContainer" type="HBoxContainer" parent="MarginContainer/VBoxContainer/ShopContents/MiscUpgradesContainer/ConsumablesContainer" unique_id=1460704069]
+[node name="TheBarContainer" type="VBoxContainer" parent="MarginContainer/VBoxContainer/ShopContents/MiscUpgradesContainer/ConsumablesContainer" unique_id=1034309871]
+layout_mode = 2
+size_flags_vertical = 3
+
+[node name="Label" type="Label" parent="MarginContainer/VBoxContainer/ShopContents/MiscUpgradesContainer/ConsumablesContainer/TheBarContainer" unique_id=283922080]
+layout_mode = 2
+text = "The Bar"
+horizontal_alignment = 1
+
+[node name="DrinksContainer" type="HBoxContainer" parent="MarginContainer/VBoxContainer/ShopContents/MiscUpgradesContainer/ConsumablesContainer/TheBarContainer" unique_id=1460704069]
+unique_name_in_owner = true
 layout_mode = 2
 size_flags_vertical = 3
 

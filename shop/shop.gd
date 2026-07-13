@@ -7,6 +7,7 @@ class_name Shop
 @onready var emergency_heal_container := %EmergencyHealContainer
 @onready var reel_stop_modifiers_container := %ReelStopModifiersContainer
 @onready var remove_reel_stop_container := %RemoveReelStopContainer
+@onready var charms_container := %CharmsContainer
 
 const SHOP_ITEM_SCENE = preload("res://shop/item/shop_item.tscn")
 
@@ -184,11 +185,11 @@ func _get_upgrades_for_sale(num_upgrades: int = 2) -> Array[ShopItemData]:
 
 func _populate_charms() -> void:
 	var charms_for_sale := _get_charms_for_sale()
-	_populate_container(reels_container, charms_for_sale)
+	_populate_container(charms_container, charms_for_sale)
 
 func _get_charms_for_sale(num_charms: int = 2) -> Array[ShopItemData]:
 	# TODO: implement
-	var charms: Array[ShopItemData] = []
+	var charms: Array[ShopItemData] = [CharmShopItemData.create(RabbitsFoot.new())]
 	return charms
 
 func _populate_consumables() -> void:
