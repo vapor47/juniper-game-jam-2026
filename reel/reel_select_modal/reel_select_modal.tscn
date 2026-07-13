@@ -22,7 +22,7 @@ grow_horizontal = 2
 grow_vertical = 2
 color = Color(0, 0, 0, 0.6)
 
-[node name="PanelContainer" type="PanelContainer" parent="." unique_id=418808951]
+[node name="CenterContainer" type="CenterContainer" parent="." unique_id=1900519613]
 layout_mode = 1
 anchors_preset = 15
 anchor_right = 1.0
@@ -30,22 +30,32 @@ anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
 
-[node name="VBoxContainer" type="VBoxContainer" parent="PanelContainer" unique_id=649437018]
+[node name="PanelContainer" type="PanelContainer" parent="CenterContainer" unique_id=418808951]
 layout_mode = 2
 
-[node name="TitleLabel" type="Label" parent="PanelContainer/VBoxContainer" unique_id=1645923783]
+[node name="VBoxContainer" type="VBoxContainer" parent="CenterContainer/PanelContainer" unique_id=649437018]
+layout_mode = 2
+alignment = 1
+
+[node name="TitleLabel" type="Label" parent="CenterContainer/PanelContainer/VBoxContainer" unique_id=1645923783]
 unique_name_in_owner = true
 layout_mode = 2
+size_flags_vertical = 6
 horizontal_alignment = 1
 vertical_alignment = 1
 
-[node name="ReelGrid" type="GridContainer" parent="PanelContainer/VBoxContainer" unique_id=425660527]
+[node name="CenterContainer" type="CenterContainer" parent="CenterContainer/PanelContainer/VBoxContainer" unique_id=1624255271]
+layout_mode = 2
+size_flags_vertical = 3
+
+[node name="ReelGrid" type="GridContainer" parent="CenterContainer/PanelContainer/VBoxContainer/CenterContainer" unique_id=425660527]
 unique_name_in_owner = true
 layout_mode = 2
 size_flags_vertical = 3
 columns = 3
 
-[node name="CancelButton" type="Button" parent="PanelContainer/VBoxContainer" unique_id=455898685]
+[node name="CancelButton" type="Button" parent="CenterContainer/PanelContainer/VBoxContainer" unique_id=455898685]
 unique_name_in_owner = true
 layout_mode = 2
+size_flags_vertical = 3
 text = "Back"
