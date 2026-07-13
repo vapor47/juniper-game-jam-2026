@@ -54,6 +54,7 @@ func setup(e: Array[EnemyData]) -> void:
 	enemies = e
 	for enemy in enemies:
 		enemy.died.connect(_on_entity_died)
+		player_turn_started.connect(enemy._choose_intent)
 	Global.player.died.connect(_on_entity_died)
 		
 
@@ -297,7 +298,7 @@ func _init_starting_loadout() -> void:
 func _begin_player_turn() -> void:
 	_reset_player_turn_state()
 	Global.player.regen_tokens()
-	#player_turn_started.emit()
+	player_turn_started.emit()
 	_begin_swap_phase()
 
 func _reset_player_turn_state() -> void:
@@ -421,7 +422,6 @@ func _start_enemy_turn() -> void:
 		if is_instance_valid(enemy):
 			var actions := enemy.get_actions()
 			await _perform_actions(actions, enemy, Global.player)
-			enemy.make_move()
 	#if combat_state != CombatState.ENDED:
 	
 	#_start_player_turn()

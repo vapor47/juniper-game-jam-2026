@@ -9,17 +9,18 @@ func _init() -> void:
 	display_name = "Chargey Guy"
 	max_health = 100
 	health = max_health
-	_choose_intent()
+	#_choose_intent()
 
 
 func _choose_intent() -> void:
 	if turns_until_attack <= 0:
-		intent = { "type": "attack", "value": 35 }
-		custom_intent_str = "Attacking for " + str(intent.value)
+		var dmg := 35
+		custom_intent_str = "Attacking for " + str(dmg)
+		intent = { "type": "attack", "value": dmg }
 		turns_until_attack = 2
 	else:
-		intent = { "type": "charge", "value": turns_until_attack }
 		custom_intent_str = "Charging... (%d %s)" % [turns_until_attack, "turn" if turns_until_attack == 1 else "turns"]
+		intent = { "type": "charge", "value": turns_until_attack }
 		turns_until_attack -= 1
 
 

@@ -9,7 +9,10 @@ var intent: Dictionary = {}:  # { "type": "attack", "value": 10 }
 		intent_updated.emit()
 
 var portrait: Texture2D = load("res://icon.svg")
-var custom_intent_str: String = ""
+var custom_intent_str: String = "":
+	set(new_intent_str):
+		custom_intent_str = new_intent_str
+		intent_updated.emit()
 
 func _init() -> void:
 	display_name = "Bad Guy"
@@ -32,10 +35,6 @@ func get_actions() -> Array[CombatManager.Action]:
 	if intent.get("type") == "attack":
 		return [CombatManager.Action.new(SlotSymbol.SymbolType.ATTACK, intent.get("value"), "Attacked player for %d damage!" % intent.get("value"))]
 	return []
-	
-func make_move() -> void:
-	#_execute_intent()
-	_choose_intent()
 	
 func get_intent_as_string() -> String:
 	if custom_intent_str:
