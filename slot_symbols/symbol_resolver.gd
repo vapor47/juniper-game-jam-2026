@@ -52,7 +52,7 @@ static func resolve(ctx: ResolutionContext) -> Array:
 					totals[stop.slot_symbol.get_symbol_type()], ctx, stop)
 		
 		if stop.slot_symbol.value_type == SlotSymbol.ValueType.MULT:
-			totals[stop.slot_symbol.get_symbol_type()] = int(ceil(totals.get(stop.slot_symbol.get_symbol_type(), 0) * (1 + float(stop_values[stop]) / 4)))
+			totals[stop.slot_symbol.get_symbol_type()] = int(ceil(totals.get(stop.slot_symbol.get_symbol_type(), 0) * (1 + float(stop_values[stop]) / 2)))
 
 	# ---- Phase 4: side effects, HOOK D
 	for stop in selected_stops:
@@ -68,7 +68,7 @@ static func _combo_value_from_sum(value_sum: int, eff_count: int) -> int:
 	if eff_count <= 1:
 		return value_sum
 	var scale := pow(eff_count - 1, 1.3)
-	return roundi(value_sum + (value_sum * 0.12 * scale) + scale)
+	return roundi(value_sum + (value_sum * 0.2 * scale) + scale)
 
 static func _add_to_type_total(totals: Dictionary[SlotSymbol.SymbolType, int], symbol: SlotSymbol, contribution: int) -> void:
 	var t := symbol.get_symbol_type()
