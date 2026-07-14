@@ -1,4 +1,4 @@
-extends Control
+extends CanvasLayer
 class_name LoadoutSelection
 
 """
@@ -22,6 +22,8 @@ Stretch goals:
 """
 @onready var loadout_cells := %LoadoutCells
 @onready var inventory_grid: GridContainer = %InventoryGrid
+
+signal loadout_confirmed(reels: Array[Reel])
 
 const LOADOUT_CELL_SCENE := preload("res://combat/loadout/loadout_cell.tscn")
 
@@ -83,3 +85,9 @@ func _select_next_available_cell() -> void:
 			return
 			
 	selected_loadout_cell = null
+
+func _on_confirm_button_pressed() -> void:
+	var loadout: Array[Reel] = []
+	for c: LoadoutCell in loadout_cells.get_children():
+		loadout.append(c.reel)
+	loadout_confirmed.emit(loadout)

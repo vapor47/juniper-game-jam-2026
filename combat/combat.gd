@@ -39,7 +39,7 @@ signal enemy_turn_started
 
 enum CombatResult { LOSS, VICTORY }
 #enum CombatState { INACTIVE, PLAYER_TURN, ENEMY_TURN, ENDED }
-#
+
 #var combat_state: CombatState = CombatState.INACTIVE
 var enemies: Array[EnemyData]
 # From this array of enemy data, we instantiate the enemies, and enemyUI scenes
@@ -117,6 +117,8 @@ Perhapssss along individual respins? I think the idea of locking slots in place 
 - User finally confirms their X chosen slots, and the player actions are calculated and resolved.
 """
 @onready var slot_machine: SlotMachine = %SlotMachine
+
+const LOADOUT_SELECTION_MODAL = preload("res://combat/loadout/loadout_selection.tscn")
 
 var max_active_slots: int = 3
 var selected_slots: Dictionary[Slot, bool] = {}:
@@ -198,13 +200,30 @@ func _begin_combat() -> void:
 	Global.player.replenish_tokens()
 	context = CombatContext.new()
 	
-#	Choose starting reel load out
-	_init_starting_loadout()
+	_open_loadout_selection_modal()
 	side_panel.populate(_get_reel_inventory_data())
 	_update_combo_legend()
 	Global.player.broadcast("on_combat_started", [context])
 	_begin_player_turn()
 
+func _open_loadout_selection_modal() -> void:
+	var modal: LoadoutSelection = LOADOUT_SELECTION_MODAL.instantiate()
+	modal.loadout_confirmed.connect(_on_loadout_confirmed.bind(modal))
+	add_child(modal)
+
+func _on_loadout_confirmed(reels: Array[Reel], modal: LoadoutSelection) -> void:
+	if reels.size() > Global.player.total_slots:
+		push_error("Starting loadout greater than total slots")
+		return 
+	
+	var slots: Array[Node] = slot_machine.get_slots()
+	for i in reels.size():
+		if not reels[i]:
+			continue
+		slots[i]._insert_reel(reels[i])
+	
+	modal.queue_free()
+	
 func _init_starting_loadout() -> void:
 	var slots: Array[Node] = slot_machine.get_slots()
 

@@ -2,8 +2,10 @@
 
 [ext_resource type="Script" uid="uid://igqg57kbjgd4" path="res://combat/loadout/loadout_selection.gd" id="1_xo3d8"]
 
-[node name="LoadoutSelection" type="Control" unique_id=959548820]
-layout_mode = 3
+[node name="LoadoutSelection" type="CanvasLayer" unique_id=1074528704]
+script = ExtResource("1_xo3d8")
+
+[node name="Dimmer" type="ColorRect" parent="." unique_id=1501627470]
 anchors_preset = 15
 anchor_right = 1.0
 anchor_bottom = 1.0
@@ -11,10 +13,9 @@ grow_horizontal = 2
 grow_vertical = 2
 size_flags_horizontal = 3
 size_flags_vertical = 3
-script = ExtResource("1_xo3d8")
+color = Color(0, 0, 0, 0.7)
 
 [node name="VBoxContainer" type="VBoxContainer" parent="." unique_id=2108977198]
-layout_mode = 1
 anchors_preset = 15
 anchor_right = 1.0
 anchor_bottom = 1.0
@@ -39,3 +40,5 @@ columns = 4
 layout_mode = 2
 size_flags_horizontal = 4
 text = "CONFIRM"
+
+[connection signal="pressed" from="VBoxContainer/ConfirmButton" to="." method="_on_confirm_button_pressed"]
