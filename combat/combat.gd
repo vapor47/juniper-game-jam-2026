@@ -202,7 +202,6 @@ func _begin_combat() -> void:
 	
 	_open_loadout_selection_modal()
 	side_panel.populate(_get_reel_inventory_data())
-	_update_combo_legend()
 	Global.player.broadcast("on_combat_started", [context])
 	_begin_player_turn()
 
@@ -223,6 +222,8 @@ func _on_loadout_confirmed(reels: Array[Reel], modal: LoadoutSelection) -> void:
 		slots[i]._insert_reel(reels[i], false)
 	
 	modal.queue_free()
+	
+	_update_combo_legend()
 	
 func _init_starting_loadout() -> void:
 	var slots: Array[Node] = slot_machine.get_slots()
