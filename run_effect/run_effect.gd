@@ -2,8 +2,11 @@
 extends RefCounted
 class_name RunEffect
 
+enum Rarity { COMMON, UNCOMMON, RARE }
+
 var display_name: String
 var description: String
+var rarity: Rarity = Rarity.COMMON
 var icon: Texture2D
 
 @warning_ignore_start("unused_parameter")
@@ -13,6 +16,7 @@ func modify_result_total(total: int, type: CombatManager.Action.Type, ctx: Resol
 func combo_count_bonus() -> int: return 0
 
 # -- lifecycle hooks (called by CombatManager/RunManager at the right seams) --
+func on_acquired() -> void: pass
 func on_combat_started(ctx: CombatContext) -> void: pass
 func on_player_turn_started(ctx: CombatContext) -> void: pass
 func on_turn_ended(ctx: CombatContext) -> void: pass
@@ -25,6 +29,8 @@ func modify_shop_price(price: int, item: ShopItemData) -> int: return price
 # -- lifetime --
 func is_expired() -> bool: return false   # charms: never; drinks: after their combat
 
+func get_rarity() -> Rarity:
+	return rarity
 """
 Effect Ideas (map these to whatever drinks/charms feel best):
 	- Gain gold if all flat values are 7 ( might be too rare )
