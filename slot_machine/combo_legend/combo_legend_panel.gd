@@ -31,7 +31,7 @@ func _build_row(row: ComboLegendRow, symbols_area_width: int) -> Control:
 	
 	for symbol: SlotSymbol in row.required_symbols:
 		var icon := TextureRect.new()
-		icon.texture = symbol.get_symbol_icon()
+		icon.texture = symbol.icon
 		icon.custom_minimum_size = Vector2(ICON_SIZE, ICON_SIZE)
 		icon.custom_maximum_size = Vector2(ICON_SIZE, ICON_SIZE)
 		icon.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_CENTERED
@@ -54,7 +54,7 @@ func _build_row(row: ComboLegendRow, symbols_area_width: int) -> Control:
 	result_box.size_flags_horizontal = Control.SIZE_SHRINK_END
 	
 	var result_icon := TextureRect.new()
-	result_icon.texture = _get_result_texture(row.result.type)
+	result_icon.texture = _get_result_texture(row.category)
 	result_icon.custom_minimum_size = Vector2(RESULT_ICON_SIZE, RESULT_ICON_SIZE)
 	result_icon.custom_maximum_size = Vector2(RESULT_ICON_SIZE, RESULT_ICON_SIZE)
 	result_icon.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_CENTERED
@@ -63,7 +63,7 @@ func _build_row(row: ComboLegendRow, symbols_area_width: int) -> Control:
 	result_box.add_child(result_icon)
 	
 	var value_label := Label.new()
-	value_label.text = str(row.result.value)
+	value_label.text = str(row.result)
 	result_box.add_child(value_label)
 	
 	hbox.add_child(result_box)
