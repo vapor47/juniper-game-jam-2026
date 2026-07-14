@@ -48,6 +48,10 @@ size_flags_horizontal = 4
 size_flags_vertical = 4
 mouse_filter = 1
 
+[node name="SlotSymbolIcon" type="TextureRect" parent="MarginContainer/SlotContainer/SlotWindow" unique_id=759829586]
+unique_name_in_owner = true
+layout_mode = 2
+
 [node name="Label" type="Label" parent="MarginContainer/SlotContainer/SlotWindow" unique_id=1582224683]
 layout_mode = 2
 mouse_filter = 1

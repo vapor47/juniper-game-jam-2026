@@ -187,23 +187,26 @@ func _populate_charms() -> void:
 	var charms_for_sale := _get_charms_for_sale()
 	_populate_container(charms_container, charms_for_sale)
 
-func _get_charms_for_sale(num_charms: int = 2) -> Array[ShopItemData]:
-	# TODO: implement
-	var charms: Array[ShopItemData] = [CharmShopItemData.create(RabbitsFoot.new())]
-	return charms
+func _get_charms_for_sale(count: int = 2) -> Array[ShopItemData]:
+	var items: Array[ShopItemData] = []
+	for c: Charm in CharmPool.roll(count):
+		items.append(CharmShopItemData.create(c))
+	return items
 
 func _populate_consumables() -> void:
 	_populate_cocktails()
 	_populate_emergency_heal()
 	
 func _populate_cocktails() -> void:
-	var cocktails_for_sale := _get_cocktails_for_sale()
-	_populate_container(reels_container, cocktails_for_sale)
+	var drinks_for_sale := _get_drinks_for_sale()
+	_populate_container(reels_container, drinks_for_sale)
 
-func _get_cocktails_for_sale(num_cocktails: int = 3) -> Array[ShopItemData]:
-	# TODO: implement
-	var cocktails: Array[ShopItemData] = []
-	return cocktails
+
+func _get_drinks_for_sale(count: int = 2) -> Array[ShopItemData]:
+	var items: Array[ShopItemData] = []
+	for d: Drink in DrinkPool.roll(count):
+		items.append(DrinkShopItemData.create(d))
+	return items
 	
 func _populate_emergency_heal() -> void:
 	_populate_container(emergency_heal_container, [EmergencyHealShopItemData.create()])

@@ -7,11 +7,20 @@ signal stopped_spinning
 var is_held: bool = false
 var slot_reel: Reel = null
 var _curr_stop: ReelStop = null:
-	set(new):
-		print_debug("curr stop changed" + str(self))
-		print_debug(new.slot_symbol.symbol_name)
-		_curr_stop = new
+	set(new_stop):
+		#print_debug("curr stop changed" + str(self))
+		#print_debug(new_stop.slot_symbol.symbol_name)
+		_curr_stop = new_stop
+		if new_stop:
+			if new_stop.slot_symbol.icon:
+				symbol_icon_rect.texture = new_stop.slot_symbol.icon
+			else:
+				symbol_icon_rect.texture = null
+		else:
+			symbol_icon_rect.texture = null
+			
 @onready var result_label: Label = $MarginContainer/SlotContainer/SlotWindow/Label
+@onready var symbol_icon_rect: TextureRect = %SlotSymbolIcon
 @onready var hold_button: HoldButton = %HoldButton
 
 var is_spinning: bool = false:
@@ -35,6 +44,9 @@ func _exit_tree() -> void:
 	remove_from_group("slots")
 
 func spin(duration: float = Global.SLOT_SPIN_DURATION) -> ReelStop:
+	if not slot_reel:
+		return
+	
 	_curr_stop = slot_reel.reel_stops.pick_random()
 	
 	_start_spin_animation()
@@ -46,6 +58,18 @@ func spin(duration: float = Global.SLOT_SPIN_DURATION) -> ReelStop:
 func get_curr_stop() -> ReelStop:
 	return _curr_stop
 
+func _update_slot_icon_or_placeholder_label(symbol: SlotSymbol) -> void:
+	if symbol.icon:
+		symbol_icon_rect.texture = symbol.icon
+		result_label.text = ""
+		symbol_icon_rect.show()
+		result_label.hide()
+	else:
+		result_label.text = symbol.symbol_name
+		symbol_icon_rect.texture = null
+		result_label.show()
+		symbol_icon_rect.hide()
+	
 func _start_spin_animation() -> void:
 	if is_spinning:
 		return
@@ -57,7 +81,8 @@ func _start_spin_animation() -> void:
 	)
 	
 	while is_spinning:
-		result_label.text = fake_symbols.pick_random().symbol_name
+		_update_slot_icon_or_placeholder_label(fake_symbols.pick_random())
+		#result_label.text = fake_symbols.pick_random().symbol_name
 		await get_tree().create_timer(Global.SLOT_SPIN_INTERVAL).timeout
 		#if not is_spinning:
 			#break
@@ -68,7 +93,9 @@ func _stop_spin_animation(final_stop: ReelStop) -> void:
 		return
 		
 	is_spinning = false
-	result_label.text = get_curr_stop().slot_symbol.symbol_name
+	
+	#result_label.text = get_curr_stop().slot_symbol.symbol_name
+	_update_slot_icon_or_placeholder_label(get_curr_stop().slot_symbol)
 
 var is_selected: bool = false
 
@@ -125,7 +152,9 @@ func _insert_reel(reel: Reel, should_spin: bool = true) -> void:
 	Global.reel_inventory[reel.reel_name] -= 1
 	
 	_curr_stop = slot_reel.reel_stops.pick_random()
-	result_label.text = _curr_stop.slot_symbol.symbol_name
+	#result_label.text = _curr_stop.slot_symbol.symbol_name
+	_update_slot_icon_or_placeholder_label(_curr_stop.slot_symbol)
+
 	#result_label.text = slot_reel.reel_stops.map(
 		#func(s: ReelStop) -> SlotSymbol:
 			#return s.slot_symbol

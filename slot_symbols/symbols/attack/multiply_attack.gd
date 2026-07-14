@@ -7,3 +7,4 @@ func _init() -> void:
 	symbol_name = "Multiply Attack"
 	symbol_value = BASE_VALUE
 	value_type = ValueType.MULT
+	icon = preload("res://assets/icons/multiply_attack_icon.svg")
