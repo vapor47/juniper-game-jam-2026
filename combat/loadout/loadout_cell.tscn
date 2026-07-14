@@ -1,0 +1,8 @@
+[gd_scene format=3 uid="uid://bfkmtc5aiwd0x"]
+
+[ext_resource type="Script" uid="uid://deby3kdfkvjyl" path="res://combat/loadout/loadout_cell.gd" id="1_naktv"]
+
+[node name="LoadoutCell" type="Button" unique_id=1189660177]
+script = ExtResource("1_naktv")
+
+[connection signal="pressed" from="." to="." method="_on_pressed"]

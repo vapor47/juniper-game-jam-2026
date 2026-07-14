@@ -1,0 +1,41 @@
+[gd_scene format=3 uid="uid://4l80perv1jut"]
+
+[ext_resource type="Script" uid="uid://igqg57kbjgd4" path="res://combat/loadout/loadout_selection.gd" id="1_xo3d8"]
+
+[node name="LoadoutSelection" type="Control" unique_id=959548820]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+size_flags_horizontal = 3
+size_flags_vertical = 3
+script = ExtResource("1_xo3d8")
+
+[node name="VBoxContainer" type="VBoxContainer" parent="." unique_id=2108977198]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+alignment = 1
+
+[node name="LoadoutCells" type="HBoxContainer" parent="VBoxContainer" unique_id=1859658524]
+unique_name_in_owner = true
+layout_mode = 2
+alignment = 1
+
+[node name="CenterContainer" type="CenterContainer" parent="VBoxContainer" unique_id=619827939]
+layout_mode = 2
+
+[node name="InventoryGrid" type="GridContainer" parent="VBoxContainer/CenterContainer" unique_id=58596541]
+unique_name_in_owner = true
+layout_mode = 2
+columns = 4
+
+[node name="ConfirmButton" type="Button" parent="VBoxContainer" unique_id=1646146159]
+layout_mode = 2
+size_flags_horizontal = 4
+text = "CONFIRM"

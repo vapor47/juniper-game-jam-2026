@@ -40,6 +40,8 @@ window/stretch/aspect="expand"
 
 folder_colors={
 "res://combat/": "red",
+"res://combat/contexts/": "yellow",
+"res://combat/loadout/": "gray",
 "res://combat/player/": "blue",
 "res://slot_symbols/symbols/attack/": "red",
 "res://slot_symbols/symbols/defend/": "blue",

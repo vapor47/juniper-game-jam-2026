@@ -1,5 +1,3 @@
-@icon("res://at-icons_v1.3.0/addons/at-icons/control/cutlass.svg")
-
 class_name AttackSlotSymbolBase
 extends SlotSymbol
 
