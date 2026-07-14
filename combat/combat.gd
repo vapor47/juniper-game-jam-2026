@@ -220,7 +220,7 @@ func _on_loadout_confirmed(reels: Array[Reel], modal: LoadoutSelection) -> void:
 	for i in reels.size():
 		if not reels[i]:
 			continue
-		slots[i]._insert_reel(reels[i])
+		slots[i]._insert_reel(reels[i], false)
 	
 	modal.queue_free()
 	
