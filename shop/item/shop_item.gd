@@ -37,7 +37,8 @@ func is_available() -> bool:
 	return true
 
 func _ready() -> void:
-	text = item_data.display_name + "\n $" + str(item_data.price) 
+	text = item_data.display_name + "\n $" + str(item_data.price)
+	icon = item_data.icon
 
 func _on_pressed() -> void:
 	purchase_requested.emit(item_data)

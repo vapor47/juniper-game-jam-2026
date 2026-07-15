@@ -19,3 +19,4 @@ func _init() -> void:
 	#icon:
 	description = "Reel containing attacks"
 	allowed_symbol_types = [SlotSymbol.SymbolType.ATTACK]
+	icon = preload("res://assets/icons/reels/attack_reel_icon.svg")

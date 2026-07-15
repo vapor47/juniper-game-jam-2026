@@ -18,6 +18,7 @@ static func create(p_reel: Reel) -> ReelShopItemData:
 	var item := ReelShopItemData.new()
 	item.reel = p_reel
 	item.display_name = p_reel.reel_name + " Reel"
-	item.resource_name = item.display_name  # optional, debugger nicety only
+	item.resource_name = item.display_name
 	item.price = BASE_REEL_PRICE
+	item.icon = p_reel.icon
 	return item
