@@ -34,11 +34,11 @@ func is_run_complete() -> bool:
 func _on_restart() -> void:
 	Global.reset()
 	_reset_run_state()
-	#Global.reel_inventory = {
-		#"Attack": 3,
-		#"Defend": 3,
-		#"Heal": 0,
-	#}
+	Global.reel_inventory = {
+		"Attack": 3,
+		"Defend": 3,
+		"Heal": 0,
+	}
 
 func _reset_run_state() -> void:
 	curr_encounter_idx = 0

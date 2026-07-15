@@ -44,8 +44,11 @@ var max_active_slots: int = BASE_MAX_ACTIVE_SLOTS:
 			push_error("Maximum Active Slots cannot exceed current Total Slots")
 		max_active_slots = min(new_value, total_slots)
 
-
-var gold: int = BASE_GOLD
+signal gold_updated(gold: int)
+var gold: int = BASE_GOLD:
+	set(new_gold):
+		gold = new_gold
+		gold_updated.emit(new_gold)
 
 var owned_charms: Array[Charm] = []
 var active_drinks: Array[Drink] = []

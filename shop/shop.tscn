@@ -33,10 +33,18 @@ theme_override_constants/margin_bottom = 24
 [node name="VBoxContainer" type="VBoxContainer" parent="MarginContainer" unique_id=55145351]
 layout_mode = 2
 
-[node name="ShopTitleLabel" type="Label" parent="MarginContainer/VBoxContainer" unique_id=1137000424]
+[node name="VBoxContainer" type="VBoxContainer" parent="MarginContainer/VBoxContainer" unique_id=898881166]
+layout_mode = 2
+
+[node name="ShopTitleLabel" type="Label" parent="MarginContainer/VBoxContainer/VBoxContainer" unique_id=1137000424]
 layout_mode = 2
 theme_override_font_sizes/font_size = 48
 text = "THE GIFT SHOP"
+horizontal_alignment = 1
+
+[node name="GoldLabel" type="Label" parent="MarginContainer/VBoxContainer/VBoxContainer" unique_id=1043542615]
+unique_name_in_owner = true
+layout_mode = 2
 horizontal_alignment = 1
 
 [node name="ShopContents" type="VBoxContainer" parent="MarginContainer/VBoxContainer" unique_id=1162039531]
@@ -98,7 +106,7 @@ offset_top = 205.0
 offset_right = 1872.0
 offset_bottom = 205.0
 size_flags_vertical = 4
-theme_override_constants/separation = 120
+theme_override_constants/separation = 128
 alignment = 1
 
 [node name="TheBarContainer" type="VBoxContainer" parent="MarginContainer/VBoxContainer/ShopContents/TheBar" unique_id=1034309871]
@@ -138,6 +146,7 @@ layout_mode = 2
 size_flags_horizontal = 3
 
 [node name="ConsumablesContainer" type="VBoxContainer" parent="MarginContainer/VBoxContainer/ShopContents/TheBar/MiscUpgradesContainer" unique_id=1365441088]
+visible = false
 layout_mode = 2
 size_flags_horizontal = 3
 

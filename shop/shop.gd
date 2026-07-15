@@ -21,13 +21,16 @@ const UPGRADE_POOL: Array[ShopItemData] = [
 
 func _ready() -> void:
 	_populate_shop()
+	%GoldLabel.text = "Gold: %d" % Global.player.gold
+	Global.player.gold_updated.connect(
+		func(g: int) -> void:
+			%GoldLabel.text = "Gold: %d" % g
+	)
 
 func _populate_shop() -> void:
 	_populate_machine_modifications()
 	_populate_misc_upgrades()
 
-
-# TODO: Create gold label and continue buttong
 
 func _populate_container(container: BoxContainer, items: Array[ShopItemData]) -> void:
 	for item_data: ShopItemData in items:
