@@ -83,11 +83,15 @@ layout_mode = 2
 size_flags_horizontal = 3
 alignment = 1
 
-[node name="TheBar" type="Control" parent="MarginContainer/VBoxContainer/ShopContents" unique_id=2030647551]
+[node name="TheBar" type="AspectRatioContainer" parent="MarginContainer/VBoxContainer/ShopContents" unique_id=1226149590]
 layout_mode = 2
 size_flags_vertical = 3
+stretch_mode = 3
 
-[node name="BarBackground" type="TextureRect" parent="MarginContainer/VBoxContainer/ShopContents/TheBar" unique_id=632522457]
+[node name="Control" type="Control" parent="MarginContainer/VBoxContainer/ShopContents/TheBar" unique_id=1124162404]
+layout_mode = 2
+
+[node name="BarBackground" type="TextureRect" parent="MarginContainer/VBoxContainer/ShopContents/TheBar/Control" unique_id=632522457]
 layout_mode = 1
 anchors_preset = 15
 anchor_right = 1.0
@@ -99,21 +103,23 @@ texture = ExtResource("3_givde")
 expand_mode = 1
 stretch_mode = 5
 
-[node name="DrinksContainer" type="HBoxContainer" parent="MarginContainer/VBoxContainer/ShopContents/TheBar" unique_id=1460704069]
+[node name="DrinksContainer" type="HBoxContainer" parent="MarginContainer/VBoxContainer/ShopContents/TheBar/Control" unique_id=1460704069]
 unique_name_in_owner = true
-layout_mode = 0
-offset_top = 205.0
-offset_right = 1872.0
-offset_bottom = 205.0
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_top = 36.0
+offset_bottom = 36.0
+grow_horizontal = 2
+grow_vertical = 2
 size_flags_vertical = 4
 theme_override_constants/separation = 128
 alignment = 1
 
 [node name="TheBarContainer" type="VBoxContainer" parent="MarginContainer/VBoxContainer/ShopContents/TheBar" unique_id=1034309871]
 visible = false
-layout_mode = 0
-offset_right = 1872.0
-offset_bottom = 459.0
+layout_mode = 2
 size_flags_vertical = 3
 
 [node name="Label" type="Label" parent="MarginContainer/VBoxContainer/ShopContents/TheBar/TheBarContainer" unique_id=283922080]
@@ -124,12 +130,7 @@ horizontal_alignment = 1
 
 [node name="MiscUpgradesContainer" type="HBoxContainer" parent="MarginContainer/VBoxContainer/ShopContents/TheBar" unique_id=2032720724]
 visible = false
-layout_mode = 1
-anchors_preset = 15
-anchor_right = 1.0
-anchor_bottom = 1.0
-grow_horizontal = 2
-grow_vertical = 2
+layout_mode = 2
 size_flags_vertical = 3
 alignment = 1
 
