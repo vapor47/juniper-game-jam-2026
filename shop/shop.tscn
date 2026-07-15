@@ -2,6 +2,7 @@
 
 [ext_resource type="Script" uid="uid://x5ggvgyj1oud" path="res://shop/shop.gd" id="1_r2p71"]
 [ext_resource type="Script" uid="uid://bsrk42cuc78ks" path="res://reel/reel_modification_flow.gd" id="2_sxvro"]
+[ext_resource type="Texture2D" uid="uid://u6jqbt1upg2w" path="res://assets/the_bar_background.png" id="3_givde"]
 
 [node name="Shop" type="Control" unique_id=11112363]
 layout_mode = 3
@@ -50,6 +51,7 @@ size_flags_vertical = 3
 unique_name_in_owner = true
 layout_mode = 2
 size_flags_horizontal = 3
+alignment = 1
 
 [node name="ReelModificationsContainer" type="HBoxContainer" parent="MarginContainer/VBoxContainer/ShopContents/MachineModificationsContainer" unique_id=1350528776]
 layout_mode = 2
@@ -60,51 +62,88 @@ alignment = 1
 unique_name_in_owner = true
 layout_mode = 2
 size_flags_horizontal = 3
+alignment = 1
 
 [node name="ReelStopContainer" type="HBoxContainer" parent="MarginContainer/VBoxContainer/ShopContents/MachineModificationsContainer/ReelModificationsContainer" unique_id=1467011792]
 layout_mode = 2
 size_flags_horizontal = 3
+alignment = 1
 
 [node name="RemoveReelStopContainer" type="BoxContainer" parent="MarginContainer/VBoxContainer/ShopContents/MachineModificationsContainer/ReelModificationsContainer" unique_id=1178141984]
 unique_name_in_owner = true
 layout_mode = 2
 size_flags_horizontal = 3
-
-[node name="MiscUpgradesContainer" type="HBoxContainer" parent="MarginContainer/VBoxContainer/ShopContents" unique_id=2032720724]
-layout_mode = 2
-size_flags_vertical = 3
 alignment = 1
 
-[node name="StatUpgradesContainer" type="VBoxContainer" parent="MarginContainer/VBoxContainer/ShopContents/MiscUpgradesContainer" unique_id=1140299182]
-unique_name_in_owner = true
-layout_mode = 2
-size_flags_horizontal = 3
-
-[node name="CharmsContainer" type="HBoxContainer" parent="MarginContainer/VBoxContainer/ShopContents/MiscUpgradesContainer" unique_id=123195714]
-unique_name_in_owner = true
-layout_mode = 2
-size_flags_horizontal = 3
-
-[node name="ConsumablesContainer" type="VBoxContainer" parent="MarginContainer/VBoxContainer/ShopContents/MiscUpgradesContainer" unique_id=1365441088]
-layout_mode = 2
-size_flags_horizontal = 3
-
-[node name="TheBarContainer" type="VBoxContainer" parent="MarginContainer/VBoxContainer/ShopContents/MiscUpgradesContainer/ConsumablesContainer" unique_id=1034309871]
+[node name="TheBar" type="Control" parent="MarginContainer/VBoxContainer/ShopContents" unique_id=2030647551]
 layout_mode = 2
 size_flags_vertical = 3
 
-[node name="Label" type="Label" parent="MarginContainer/VBoxContainer/ShopContents/MiscUpgradesContainer/ConsumablesContainer/TheBarContainer" unique_id=283922080]
+[node name="BarBackground" type="TextureRect" parent="MarginContainer/VBoxContainer/ShopContents/TheBar" unique_id=632522457]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+size_flags_vertical = 3
+texture = ExtResource("3_givde")
+expand_mode = 1
+stretch_mode = 5
+
+[node name="DrinksContainer" type="HBoxContainer" parent="MarginContainer/VBoxContainer/ShopContents/TheBar" unique_id=1460704069]
+unique_name_in_owner = true
+layout_mode = 0
+offset_top = 205.0
+offset_right = 1872.0
+offset_bottom = 205.0
+size_flags_vertical = 4
+theme_override_constants/separation = 120
+alignment = 1
+
+[node name="TheBarContainer" type="VBoxContainer" parent="MarginContainer/VBoxContainer/ShopContents/TheBar" unique_id=1034309871]
+visible = false
+layout_mode = 0
+offset_right = 1872.0
+offset_bottom = 459.0
+size_flags_vertical = 3
+
+[node name="Label" type="Label" parent="MarginContainer/VBoxContainer/ShopContents/TheBar/TheBarContainer" unique_id=283922080]
+visible = false
 layout_mode = 2
 text = "The Bar"
 horizontal_alignment = 1
 
-[node name="DrinksContainer" type="HBoxContainer" parent="MarginContainer/VBoxContainer/ShopContents/MiscUpgradesContainer/ConsumablesContainer/TheBarContainer" unique_id=1460704069]
-unique_name_in_owner = true
-layout_mode = 2
+[node name="MiscUpgradesContainer" type="HBoxContainer" parent="MarginContainer/VBoxContainer/ShopContents/TheBar" unique_id=2032720724]
+visible = false
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
 size_flags_vertical = 3
+alignment = 1
 
-[node name="EmergencyHealContainer" type="BoxContainer" parent="MarginContainer/VBoxContainer/ShopContents/MiscUpgradesContainer/ConsumablesContainer" unique_id=1503516428]
+[node name="StatUpgradesContainer" type="VBoxContainer" parent="MarginContainer/VBoxContainer/ShopContents/TheBar/MiscUpgradesContainer" unique_id=1140299182]
 unique_name_in_owner = true
+visible = false
+layout_mode = 2
+size_flags_horizontal = 3
+
+[node name="CharmsContainer" type="HBoxContainer" parent="MarginContainer/VBoxContainer/ShopContents/TheBar/MiscUpgradesContainer" unique_id=123195714]
+unique_name_in_owner = true
+visible = false
+layout_mode = 2
+size_flags_horizontal = 3
+
+[node name="ConsumablesContainer" type="VBoxContainer" parent="MarginContainer/VBoxContainer/ShopContents/TheBar/MiscUpgradesContainer" unique_id=1365441088]
+layout_mode = 2
+size_flags_horizontal = 3
+
+[node name="EmergencyHealContainer" type="BoxContainer" parent="MarginContainer/VBoxContainer/ShopContents/TheBar/MiscUpgradesContainer/ConsumablesContainer" unique_id=1503516428]
+unique_name_in_owner = true
+visible = false
 layout_mode = 2
 size_flags_vertical = 3
 

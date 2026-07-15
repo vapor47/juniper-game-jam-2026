@@ -37,3 +37,6 @@ func on_purchase(player: PlayerData) -> void: pass
 
 func requires_flow() -> bool:
 	return false
+
+func get_card_size() -> Vector2:
+	return Vector2(160, 160)

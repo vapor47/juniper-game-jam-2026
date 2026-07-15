@@ -17,3 +17,7 @@ static func create(p_drink: Drink) -> DrinkShopItemData:
 	item.price = BASE_CHARM_PRICE
 	item.drink = p_drink
 	return item
+
+
+func get_card_size() -> Vector2:
+	return Vector2(60, 140)

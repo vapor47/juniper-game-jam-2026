@@ -40,6 +40,9 @@ func _ready() -> void:
 	text = item_data.display_name + "\n $" + str(item_data.price)
 	icon = item_data.icon
 	tooltip_text = item_data.description
+	custom_minimum_size = item_data.get_card_size()
+	size_flags_horizontal = Control.SIZE_SHRINK_CENTER
+	size_flags_vertical = Control.SIZE_SHRINK_CENTER
 
 func _on_pressed() -> void:
 	purchase_requested.emit(item_data)

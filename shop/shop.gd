@@ -205,7 +205,7 @@ func _populate_drinks() -> void:
 	_populate_container(drinks_container, drinks_for_sale)
 
 
-func _get_drinks_for_sale(count: int = 2) -> Array[ShopItemData]:
+func _get_drinks_for_sale(count: int = 5) -> Array[ShopItemData]:
 	var items: Array[ShopItemData] = []
 	for d: Drink in DrinkPool.roll(count):
 		items.append(DrinkShopItemData.create(d))

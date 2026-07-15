@@ -23,10 +23,10 @@ static func roll(count: int) -> Array[Drink]:
 	return out
 
 static func _roll_rarity() -> Rarity:
-	var r := randf()
-	var cumulative := 0.0
-	for rarity: Rarity in RARITY_WEIGHTS:
-		cumulative += RARITY_WEIGHTS[rarity]
-		if r <= cumulative:
-			return rarity
+	#var r := randf()
+	#var cumulative := 0.0
+	#for rarity: Rarity in RARITY_WEIGHTS:
+		#cumulative += RARITY_WEIGHTS[rarity]
+		#if r <= cumulative:
+			#return rarity
 	return Rarity.COMMON
