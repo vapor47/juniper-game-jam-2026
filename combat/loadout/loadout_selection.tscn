@@ -13,7 +13,7 @@ grow_horizontal = 2
 grow_vertical = 2
 size_flags_horizontal = 3
 size_flags_vertical = 3
-color = Color(0, 0, 0, 0.7)
+color = Color(0, 0, 0, 0.8)
 
 [node name="VBoxContainer" type="VBoxContainer" parent="." unique_id=2108977198]
 anchors_preset = 15
@@ -21,7 +21,14 @@ anchor_right = 1.0
 anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
+theme_override_constants/separation = 64
 alignment = 1
+
+[node name="Label" type="Label" parent="VBoxContainer" unique_id=1992391609]
+layout_mode = 2
+theme_override_font_sizes/font_size = 64
+text = "Select Loadout"
+horizontal_alignment = 1
 
 [node name="LoadoutCells" type="HBoxContainer" parent="VBoxContainer" unique_id=1859658524]
 unique_name_in_owner = true
@@ -32,7 +39,16 @@ alignment = 1
 [node name="CenterContainer" type="CenterContainer" parent="VBoxContainer" unique_id=619827939]
 layout_mode = 2
 
-[node name="InventoryGrid" type="GridContainer" parent="VBoxContainer/CenterContainer" unique_id=58596541]
+[node name="VBoxContainer" type="VBoxContainer" parent="VBoxContainer/CenterContainer" unique_id=249812004]
+layout_mode = 2
+
+[node name="Label2" type="Label" parent="VBoxContainer/CenterContainer/VBoxContainer" unique_id=2077597771]
+layout_mode = 2
+text = "Available Reels"
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="InventoryGrid" type="GridContainer" parent="VBoxContainer/CenterContainer/VBoxContainer" unique_id=58596541]
 unique_name_in_owner = true
 layout_mode = 2
 columns = 4
