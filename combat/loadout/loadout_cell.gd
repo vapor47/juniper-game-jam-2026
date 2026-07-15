@@ -35,6 +35,7 @@ func _ready() -> void:
 	var styles := _get_styles()
 	for state: String in styles:
 		add_theme_stylebox_override(state, styles[state])
+	HoverLabel.attach_to(self, func() -> String: return reel.reel_name if reel else "")
 
 func _on_pressed() -> void:
 	loadout_cell_pressed.emit(self)

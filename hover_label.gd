@@ -3,6 +3,7 @@ extends CanvasLayer
 @onready var label: RichTextLabel = %RichTextLabel
 
 var _current_target: Control = null
+@warning_ignore("untyped_declaration")
 var _content_source
 const OFFSET := Vector2(16, 16)
 
@@ -10,9 +11,12 @@ func _ready() -> void:
 	label.hide()
 	label.set_anchors_preset(Control.PRESET_TOP_LEFT)
 
-func show_for(target: Control, hover_text: String = "placeholder") -> void:
+@warning_ignore("untyped_declaration")
+func show_for(target: Control, content) -> void:
 	_current_target = target
-	label.text = hover_text
+	_content_source = content
+	#label.text = hover_text
+	_refresh_text()
 	label.show()
 	_update_position()
 
@@ -21,6 +25,7 @@ func hide_for(target: Control) -> void:
 		_current_target = null
 		label.hide()
 
+@warning_ignore("untyped_declaration")
 func attach_to(node: Node, content) -> void:
 	node.mouse_entered.connect(func() -> void: HoverLabel.show_for(node, content))
 	node.mouse_exited.connect(func() -> void: HoverLabel.hide_for(node))
@@ -28,6 +33,8 @@ func attach_to(node: Node, content) -> void:
 func _refresh_text() -> void:
 	if _content_source is Callable:
 		label.text = _content_source.call()
+		@warning_ignore("standalone_ternary")
+		show() if label.text else hide()
 	else:
 		label.text = str(_content_source)
 
