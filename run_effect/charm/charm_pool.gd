@@ -1,38 +1,37 @@
 # charm_pool.gd
 class_name CharmPool
 
-static var CHARMS: Array[GDScript] = [
-	RabbitsFootCharm,
-	MorningCoffeeCharm,
-	TipJarCharm,
-	FrequentFlyerCharm,
-	CardCounterCharm,
+enum Rarity { COMMON, UNCOMMON, RARE }
+
+static var ENTRIES := [
+	{ "charm": RabbitsFootCharm,   "rarity": Rarity.COMMON },
+	{ "charm": MorningCoffeeCharm, "rarity": Rarity.COMMON },
+	{ "charm": TipJarCharm,        "rarity": Rarity.UNCOMMON },
+	{ "charm": FrequentFlyerCharm, "rarity": Rarity.UNCOMMON },
+	{ "charm": CardCounterCharm,   "rarity": Rarity.RARE },
 ]
 
-const RARITY_WEIGHTS := {
-	Charm.Rarity.COMMON: 0.60,
-	Charm.Rarity.UNCOMMON: 0.30,
-	Charm.Rarity.RARE: 0.10,
+static var RARITY_WEIGHTS := {
+	Rarity.COMMON: 0.60,
+	Rarity.UNCOMMON: 0.30,
+	Rarity.RARE: 0.10,
 }
-
 
 static func roll(count: int) -> Array[Charm]:
 	var out: Array[Charm] = []
 	for i in count:
 		var rarity := _roll_rarity()
-		var matches := CHARMS.filter(func(c: GDScript) -> bool:
-			return c.get_rarity() == rarity)
+		var matches := ENTRIES.filter(func(e): return e["rarity"] == rarity)
 		if matches.is_empty():
 			continue
-		out.append(matches.pick_random().new())
+		out.append(matches.pick_random()["charm"].new())
 	return out
 
-
-static func _roll_rarity() -> RunEffect.Rarity:
+static func _roll_rarity() -> Rarity:
 	var r := randf()
 	var cumulative := 0.0
-	for rarity: RunEffect.Rarity in RARITY_WEIGHTS:
+	for rarity: Rarity in RARITY_WEIGHTS:
 		cumulative += RARITY_WEIGHTS[rarity]
 		if r <= cumulative:
 			return rarity
-	return RunEffect.Rarity.COMMON
+	return Rarity.COMMON

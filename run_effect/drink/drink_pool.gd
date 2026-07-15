@@ -1,7 +1,9 @@
 class_name DrinkPool
 
-static var DRINKS: Array[GDScript] = [
-	OldFashionedDrink,
+enum Rarity { COMMON, UNCOMMON, RARE }
+
+static var ENTRIES := [
+	{ "drink": OldFashionedDrink, "rarity": Rarity.COMMON },
 ]
 
 const RARITY_WEIGHTS := {
@@ -10,23 +12,21 @@ const RARITY_WEIGHTS := {
 	Charm.Rarity.RARE: 0.10,
 }
 
-
 static func roll(count: int) -> Array[Drink]:
 	var out: Array[Drink] = []
 	for i in count:
 		var rarity := _roll_rarity()
-		var matches := DRINKS.filter(func(s: GDScript) -> bool:
-			return s.get_rarity() == rarity)
+		var matches := ENTRIES.filter(func(e): return e["rarity"] == rarity)
 		if matches.is_empty():
 			continue
-		out.append(matches.pick_random().new())
+		out.append(matches.pick_random()["drink"].new())
 	return out
 
-static func _roll_rarity() -> RunEffect.Rarity:
+static func _roll_rarity() -> Rarity:
 	var r := randf()
 	var cumulative := 0.0
-	for rarity: RunEffect.Rarity in RARITY_WEIGHTS:
+	for rarity: Rarity in RARITY_WEIGHTS:
 		cumulative += RARITY_WEIGHTS[rarity]
 		if r <= cumulative:
 			return rarity
-	return RunEffect.Rarity.COMMON
+	return Rarity.COMMON

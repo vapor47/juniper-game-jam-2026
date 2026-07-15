@@ -8,6 +8,7 @@ class_name Shop
 @onready var reel_stop_modifiers_container := %ReelStopModifiersContainer
 @onready var remove_reel_stop_container := %RemoveReelStopContainer
 @onready var charms_container := %CharmsContainer
+@onready var drinks_container := %DrinksContainer
 
 const SHOP_ITEM_SCENE = preload("res://shop/item/shop_item.tscn")
 
@@ -194,12 +195,14 @@ func _get_charms_for_sale(count: int = 2) -> Array[ShopItemData]:
 	return items
 
 func _populate_consumables() -> void:
-	_populate_cocktails()
+	_populate_drinks()
 	_populate_emergency_heal()
 	
-func _populate_cocktails() -> void:
+func _populate_drinks() -> void:
 	var drinks_for_sale := _get_drinks_for_sale()
-	_populate_container(reels_container, drinks_for_sale)
+	print_debug(drinks_for_sale)
+
+	_populate_container(drinks_container, drinks_for_sale)
 
 
 func _get_drinks_for_sale(count: int = 2) -> Array[ShopItemData]:

@@ -6,7 +6,7 @@ enum Rarity { COMMON, UNCOMMON, RARE }
 
 var display_name: String
 var description: String
-var rarity: Rarity = Rarity.COMMON
+static var rarity: Rarity = Rarity.COMMON
 var icon: Texture2D
 
 @warning_ignore_start("unused_parameter")
@@ -29,7 +29,7 @@ func modify_shop_price(price: int, item: ShopItemData) -> int: return price
 # -- lifetime --
 func is_expired() -> bool: return false   # charms: never; drinks: after their combat
 
-func get_rarity() -> Rarity:
+static func get_rarity() -> Rarity:
 	return rarity
 """
 Effect Ideas (map these to whatever drinks/charms feel best):

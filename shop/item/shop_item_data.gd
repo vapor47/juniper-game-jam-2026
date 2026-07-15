@@ -28,12 +28,12 @@ Possible Item Actions:
 const BASE_PRICE: int = 1
 
 @export var display_name: String
+@export var description: String
 @export var price: int
 @export var icon: Texture2D
 var purchased: bool = false
 
-func on_purchase(player: PlayerData) -> void:
-	pass  # override
+func on_purchase(player: PlayerData) -> void: pass
 
 func requires_flow() -> bool:
 	return false

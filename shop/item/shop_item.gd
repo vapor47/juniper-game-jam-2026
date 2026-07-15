@@ -39,6 +39,7 @@ func is_available() -> bool:
 func _ready() -> void:
 	text = item_data.display_name + "\n $" + str(item_data.price)
 	icon = item_data.icon
+	tooltip_text = item_data.description
 
 func _on_pressed() -> void:
 	purchase_requested.emit(item_data)
