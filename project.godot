@@ -22,6 +22,7 @@ EventBus="*uid://rj2vow142o5p"
 SymbolResolver="*uid://c70d3i8ju3pul"
 SceneManager="*uid://dmu08rwlathqs"
 RunManager="*uid://bu1kmbs68mdki"
+HoverLabel="*uid://dl0js3r45tm8c"
 
 [debug]
 
@@ -35,6 +36,7 @@ window/size/mode=2
 window/size/initial_position_type=0
 window/stretch/mode="canvas_items"
 window/stretch/aspect="expand"
+window/size/mode.editor=0
 
 [file_customization]
 

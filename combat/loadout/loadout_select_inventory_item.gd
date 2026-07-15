@@ -18,7 +18,7 @@ var quantity: int = 0:
 
 func _ready() -> void:
 	quantity_label.text = "x%d" % quantity
-	tooltip_text = reel.reel_name + " Reel"
+	HoverLabel.attach_to(self, reel.reel_name + " Reel")
 
 func _on_pressed() -> void:
 	loadout_inventory_item_selected.emit(reel)
