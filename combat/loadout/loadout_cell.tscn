@@ -3,6 +3,13 @@
 [ext_resource type="Script" uid="uid://deby3kdfkvjyl" path="res://combat/loadout/loadout_cell.gd" id="1_naktv"]
 
 [node name="LoadoutCell" type="Button" unique_id=1189660177]
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+size_flags_horizontal = 4
+size_flags_vertical = 4
 script = ExtResource("1_naktv")
 
 [connection signal="pressed" from="." to="." method="_on_pressed"]

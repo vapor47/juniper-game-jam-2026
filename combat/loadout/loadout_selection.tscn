@@ -26,6 +26,7 @@ alignment = 1
 [node name="LoadoutCells" type="HBoxContainer" parent="VBoxContainer" unique_id=1859658524]
 unique_name_in_owner = true
 layout_mode = 2
+theme_override_constants/separation = 32
 alignment = 1
 
 [node name="CenterContainer" type="CenterContainer" parent="VBoxContainer" unique_id=619827939]
