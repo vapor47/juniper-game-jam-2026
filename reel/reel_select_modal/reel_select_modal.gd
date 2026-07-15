@@ -24,7 +24,7 @@ func _ready() -> void:
 
 func _populate() -> void:
 	for reel_name: String in Global.reels:
-		if Global.reel_inventory.get(reel_name, 0) <= 0:
+		if Global.player.get_reel_inventory().get(reel_name, 0) <= 0:
 			continue  # not owned
 
 		var reel: Reel = Global.reels[reel_name]

@@ -17,6 +17,6 @@ func setup(r: Reel) -> void:
 	icon = r.icon
 	
 func _on_pressed() -> void:
-	Global.reel_inventory[reel.reel_name] = Global.reel_inventory.get(reel.reel_name, 0) + 1
+	Global.player.add_reel_to_inventory(reel)
 	# continue from combat reward screen
 	SceneManager.combat_reward_chosen.emit()

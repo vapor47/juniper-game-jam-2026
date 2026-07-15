@@ -11,8 +11,7 @@ const BASE_REEL_PRICE: int = 50
 @export var reel: Reel
 
 func on_purchase(_player: PlayerData) -> void:
-	Global.reel_inventory[reel.reel_name] = Global.reel_inventory.get(reel.reel_name) + 1
-
+	Global.player.add_reel_to_inventory(reel)
 
 static func create(p_reel: Reel) -> ReelShopItemData:
 	var item := ReelShopItemData.new()

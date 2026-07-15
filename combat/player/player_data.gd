@@ -55,6 +55,9 @@ var active_drinks: Array[Drink] = []
 var expired_drinks: Array[Drink] = []
 var drinks_consumed: int = 0
 
+signal reel_inventory_updated(new_inventory: Dictionary[String, int])
+var _reel_inventory: Dictionary[String, int]
+
 func get_active_effects() -> Array[RunEffect]:
 	return owned_charms + active_drinks
 
@@ -64,6 +67,11 @@ func get_num_drinks_consumed() -> int:
 
 func _init() -> void:
 	display_name = "Player"
+	_reel_inventory = {
+		"Attack": 3,
+		"Defend": 3,
+		"Heal": 0,
+	}
 	
 func replenish_tokens() -> void:
 	tokens = max_tokens
@@ -89,3 +97,22 @@ func broadcast(method: StringName, args: Array = []) -> void:
 	# sweep expirations after combat-end broadcasts
 	#active_drinks = active_drinks.filter(func(e): return not e.is_expired())
 	# (emit run_effect_removed for UI as needed)
+
+func get_reel_inventory() -> Dictionary[String, int]:
+	return _reel_inventory
+
+func add_reel_to_inventory(reel: Reel) -> bool:
+	if not reel:
+		return false
+	_reel_inventory[reel.reel_name] = _reel_inventory.get(reel.reel_name, 0) + 1
+	reel_inventory_updated.emit(_reel_inventory)
+	return true
+
+func remove_reel_from_inventory(reel: Reel) -> bool:
+	if not reel:
+		return false
+	if _reel_inventory.get(reel.reel_name, 0) <= 0:
+		return false
+	_reel_inventory[reel.reel_name] -= 1
+	reel_inventory_updated.emit(_reel_inventory)
+	return true

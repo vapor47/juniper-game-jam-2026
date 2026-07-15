@@ -145,11 +145,11 @@ slot on press simply calls whatever behavior is passed to it.
 func _insert_reel(reel: Reel, should_spin: bool = true) -> void:
 	if not reel:
 		return
-	if Global.reel_inventory[reel.reel_name] <= 0:
+	if Global.player.get_reel_inventory()[reel.reel_name] <= 0:
 		push_error("Attempted to insert reel with 0 remaining in inventory.")
 	print_debug("Reel inserted")
 	slot_reel = reel
-	Global.reel_inventory[reel.reel_name] -= 1
+	Global.player.remove_reel_from_inventory(reel)
 	
 	_curr_stop = slot_reel.reel_stops.pick_random()
 	#result_label.text = _curr_stop.slot_symbol.symbol_name
@@ -166,7 +166,7 @@ func _insert_reel(reel: Reel, should_spin: bool = true) -> void:
 func _remove_reel() -> void:
 	if not slot_reel:
 		return
-	Global.reel_inventory[slot_reel.reel_name] += 1
+	Global.player.add_reel_to_inventory(slot_reel)
 	slot_reel = null
 	
 func _swap_reel(reel_to_insert: Reel) -> void:
@@ -191,7 +191,7 @@ func attempt_reel_swap(reel_to_insert: Reel, token_cost: int = 0) -> bool:
 	if reel_to_insert == slot_reel:
 		return false
 		
-	if Global.reel_inventory[reel_to_insert.reel_name] <= 0:
+	if Global.player.get_reel_inventory()[reel_to_insert.reel_name] <= 0:
 		return false
 	
 	_swap_reel(reel_to_insert)

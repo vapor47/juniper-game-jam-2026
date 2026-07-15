@@ -43,9 +43,9 @@ func _init_loadout_cells() -> void:
 		loadout_cells.add_child(cell)
 
 func _init_inventory_view() -> void:
-	for reel_name: String in Global.reel_inventory:
+	for reel_name: String in Global.player.get_reel_inventory():
 		var reel := Global.reels[reel_name]
-		var quantity := Global.reel_inventory[reel_name]
+		var quantity: int = Global.player.get_reel_inventory()[reel_name]
 		var item := LoadoutSelectInventoryItem.create(reel, quantity)
 		item.loadout_inventory_item_selected.connect(_on_inventory_item_selected)
 		reel_to_item[reel] = item

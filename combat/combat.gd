@@ -29,7 +29,7 @@ func _get_reel_inventory_data() -> Array:
 	return Global.reels.keys().map(func(reel_name: String): return {
 		"reel_name": reel_name,
 		"reel": Global.reels[reel_name],
-		"amount": Global.reel_inventory[reel_name],
+		"amount": Global.player.get_reel_inventory()[reel_name],
 	})
 	
 	
@@ -188,10 +188,6 @@ func _ready() -> void:
 	### Existing code
 	set_process_unhandled_input(true)
 	
-	side_panel.populate(_get_reel_inventory_data())
-	EventBus.reel_swapped.connect(func(_reel: Reel) -> void: side_panel.populate(_get_reel_inventory_data()))
-	#EventBus.slots_locked_in.connect(_on_spin_resolved)
-	
 	_init_enemies()
 	_begin_combat()
 
@@ -201,7 +197,6 @@ func _begin_combat() -> void:
 	context = CombatContext.new()
 	
 	_open_loadout_selection_modal()
-	side_panel.populate(_get_reel_inventory_data())
 	Global.player.broadcast("on_combat_started", [context])
 	_begin_player_turn()
 
@@ -418,7 +413,6 @@ func _swap_slot_reels(reel_to_insert: Reel) -> void:
 		return
 	
 	if slot_to_swap.attempt_reel_swap(reel_to_insert) == true:
-		side_panel.populate(_get_reel_inventory_data())
 		slot_to_swap = null
 
 func _select_slot(slot: Slot) -> void:

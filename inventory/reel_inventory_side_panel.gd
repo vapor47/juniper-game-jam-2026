@@ -24,16 +24,24 @@ func _ready() -> void:
 	
 	#EventBus.slot_selected.connect(_on_open_requested)
 	EventBus.close_side_panel.connect(close)
+	Global.player.reel_inventory_updated.connect(populate)
+	
+	EventBus.token_count_updated.connect(
+		func() -> void:
+			var swap_disabled = %CombatManager.initial_spin_completed and Global.player.tokens <= 0
+			for item in get_children():
+				item.disabled = swap_disabled
+	)
 
 func populate(inventory_data) -> void:
 	print_debug("Populating side panel...")
 	for child in grid.get_children():
 		child.queue_free()
 
-	for i in inventory_data.size():
+	for reel_name in inventory_data:
 		var item = ReelInventoryItemScene.instantiate()
 		grid.add_child(item)
-		item.setup(inventory_data[i])
+		item.setup(reel_name, inventory_data[reel_name])
 		
 		
 func toggle() -> void:
