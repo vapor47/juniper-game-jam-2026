@@ -23,6 +23,7 @@ SymbolResolver="*uid://c70d3i8ju3pul"
 SceneManager="*uid://dmu08rwlathqs"
 RunManager="*uid://bu1kmbs68mdki"
 HoverLabel="*uid://dl0js3r45tm8c"
+PauseMenu="*uid://c56h1gy036pr8"
 
 [debug]
 

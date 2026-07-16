@@ -1,0 +1,41 @@
+[gd_scene format=3 uid="uid://c56h1gy036pr8"]
+
+[ext_resource type="Script" uid="uid://8oy4u1w7leno" path="res://screens/pause_menu.gd" id="1_in564"]
+
+[node name="PauseMenu" type="CanvasLayer" unique_id=2017462931]
+layer = 1000
+script = ExtResource("1_in564")
+
+[node name="ColorRect" type="ColorRect" parent="." unique_id=1917825245]
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+color = Color(0, 0, 0, 0.8)
+
+[node name="CenterContainer" type="CenterContainer" parent="." unique_id=1626327876]
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+size_flags_horizontal = 3
+size_flags_vertical = 3
+
+[node name="VBoxContainer" type="VBoxContainer" parent="CenterContainer" unique_id=120969360]
+layout_mode = 2
+theme_override_constants/separation = 24
+
+[node name="RestartButton" type="Button" parent="CenterContainer/VBoxContainer" unique_id=1699363262]
+unique_name_in_owner = true
+layout_mode = 2
+text = "Restart Run"
+
+[node name="MainMenuButton" type="Button" parent="CenterContainer/VBoxContainer" unique_id=2119330106]
+unique_name_in_owner = true
+layout_mode = 2
+text = "Back to Main Menu"
+
+[connection signal="pressed" from="CenterContainer/VBoxContainer/RestartButton" to="." method="_on_restart_button_pressed"]
+[connection signal="pressed" from="CenterContainer/VBoxContainer/MainMenuButton" to="." method="_on_main_menu_button_pressed"]

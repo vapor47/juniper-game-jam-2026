@@ -22,7 +22,6 @@ signal token_count_updated(new_value: int)
 signal reel_modified(reel: Reel)
 
 signal shop_exited
-signal run_restarted
 signal run_effect_added(r: RunEffect)
 
 signal curr_health_updated(who: CombatantData, new_val: int)
