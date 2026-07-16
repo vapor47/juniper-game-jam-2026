@@ -203,10 +203,7 @@ func _populate_consumables() -> void:
 	
 func _populate_drinks() -> void:
 	var drinks_for_sale := _get_drinks_for_sale()
-	print_debug(drinks_for_sale)
-
 	_populate_container(drinks_container, drinks_for_sale)
-
 
 func _get_drinks_for_sale(count: int = 5) -> Array[ShopItemData]:
 	var items: Array[ShopItemData] = []

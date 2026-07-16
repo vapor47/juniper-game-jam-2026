@@ -86,10 +86,13 @@ alignment = 1
 [node name="TheBar" type="AspectRatioContainer" parent="MarginContainer/VBoxContainer/ShopContents" unique_id=1226149590]
 layout_mode = 2
 size_flags_vertical = 3
+mouse_filter = 2
 stretch_mode = 3
 
 [node name="Control" type="Control" parent="MarginContainer/VBoxContainer/ShopContents/TheBar" unique_id=1124162404]
 layout_mode = 2
+size_flags_vertical = 4
+mouse_filter = 2
 
 [node name="BarBackground" type="TextureRect" parent="MarginContainer/VBoxContainer/ShopContents/TheBar/Control" unique_id=632522457]
 layout_mode = 1
@@ -100,7 +103,7 @@ grow_horizontal = 2
 grow_vertical = 2
 size_flags_vertical = 3
 texture = ExtResource("3_givde")
-expand_mode = 1
+expand_mode = 5
 stretch_mode = 5
 
 [node name="DrinksContainer" type="HBoxContainer" parent="MarginContainer/VBoxContainer/ShopContents/TheBar/Control" unique_id=1460704069]
