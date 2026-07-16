@@ -35,6 +35,7 @@ func _ready() -> void:
 
 func populate(inventory_data) -> void:
 	print_debug("Populating side panel...")
+	print_debug(inventory_data)
 	for child in grid.get_children():
 		child.queue_free()
 

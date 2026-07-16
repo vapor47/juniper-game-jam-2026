@@ -498,7 +498,6 @@ func _get_combo_legend_values(options: Array[Slot], max_combo_size: int) -> Arra
 	var symbol_count: Dictionary[SlotSymbol, int]
 	
 	for option: Slot in options:
-		print_debug(options)
 		if not option.get_curr_stop():
 			continue
 		var symbol: SlotSymbol = option.get_curr_stop().slot_symbol
