@@ -102,6 +102,8 @@ func get_reel_inventory() -> Dictionary[String, int]:
 	return _reel_inventory
 
 func add_reel_to_inventory(reel: Reel) -> bool:
+	if RunManager.is_resetting:
+		return false
 	if not reel:
 		return false
 	_reel_inventory[reel.reel_name] = _reel_inventory.get(reel.reel_name, 0) + 1
@@ -109,6 +111,8 @@ func add_reel_to_inventory(reel: Reel) -> bool:
 	return true
 
 func remove_reel_from_inventory(reel: Reel) -> bool:
+	if RunManager.is_resetting:
+		return false
 	if not reel:
 		return false
 	if _reel_inventory.get(reel.reel_name, 0) <= 0:

@@ -23,24 +23,23 @@ func _ready() -> void:
 	position.x = _get_screen_width() + size.x
 	
 	#EventBus.slot_selected.connect(_on_open_requested)
+	populate(Global.player.get_reel_inventory())
 	EventBus.close_side_panel.connect(close)
 	Global.player.reel_inventory_updated.connect(populate)
 	
 	EventBus.token_count_updated.connect(
 		func() -> void:
-			var swap_disabled = %CombatManager.initial_spin_completed and Global.player.tokens <= 0
+			var swap_disabled: bool = %CombatManager.initial_spin_completed and Global.player.tokens <= 0
 			for item in get_children():
 				item.disabled = swap_disabled
 	)
 
-func populate(inventory_data) -> void:
-	print_debug("Populating side panel...")
-	print_debug(inventory_data)
+func populate(inventory_data: Dictionary[String, int]) -> void:
 	for child in grid.get_children():
 		child.queue_free()
 
 	for reel_name in inventory_data:
-		var item = ReelInventoryItemScene.instantiate()
+		var item: ReelInventoryItem = ReelInventoryItemScene.instantiate()
 		grid.add_child(item)
 		item.setup(reel_name, inventory_data[reel_name])
 		

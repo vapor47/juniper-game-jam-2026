@@ -9,6 +9,7 @@ var encounter_queue: Array[Array] = [
 
 var curr_encounter_idx: int = 0
 var emergency_heal_used: bool = false
+var is_resetting: bool = false
 
 
 # Create Encounter object? that can be either combat, shop, etc
@@ -29,8 +30,13 @@ func is_run_complete() -> bool:
 	return curr_encounter_idx >= encounter_queue.size()
 
 func restart_run() -> void:
+	is_resetting = true
+	
 	reset_run_state()
 	SceneManager.go_to_combat(get_next_encounter())
+	await get_tree().process_frame
+	
+	is_resetting = false
 
 func reset_run_state() -> void:
 	Global.reset()

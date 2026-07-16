@@ -1,4 +1,5 @@
 extends VBoxContainer
+class_name ReelInventoryItem
 
 var reel: Reel
 var amount: int
