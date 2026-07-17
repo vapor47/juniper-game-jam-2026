@@ -10,6 +10,8 @@ static func resolve(ctx: ResolutionContext) -> Array:
 		var v := stop.slot_symbol.symbol_value
 		for mod: StopModifier in stop.modifiers:
 			v = mod.modify_stop_value(v, ctx, stop)
+		for drink: Drink in Global.player.active_drinks:
+			v = drink.modify_stop_value(v, ctx, stop)
 		stop_values[stop] = v
 
 	# ---- Phase 2: combo counting with HOOK C bonuses

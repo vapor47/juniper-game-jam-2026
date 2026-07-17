@@ -6,8 +6,8 @@ var drink: Drink
 
 
 
-func on_purchase(_player: PlayerData) -> void:
-	Global.player.consume_drink(drink)
+func on_purchase(player: PlayerData) -> void:
+	player.consume_drink(drink)
 	drink.on_acquired()
 
 static func create(p_drink: Drink) -> DrinkShopItemData:
