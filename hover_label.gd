@@ -6,6 +6,7 @@ var _current_target: Control = null
 @warning_ignore("untyped_declaration")
 var _content_source
 const OFFSET := Vector2(16, 16)
+var _has_custom_pos = false
 
 func _ready() -> void:
 	label.hide()
@@ -24,6 +25,7 @@ func hide_for(target: Control) -> void:
 	if _current_target == target:
 		_current_target = null
 		label.hide()
+		_has_custom_pos = false
 
 @warning_ignore("untyped_declaration")
 func attach_to(node: Node, content) -> void:
@@ -45,6 +47,8 @@ func _process(_delta: float) -> void:
 		_update_position()
 
 func _update_position() -> void:
+	if _has_custom_pos:
+		return
 	var mouse_pos := label.get_viewport().get_mouse_position()
 	var viewport_size := label.get_viewport().get_visible_rect().size
 	var label_size := label.size
@@ -60,3 +64,18 @@ func _update_position() -> void:
 		pos.y = mouse_pos.y - OFFSET.y - label_size.y
 
 	label.global_position = pos
+
+func set_target_relative_pos(target: Control, relative_pos: Vector2) -> void:
+	_has_custom_pos = true
+	var target_pos := target.get_global_rect().get_center()
+	label.global_position = target_pos + relative_pos
+	
+"""
+Add fixed position and style
+
+Fixed (relative position): (Node-relative position)
+	Get center position of node, add vector2. Set as fixed
+	Do not update in update position
+	
+Apply direction to face label, and anchoring/alignment
+"""

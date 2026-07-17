@@ -136,8 +136,8 @@ text = "Amount:"
 unique_name_in_owner = true
 layout_mode = 2
 max_value = 10000.0
+rounded = true
 alignment = 1
-prefix = "Amount"
 select_all_on_focus = true
 
 [node name="HBoxContainer2" type="HBoxContainer" parent="CenterContainer/GodMenu/MarginContainer/VBoxContainer/DealDamageSection/PanelContainer/MarginContainer/VBoxContainer/OptionsHBox" unique_id=2054136229]

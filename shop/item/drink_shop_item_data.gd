@@ -5,6 +5,7 @@ const BASE_CHARM_PRICE: int = 50
 var drink: Drink
 
 
+
 func on_purchase(_player: PlayerData) -> void:
 	Global.player.consume_drink(drink)
 	drink.on_acquired()

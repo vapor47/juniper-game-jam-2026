@@ -34,7 +34,7 @@ func _populate_shop() -> void:
 
 func _populate_container(container: BoxContainer, items: Array[ShopItemData]) -> void:
 	for item_data: ShopItemData in items:
-		var item: ShopItem= SHOP_ITEM_SCENE.instantiate()
+		var item: ShopItem = SHOP_ITEM_SCENE.instantiate()
 		item.setup(item_data)
 		item.purchase_requested.connect(_on_item_purchased)
 		container.add_child(item)
@@ -203,7 +203,18 @@ func _populate_consumables() -> void:
 	
 func _populate_drinks() -> void:
 	var drinks_for_sale := _get_drinks_for_sale()
-	_populate_container(drinks_container, drinks_for_sale)
+	#_populate_container(drinks_container, drinks_for_sale)
+	for item_data: ShopItemData in drinks_for_sale:
+		var item: ShopItem = SHOP_ITEM_SCENE.instantiate()
+		item.setup(item_data)
+		item.purchase_requested.connect(_on_item_purchased)
+		drinks_container.add_child(item)
+		item.tooltip_text = ""
+		HoverLabel.attach_to(item, item_data.description)
+		item.mouse_entered.connect(
+			func() -> void:
+				HoverLabel.set_target_relative_pos(item, Vector2(-100,-100))
+		)
 
 func _get_drinks_for_sale(count: int = 5) -> Array[ShopItemData]:
 	var items: Array[ShopItemData] = []
