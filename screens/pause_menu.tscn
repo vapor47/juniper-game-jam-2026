@@ -132,18 +132,12 @@ layout_mode = 2
 theme_override_colors/font_color = Color(0, 0, 0, 1)
 text = "Amount:"
 
-[node name="AmountInput" type="LineEdit" parent="CenterContainer/GodMenu/MarginContainer/VBoxContainer/DealDamageSection/PanelContainer/MarginContainer/VBoxContainer/OptionsHBox/HBoxContainer" unique_id=430187661]
+[node name="AmountInput" type="SpinBox" parent="CenterContainer/GodMenu/MarginContainer/VBoxContainer/DealDamageSection/PanelContainer/MarginContainer/VBoxContainer/OptionsHBox/HBoxContainer" unique_id=552302995]
 unique_name_in_owner = true
 layout_mode = 2
-text = "0"
+max_value = 10000.0
 alignment = 1
-max_length = 4
-context_menu_enabled = false
-emoji_menu_enabled = false
-shortcut_keys_enabled = false
-selecting_enabled = false
-deselect_on_focus_loss_enabled = false
-drag_and_drop_selection_enabled = false
+prefix = "Amount"
 select_all_on_focus = true
 
 [node name="HBoxContainer2" type="HBoxContainer" parent="CenterContainer/GodMenu/MarginContainer/VBoxContainer/DealDamageSection/PanelContainer/MarginContainer/VBoxContainer/OptionsHBox" unique_id=2054136229]

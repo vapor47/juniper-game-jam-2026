@@ -1,7 +1,7 @@
 extends PanelContainer
 
 
-@onready var amount_input: LineEdit = %AmountInput
+@onready var amount_input: SpinBox = %AmountInput
 @onready var entity_option_button: OptionButton = %EntityOptionButton
 
 func _ready() -> void:
@@ -10,7 +10,7 @@ func _ready() -> void:
 	self.visibility_changed.connect(
 		func() -> void:
 			if self.visible:
-				if SceneManager.in_combat():
+				if SceneManager.in_combat() and SceneManager._curr_combat.enemies:
 					entity_option_button.set_item_metadata(0, SceneManager._curr_combat.enemies[0])
 					entity_option_button.set_item_disabled(0, false)
 				else:
@@ -23,4 +23,4 @@ func _deal_damage(amount: int, entity: CombatantData) -> void:
 
 func _on_deal_damage_button_pressed() -> void:
 	var idx := entity_option_button.selected
-	_deal_damage(int(amount_input.text), entity_option_button.get_item_metadata(idx))
+	_deal_damage(int(amount_input.value), entity_option_button.get_item_metadata(idx))
