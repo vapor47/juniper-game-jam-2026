@@ -31,3 +31,13 @@ func _on_restart_button_pressed() -> void:
 func _on_main_menu_button_pressed() -> void:
 	SceneManager.go_to_main_screen()
 	_resume()
+
+
+func _on_god_menu_button_pressed() -> void:
+	%MainMenuContainer.hide()
+	%GodMenu.show()
+
+
+func _on_god_menu_back_button_pressed() -> void:
+	%GodMenu.hide()
+	%MainMenuContainer.show()
