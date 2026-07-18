@@ -19,7 +19,7 @@ func combo_count_bonus() -> int: return 0
 func on_acquired() -> void: pass
 func on_combat_started(ctx: CombatContext) -> void: pass
 func on_player_turn_started(ctx: CombatContext) -> void: pass
-func on_turn_ended(ctx: CombatContext) -> void: pass
+func on_turn_ended(ctx: ResolutionContext) -> void: pass
 func on_combo_landed(symbol: SlotSymbol, ctx: ResolutionContext) -> void: pass
 func on_combat_ended(result, ctx: CombatContext) -> void: pass
 

@@ -290,11 +290,20 @@ func _begin_action_resolution_phase() -> void:
 	Calculate result of player's finalized symbols and
 		perform actions
 	"""
-	#var stops: Array[ReelStop] = _get_selected_stops()
-	#var actions: Array[Action] = _get_actions_for_symbols(symbols)
 	var res_context: ResolutionContext = ResolutionContext.build(Global.player, enemies, initial_spin_completed, selected_slots)
 	var actions: Array[Action] = SymbolResolver.resolve(res_context)
 	await _perform_actions(actions, Global.player, enemies[0])
+	
+	var encore: TheEncoreDrink = null
+	for drink in Global.player.active_drinks:
+		if drink is TheEncoreDrink:
+			encore = drink
+			break
+
+	if encore and encore.available:
+		await _perform_actions(actions, Global.player, enemies[0])
+		encore.available = false
+	
 	_end_player_turn()
 
 #func _get_selected_stops() -> Array[ReelStop]:

@@ -4,6 +4,7 @@ enum Rarity { COMMON, UNCOMMON, RARE }
 
 static var ENTRIES := [
 	{ "drink": OldFashionedDrink, "rarity": Rarity.COMMON },
+	{ "drink": TheEncoreDrink, "rarity": Rarity.COMMON },
 ]
 
 const RARITY_WEIGHTS := {

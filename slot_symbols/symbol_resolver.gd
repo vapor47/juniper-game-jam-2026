@@ -1,7 +1,7 @@
 extends Node
 
 # symbol_resolver.gd (reworked core — adapt names to your current structure)
-static func resolve(ctx: ResolutionContext) -> Array:
+func resolve(ctx: ResolutionContext) -> Array:
 	var selected_stops := ctx.selected_stops
 
 	# ---- Phase 1: per-stop values through HOOK A
