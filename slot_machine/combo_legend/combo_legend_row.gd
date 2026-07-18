@@ -2,14 +2,14 @@ extends RefCounted
 class_name ComboLegendRow
 
 #class Result:
-	#var type: SlotSymbol.SymbolType
+	#var type: Action.Type
 	#var value: int
 	#
 	#func _init(p_symbol: SlotSymbol, p_count: int) -> void:
 		#type = p_symbol.get_symbol_type()
 		#value = SymbolResolver._combo_value_from_sum(p_symbol.symbol_value, p_count)
 
-var category: SlotSymbol.SymbolType
+var category: Action.Type
 var symbol: SlotSymbol
 var required_symbols: Array[SlotSymbol]
 var result: int

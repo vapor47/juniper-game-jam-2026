@@ -71,13 +71,13 @@ func _build_row(row: ComboLegendRow, symbols_area_width: int) -> Control:
 	return hbox
 
 
-func _get_result_texture(type: SlotSymbol.SymbolType) -> Texture2D:
+func _get_result_texture(type: Action.Type) -> Texture2D:
 	match type:
-		SlotSymbol.SymbolType.ATTACK:
+		Action.Type.ATTACK:
 			return preload("res://at-icons_v1.3.0/addons/at-icons/node3d/cutlass.svg")
-		SlotSymbol.SymbolType.DEFEND:
+		Action.Type.DEFEND:
 			return preload("res://at-icons_v1.3.0/addons/at-icons/node2d/shield.svg")
-		SlotSymbol.SymbolType.HEAL:
+		Action.Type.HEAL:
 			return preload("res://at-icons_v1.3.0/addons/at-icons/control/plus_sign_in_square.svg")
 		_:
 			return preload("res://assets/icons/icon.svg")
@@ -92,15 +92,15 @@ func build_legend(rows: Array[ComboLegendRow] = _rows) -> VBoxContainer:
 	panel_updated.emit()
 	return legend
 
-func get_categorized_rows(rows: Array[ComboLegendRow]) -> Dictionary[SlotSymbol.SymbolType, Array]:
-	var categorized_rows: Dictionary[SlotSymbol.SymbolType, Array] = {}
+func get_categorized_rows(rows: Array[ComboLegendRow]) -> Dictionary[Action.Type, Array]:
+	var categorized_rows: Dictionary[Action.Type, Array] = {}
 	for row: ComboLegendRow in rows:
 		categorized_rows.get_or_add(row.category, [] as Array[ComboLegendRow]).append(row)
 		
 	return categorized_rows
 
-func _build_legend_by_category(categorized_rows: Dictionary[SlotSymbol.SymbolType, Array]) -> VBoxContainer:
-	var categories: Array[SlotSymbol.SymbolType] = categorized_rows.keys()
+func _build_legend_by_category(categorized_rows: Dictionary[Action.Type, Array]) -> VBoxContainer:
+	var categories: Array[Action.Type] = categorized_rows.keys()
 	var n := categories.size()
 	if n == 0:
 		return
@@ -133,7 +133,7 @@ func _build_legend_by_category(categorized_rows: Dictionary[SlotSymbol.SymbolTyp
 		row_hbox.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 		
 		for i in items_in_this_row:
-			var category: SlotSymbol.SymbolType = categories[category_idx]
+			var category: Action.Type = categories[category_idx]
 			var category_rows: Array[ComboLegendRow] = categorized_rows[category] as Array[ComboLegendRow]
 			var category_box: VBoxContainer = _build_category_column(category, category_rows)
 			row_hbox.add_child(category_box)
@@ -158,12 +158,12 @@ func _build_legend_by_category(categorized_rows: Dictionary[SlotSymbol.SymbolTyp
 	return grid_wrapper
 
 
-func _build_category_column(category: SlotSymbol.SymbolType, category_rows: Array[ComboLegendRow]) -> VBoxContainer:
+func _build_category_column(category: Action.Type, category_rows: Array[ComboLegendRow]) -> VBoxContainer:
 	var column := VBoxContainer.new()
 	column.add_theme_constant_override("separation", 6)
 	
 	var header := Label.new()
-	header.text = SlotSymbol.SymbolType.keys()[category]  # or a proper display name lookup
+	header.text = Action.Type.keys()[category]  # or a proper display name lookup
 	header.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 	column.add_child(header)
 	

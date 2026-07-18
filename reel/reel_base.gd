@@ -1,7 +1,7 @@
 class_name Reel
 extends Resource
 
-var allowed_symbol_types: Array[SlotSymbol.SymbolType] = []
+var allowed_symbol_types: Array[Action.Type] = []
 var reel_name: String
 var reel_stops: Array[ReelStop] = []
 var icon: Texture2D = preload("res://icon.svg")

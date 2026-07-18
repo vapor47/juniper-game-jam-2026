@@ -18,4 +18,4 @@ func _init() -> void:
 		]
 	#icon:
 	description = "Reel containing heals"
-	allowed_symbol_types = [SlotSymbol.SymbolType.HEAL]
+	allowed_symbol_types = [Action.Type.HEAL]

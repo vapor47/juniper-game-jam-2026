@@ -12,6 +12,7 @@ var is_initial_spin: bool = true        # false once any respin has happened thi
 
 var turn: TurnContext
 
+var actions: Array[Action]
 
 var selected_stops: Array[ReelStop] = []
 var selected_count: int = 0

@@ -131,8 +131,8 @@ func _get_reel_stops_for_sale(num_stops: int = 3) -> Array[ShopItemData]:
 	
 	return stops
 
-func _get_eligible_symbol_types() -> Dictionary[SlotSymbol.SymbolType, bool]:
-	var types: Dictionary[SlotSymbol.SymbolType, bool] = {}
+func _get_eligible_symbol_types() -> Dictionary[Action.Type, bool]:
+	var types: Dictionary[Action.Type, bool] = {}
 	for reel_name: String in Global.player.get_reel_inventory():
 		if Global.player.get_reel_inventory()[reel_name] <= 0:
 			continue

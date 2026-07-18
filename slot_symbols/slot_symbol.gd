@@ -1,8 +1,6 @@
 class_name SlotSymbol
 extends RefCounted
 
-# TODO: Move elsewhere?
-enum SymbolType { ATTACK, DEFEND, HEAL }
 enum ValueType { FLAT, MULT }
 
 var symbol_name: String
@@ -16,9 +14,9 @@ func _init() -> void:
 	symbol_name = str(get_script().get_global_name()).capitalize()
 	
 
-func get_symbol_type() -> SymbolType:
+func get_symbol_type() -> Action.Type:
 	push_error("CRITICAL: get_symbol_type() was called on a base class without being overridden!")
-	return SymbolType.ATTACK 
+	return Action.Type.ATTACK 
 
 func get_symbol_icon() -> Texture2D:
 	push_error("CRITICAL: get_symbol_icon() was called on a base class without being overridden!")

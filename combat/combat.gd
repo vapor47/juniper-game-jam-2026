@@ -291,8 +291,10 @@ func _begin_action_resolution_phase() -> void:
 		perform actions
 	"""
 	var res_context: ResolutionContext = ResolutionContext.build(Global.player, enemies, initial_spin_completed, selected_slots)
-	var actions: Array[Action] = SymbolResolver.resolve(res_context)
-	await _perform_actions(actions, Global.player, enemies[0])
+	res_context.actions = SymbolResolver.resolve(res_context)
+	
+	Global.player.broadcast("on_resolution", [res_context])
+	await _perform_actions(res_context.actions, Global.player, enemies[0])
 	
 	var encore: TheEncoreDrink = null
 	for drink in Global.player.active_drinks:
@@ -301,7 +303,7 @@ func _begin_action_resolution_phase() -> void:
 			break
 
 	if encore and encore.available:
-		await _perform_actions(actions, Global.player, enemies[0])
+		await _perform_actions(res_context.actions, Global.player, enemies[0])
 		encore.available = false
 	
 	_end_player_turn()
@@ -314,17 +316,6 @@ func _begin_action_resolution_phase() -> void:
 	#
 	#return stops
 
-class Action:
-	enum Type { IDLE, ATTACK, DEFEND, HEAL }
-	var type: SlotSymbol.SymbolType
-	var value: int
-	var display_string: String
-	
-	func _init(p_type: SlotSymbol.SymbolType, p_value: int, p_display_string: String) -> void:
-		type = p_type
-		value = p_value
-		display_string = p_display_string
-
 
 func _perform_actions(actions: Array[Action], source: CombatantData = Global.player, target: CombatantData = null) -> void:
 	for action in actions:
@@ -333,13 +324,13 @@ func _perform_actions(actions: Array[Action], source: CombatantData = Global.pla
 			continue
 		
 		match action.type:
-			SlotSymbol.SymbolType.ATTACK:
+			Action.Type.ATTACK:
 				#for enemy: EnemyData in enemies:
 				var actual_dmg := target.take_damage(action.value)
 				action.display_string = "%s dealt %d damage to %s!" % [source.display_name, actual_dmg, target.display_name]
-			SlotSymbol.SymbolType.DEFEND:
+			Action.Type.DEFEND:
 				source.add_block(action.value)
-			SlotSymbol.SymbolType.HEAL:
+			Action.Type.HEAL:
 				source.heal(action.value)
 				
 				

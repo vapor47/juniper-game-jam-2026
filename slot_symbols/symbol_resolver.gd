@@ -20,10 +20,10 @@ func resolve(ctx: ResolutionContext) -> Array:
 	for stop in selected_stops:
 		by_symbol.get_or_add(stop.slot_symbol, []).append(stop)
 
-	var totals: Dictionary[SlotSymbol.SymbolType, int] = {
-		#SlotSymbol.SymbolType.ATTACK: 0,
-		#SlotSymbol.SymbolType.DEFEND: 0,
-		#SlotSymbol.SymbolType.HEAL: 0
+	var totals: Dictionary[Action.Type, int] = {
+		#Action.Type.ATTACK: 0,
+		#Action.Type.DEFEND: 0,
+		#Action.Type.HEAL: 0
 	}
 	
 	for symbol: SlotSymbol in by_symbol:
@@ -72,21 +72,21 @@ static func _combo_value_from_sum(value_sum: int, eff_count: int) -> int:
 	var scale := pow(eff_count - 1, 1.3)
 	return roundi(value_sum + (value_sum * 0.2 * scale) + scale)
 
-static func _add_to_type_total(totals: Dictionary[SlotSymbol.SymbolType, int], symbol: SlotSymbol, contribution: int) -> void:
+static func _add_to_type_total(totals: Dictionary[Action.Type, int], symbol: SlotSymbol, contribution: int) -> void:
 	var t := symbol.get_symbol_type()
 	totals[t] = totals.get(t, 0) + contribution
 
-static func _totals_to_actions(totals: Dictionary) -> Array[CombatManager.Action]:
-	var actions: Array[CombatManager.Action] = []
-	for type: SlotSymbol.SymbolType in totals:
+static func _totals_to_actions(totals: Dictionary) -> Array[Action]:
+	var actions: Array[Action] = []
+	for type: Action.Type in totals:
 		if totals[type] != 0:
-			actions.append(CombatManager.Action.new(type, totals[type], ""))
+			actions.append(Action.new(type, totals[type], ""))
 	return actions
 
 # Takes in ReelStops to account for ReelStop modifiers
 # TODO: this whole function will eventually need to be redone
 # 		to account for modifiers
-func resolve_old(stops: Array[ReelStop]) -> Array[CombatManager.Action]:
+func resolve_old(stops: Array[ReelStop]) -> Array[Action]:
 	print_debug("Resolving Symbols...")
 	var effects = []
 	
@@ -109,11 +109,11 @@ func resolve_old(stops: Array[ReelStop]) -> Array[CombatManager.Action]:
 	for symbol: SlotSymbol in counts:
 		var count: int = counts[symbol]
 		if count >= 2:
-			if symbol.get_symbol_type() == SlotSymbol.SymbolType.ATTACK and not symbol.symbol_name.contains("Multiply"):
+			if symbol.get_symbol_type() == Action.Type.ATTACK and not symbol.symbol_name.contains("Multiply"):
 				attack_flat += _get_combo_value(symbol.symbol_value, count)
-			elif symbol.get_symbol_type() == SlotSymbol.SymbolType.DEFEND and not symbol.symbol_name.contains("Multiply"):
+			elif symbol.get_symbol_type() == Action.Type.DEFEND and not symbol.symbol_name.contains("Multiply"):
 				block_flat += _get_combo_value(symbol.symbol_value, count)
-			elif symbol.get_symbol_type() == SlotSymbol.SymbolType.HEAL and not symbol.symbol_name.contains("Multiply"):
+			elif symbol.get_symbol_type() == Action.Type.HEAL and not symbol.symbol_name.contains("Multiply"):
 				heal_flat += _get_combo_value(symbol.symbol_value, count)
 			
 			applied_combos.append(symbol)
@@ -125,17 +125,17 @@ func resolve_old(stops: Array[ReelStop]) -> Array[CombatManager.Action]:
 		if symbol in applied_combos:
 			continue
 		match symbol.get_symbol_type():
-			SlotSymbol.SymbolType.ATTACK:
+			Action.Type.ATTACK:
 				if symbol.symbol_name == "Multiply Attack":
 					attack_mult += count
 				else:
 					attack_flat += symbol.symbol_value
-			SlotSymbol.SymbolType.DEFEND:
+			Action.Type.DEFEND:
 				if symbol.symbol_name == "Multiply Defend":
 					block_mult += count
 				else:
 					block_flat += symbol.symbol_value
-			SlotSymbol.SymbolType.HEAL:
+			Action.Type.HEAL:
 				if symbol.symbol_name == "Multiply Heal":
 					heal_mult += count
 				else:
@@ -146,24 +146,24 @@ func resolve_old(stops: Array[ReelStop]) -> Array[CombatManager.Action]:
 	#var total_block: int = block_flat * block_mult
 	#var total_heal: int = heal_flat * heal_mult
 	
-	var actions: Array[CombatManager.Action] = [
-		CombatManager.Action.new(SlotSymbol.SymbolType.ATTACK, attack_flat * attack_mult, "Attacked enemy for %d!" % (attack_flat * attack_mult)),
-		CombatManager.Action.new(SlotSymbol.SymbolType.DEFEND, block_flat * block_mult, "Blocked for %d!" % (block_flat * block_mult)),
-		CombatManager.Action.new(SlotSymbol.SymbolType.HEAL, heal_flat * heal_mult, "Healed for %d!" % (heal_flat * heal_mult))
+	var actions: Array[Action] = [
+		Action.new(Action.Type.ATTACK, attack_flat * attack_mult, "Attacked enemy for %d!" % (attack_flat * attack_mult)),
+		Action.new(Action.Type.DEFEND, block_flat * block_mult, "Blocked for %d!" % (block_flat * block_mult)),
+		Action.new(Action.Type.HEAL, heal_flat * heal_mult, "Healed for %d!" % (heal_flat * heal_mult))
 	]
 	
 	return actions
 	
 
-func _get_actions_for_symbols(symbols: Array[SlotSymbol]) -> Array[CombatManager.Action]:
+func _get_actions_for_symbols(symbols: Array[SlotSymbol]) -> Array[Action]:
 	var symbol_count: Dictionary[SlotSymbol, int] = {}
 	for symbol in symbols:
 		symbol_count[symbol] = symbol_count.get(symbol, 0) + 1
-	var actions: Array[CombatManager.Action] = _consolidate_symbols(symbol_count)
+	var actions: Array[Action] = _consolidate_symbols(symbol_count)
 	return actions
 
-func _consolidate_symbols(symbol_count: Dictionary[SlotSymbol, int]) -> Array[CombatManager.Action]:
-	var actions: Array[CombatManager.Action]
+func _consolidate_symbols(symbol_count: Dictionary[SlotSymbol, int]) -> Array[Action]:
+	var actions: Array[Action]
 	
 #	How do we take our symbol count and get back a list of action
 	var attack_flat: int = 0
@@ -178,26 +178,26 @@ func _consolidate_symbols(symbol_count: Dictionary[SlotSymbol, int]) -> Array[Co
 	for symbol: SlotSymbol in symbol_count.keys():
 		var count = symbol_count[symbol]
 		match symbol.get_symbol_type():
-			SlotSymbol.SymbolType.ATTACK:
+			Action.Type.ATTACK:
 				if "Multiply" in symbol.symbol_name:
 					attack_mult += count
 				else:
 					attack_flat += symbol.symbol_value * count
-			SlotSymbol.SymbolType.DEFEND:
+			Action.Type.DEFEND:
 				if "Multiply" in symbol.symbol_name:
 					block_mult += count
 				else:
 					block_flat += symbol.symbol_value * count
-			SlotSymbol.SymbolType.HEAL:
+			Action.Type.HEAL:
 				if "Multiply" in symbol.symbol_name:
 					heal_mult += count
 				else:
 					heal_flat += symbol.symbol_value * count
 	
 	actions = [
-		CombatManager.Action.new(SlotSymbol.SymbolType.ATTACK, attack_flat * attack_mult, "Attacked enemy for %d!" % (attack_flat * attack_mult)),
-		CombatManager.Action.new(SlotSymbol.SymbolType.DEFEND, block_flat * block_mult, "Blocked for %d!" % (block_flat * block_mult)),
-		CombatManager.Action.new(SlotSymbol.SymbolType.HEAL, heal_flat * heal_mult, "Healed for %d!" % (heal_flat * heal_mult))
+		Action.new(Action.Type.ATTACK, attack_flat * attack_mult, "Attacked enemy for %d!" % (attack_flat * attack_mult)),
+		Action.new(Action.Type.DEFEND, block_flat * block_mult, "Blocked for %d!" % (block_flat * block_mult)),
+		Action.new(Action.Type.HEAL, heal_flat * heal_mult, "Healed for %d!" % (heal_flat * heal_mult))
 	]
 #	from which we need a unique display string for each action
 	return actions

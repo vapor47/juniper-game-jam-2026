@@ -31,9 +31,9 @@ func _execute_intent() -> void:
 		"block":
 			block += intent.get("value")
 
-func get_actions() -> Array[CombatManager.Action]:
+func get_actions() -> Array[Action]:
 	if intent.get("type") == "attack":
-		return [CombatManager.Action.new(SlotSymbol.SymbolType.ATTACK, intent.get("value"), "Attacked player for %d damage!" % intent.get("value"))]
+		return [Action.new(Action.Type.ATTACK, intent.get("value"), "Attacked player for %d damage!" % intent.get("value"))]
 	return []
 	
 func get_intent_as_string() -> String:

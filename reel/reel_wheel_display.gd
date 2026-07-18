@@ -222,9 +222,9 @@ func _draw_icons(wa: float, n: int) -> void:
 func _symbol_color(symbol: SlotSymbol) -> Color:
 	# Base color by type, intensity could scale with symbol_value tier later.
 	match symbol.get_symbol_type():
-		SlotSymbol.SymbolType.ATTACK:
+		Action.Type.ATTACK:
 			return Color(0.75, 0.25, 0.22)
-		SlotSymbol.SymbolType.DEFEND:
+		Action.Type.DEFEND:
 			return Color(0.24, 0.42, 0.72)
 		_:
 			return Color(0.3, 0.6, 0.35)  # heal / fallback
