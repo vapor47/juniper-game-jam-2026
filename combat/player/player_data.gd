@@ -50,7 +50,7 @@ var gold: int = BASE_GOLD:
 		gold = new_gold
 		gold_updated.emit(new_gold)
 
-var owned_charms: Array[Charm] = []
+var owned_souvenirs: Array[Souvenir] = []
 var active_drinks: Array[Drink] = []
 var expired_drinks: Array[Drink] = []
 var drinks_consumed: int = 0
@@ -59,7 +59,7 @@ signal reel_inventory_updated(new_inventory: Dictionary[String, int])
 var _reel_inventory: Dictionary[String, int]
 
 func get_active_effects() -> Array[RunEffect]:
-	return owned_charms + active_drinks
+	return owned_souvenirs + active_drinks
 
 func get_num_drinks_consumed() -> int:
 	return active_drinks.size() + expired_drinks.size()
@@ -87,8 +87,8 @@ func consume_drink(d: Drink) -> void:
 	active_drinks.append(d)
 	EventBus.run_effect_added.emit(d)
 	
-func add_charm(c: Charm) -> void:
-	owned_charms.append(c)
+func add_souvenir(c: Souvenir) -> void:
+	owned_souvenirs.append(c)
 	EventBus.run_effect_added.emit(c)
 
 func broadcast(method: StringName, args: Array = []) -> void:

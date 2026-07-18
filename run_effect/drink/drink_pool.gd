@@ -9,9 +9,9 @@ static var ENTRIES := [
 ]
 
 const RARITY_WEIGHTS := {
-	Charm.Rarity.COMMON: 0.60,
-	Charm.Rarity.UNCOMMON: 0.30,
-	Charm.Rarity.RARE: 0.10,
+	Souvenir.Rarity.COMMON: 0.60,
+	Souvenir.Rarity.UNCOMMON: 0.30,
+	Souvenir.Rarity.RARE: 0.10,
 }
 
 static func roll(count: int) -> Array[Drink]:

@@ -13,8 +13,8 @@ Possible Item Actions:
 	Increase player stats
 		Global.player.stat += amount
 	
-	Acquire charm
-		Global.player.charms.append(charm)
+	Acquire souvenir
+		Global.player.souvenirs.append(souvenir)
 		
 	Apply consumable (next combat effects)
 		Global.player.active_consumables.append(consumable)

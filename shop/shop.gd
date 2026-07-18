@@ -7,7 +7,7 @@ class_name Shop
 @onready var emergency_heal_container := %EmergencyHealContainer
 @onready var reel_stop_modifiers_container := %ReelStopModifiersContainer
 @onready var remove_reel_stop_container := %RemoveReelStopContainer
-@onready var charms_container := %CharmsContainer
+@onready var souvenirs_container := %SouvenirsContainer
 @onready var drinks_container := %DrinksContainer
 
 const SHOP_ITEM_SCENE = preload("res://shop/item/shop_item.tscn")
@@ -33,6 +33,7 @@ func _populate_shop() -> void:
 
 
 func _populate_container(container: BoxContainer, items: Array[ShopItemData]) -> void:
+	print_debug(items)
 	for item_data: ShopItemData in items:
 		var item: ShopItem = SHOP_ITEM_SCENE.instantiate()
 		item.setup(item_data)
@@ -170,7 +171,7 @@ Upon action completion, we exit all modals and return to shop screen.
 
 func _populate_misc_upgrades() -> void:
 	_populate_stat_upgrades()
-	_populate_charms()
+	_populate_souvenirs()
 	_populate_consumables()
 
 func _populate_stat_upgrades() -> void:
@@ -187,14 +188,14 @@ func _get_upgrades_for_sale(num_upgrades: int = 2) -> Array[ShopItemData]:
 		upgrades.append(upgrade)
 	return upgrades
 
-func _populate_charms() -> void:
-	var charms_for_sale := _get_charms_for_sale()
-	_populate_container(charms_container, charms_for_sale)
+func _populate_souvenirs() -> void:
+	var souvenirs_for_sale := _get_souvenirs_for_sale()
+	_populate_container(souvenirs_container, souvenirs_for_sale)
 
-func _get_charms_for_sale(count: int = 2) -> Array[ShopItemData]:
+func _get_souvenirs_for_sale(count: int = 2) -> Array[ShopItemData]:
 	var items: Array[ShopItemData] = []
-	for c: Charm in CharmPool.roll(count):
-		items.append(CharmShopItemData.create(c))
+	for c: Souvenir in SouvenirPool.roll(count):
+		items.append(SouvenirShopItemData.create(c))
 	return items
 
 func _populate_consumables() -> void:

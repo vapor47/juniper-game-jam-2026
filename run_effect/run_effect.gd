@@ -1,4 +1,4 @@
-# run_effect.gd — the shared hook surface (renamed from "Charm" as base concept)
+# run_effect.gd — the shared hook surface (renamed from "Souvenir" as base concept)
 extends RefCounted
 class_name RunEffect
 
@@ -28,12 +28,12 @@ func on_combat_ended(result, ctx: CombatContext) -> void: pass
 func modify_shop_price(price: int, item: ShopItemData) -> int: return price
 
 # -- lifetime --
-func is_expired() -> bool: return false   # charms: never; drinks: after their combat
+func is_expired() -> bool: return false   # souvenirs: never; drinks: after their combat
 
 static func get_rarity() -> Rarity:
 	return rarity
 """
-Effect Ideas (map these to whatever drinks/charms feel best):
+Effect Ideas (map these to whatever drinks/souvenirs feel best):
 	- Gain gold if all flat values are 7 ( might be too rare )
 	- +X to all results
 	- *X to all results
@@ -58,7 +58,7 @@ Effect Ideas (map these to whatever drinks/charms feel best):
 	- heal health
 	- (turn stat upgrades into drinks instead? then need some way to track them in case we go backwards via wagers or events)
 
-Charm ideas by hook point
+Souvenir ideas by hook point
 A. Resolution hooks (global versions of modifier hooks)
 
 Card Counter — combos count as +1 symbol (global Matching Cufflinks; stacks with it multiplicatively in feel — probably rare)
@@ -88,7 +88,7 @@ E. Combat-lifecycle hooks
 
 Rabbit's Foot — start each combat with 5 block
 Last Call — surviving a hit that would've killed you: once per run, survive at 1 HP (passive Comp'd Suite; maybe too much overlap with the shop item — flag)
-House Rules — enemies telegraph one extra turn ahead (information as a charm!)
+House Rules — enemies telegraph one extra turn ahead (information as a souvenir!)
 
 F. Comps (pro/con, future tier — noting the pattern works in this architecture)
 
