@@ -4,6 +4,7 @@ class_name SouvenirPool
 enum Rarity { COMMON, UNCOMMON, RARE }
 
 static var ENTRIES := [
+	{ "souvenir": LoyaltyCardSouvenir,   "rarity": Rarity.COMMON },
 	{ "souvenir": RabbitsFootSouvenir,   "rarity": Rarity.COMMON },
 	{ "souvenir": MorningCoffeeSouvenir, "rarity": Rarity.COMMON },
 	{ "souvenir": TipJarSouvenir,        "rarity": Rarity.UNCOMMON },

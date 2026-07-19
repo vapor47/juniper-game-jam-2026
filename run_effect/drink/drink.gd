@@ -3,11 +3,13 @@ class_name Drink
 
 var combats_remaining: int = 1
 
+
 func on_combat_ended(_result, _ctx: CombatContext) -> void:
 	combats_remaining -= 1
 
 func is_expired() -> bool:
 	return combats_remaining <= 0
+
 
 """
 Drink ideas: (the more easily visually identifiable, the better)

@@ -91,6 +91,12 @@ func add_souvenir(c: Souvenir) -> void:
 	owned_souvenirs.append(c)
 	EventBus.run_effect_added.emit(c)
 
+func owns_souvenir(type: GDScript) -> bool:
+	for s: Souvenir in owned_souvenirs:
+		if is_instance_of(s, type):
+			return true
+	return false
+
 func broadcast(method: StringName, args: Array = []) -> void:
 	for e: RunEffect in get_active_effects():
 		e.callv(method, args)

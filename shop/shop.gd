@@ -19,6 +19,8 @@ const UPGRADE_POOL: Array[ShopItemData] = [
 	preload("res://shop/item/upgrades/increase_token_regen.tres"),
 ]
 
+var drinks_bought_this_visit: int = 0
+
 func _ready() -> void:
 	_populate_shop()
 	%GoldLabel.text = "Gold: %d" % Global.player.gold
@@ -33,7 +35,6 @@ func _populate_shop() -> void:
 
 
 func _populate_container(container: BoxContainer, items: Array[ShopItemData]) -> void:
-	print_debug(items)
 	for item_data: ShopItemData in items:
 		var item: ShopItem = SHOP_ITEM_SCENE.instantiate()
 		item.setup(item_data)
@@ -56,17 +57,27 @@ func _on_item_purchased(item: ShopItemData) -> void:
 		_commit_purchase(item)
 
 func _commit_purchase(item: ShopItemData) -> void:
-	Global.player.gold -= item.price
+	Global.player.gold -= display_price(item)
 	_mark_sold(item)              # remove from stock / gray out the card
 	#_refresh_shop_ui()            # gold display, affordability graying on remaining items
 	# run-scoped bookkeeping where relevant, e.g. removal count increments,
 	# though that arguably belongs in the removal item/flow itself
+
+	if item is DrinkShopItemData:
+		drinks_bought_this_visit += 1
+		# update ui price
 
 func _cancel_purchase(_item: ShopItemData) -> void:
 	pass
 
 func _mark_sold(item: ShopItemData) -> void:
 	item.purchased = true
+
+func display_price(item: ShopItemData) -> int:
+	if not Global.player.owns_souvenir(LoyaltyCardSouvenir):
+		return item.price
+	var discount := clampf(0.15 * drinks_bought_this_visit, 0.0, 1.0)
+	return roundi(item.price * (1.0 - discount))
 
 
 # ---------- MACHINE MODIFICATIONS ---------- #
