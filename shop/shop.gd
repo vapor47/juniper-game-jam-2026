@@ -76,7 +76,7 @@ func _mark_sold(item: ShopItemData) -> void:
 func display_price(item: ShopItemData) -> int:
 	if not Global.player.owns_souvenir(LoyaltyCardSouvenir):
 		return item.price
-	var discount := clampf(0.15 * drinks_bought_this_visit, 0.0, 1.0)
+	var discount := clampf(LoyaltyCardSouvenir.DISCOUNT_INCREMENT * drinks_bought_this_visit, 0.0, 1.0)
 	return roundi(item.price * (1.0 - discount))
 
 
