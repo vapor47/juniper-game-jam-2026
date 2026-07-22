@@ -1,5 +1,5 @@
-extends RunEffect
-class_name DecreaseTotalSlots
+extends Debuff
+class_name DecreaseTotalSlotsDebuff
 
 const SLOT_DECREMENT: int = 1
 

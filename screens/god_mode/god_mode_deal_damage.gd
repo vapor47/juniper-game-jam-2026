@@ -1,7 +1,7 @@
 extends PanelContainer
 
 
-@onready var amount_input: SpinBox = %AmountInput
+@onready var amount_input: SpinBox = %DealDamageAmountInput
 @onready var entity_option_button: OptionButton = %EntityOptionButton
 
 func _ready() -> void:

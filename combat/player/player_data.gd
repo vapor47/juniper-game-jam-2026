@@ -126,3 +126,6 @@ func remove_reel_from_inventory(reel: Reel) -> bool:
 	_reel_inventory[reel.reel_name] -= 1
 	reel_inventory_updated.emit(_reel_inventory)
 	return true
+
+func apply_debuff(debuff: Debuff) -> void:
+	debuff.on_acquired(self)

@@ -1,8 +1,9 @@
 [gd_scene format=3 uid="uid://c56h1gy036pr8"]
 
 [ext_resource type="Script" uid="uid://8oy4u1w7leno" path="res://screens/pause_menu.gd" id="1_in564"]
-[ext_resource type="Script" uid="uid://gnrccju7a1o1" path="res://screens/god_mode_section.gd" id="2_hbqyx"]
-[ext_resource type="Script" uid="uid://b142h5rfsxuxn" path="res://screens/god_menu.gd" id="2_mu52f"]
+[ext_resource type="Script" uid="uid://gnrccju7a1o1" path="res://screens/god_mode/god_mode_deal_damage.gd" id="2_hbqyx"]
+[ext_resource type="Script" uid="uid://b142h5rfsxuxn" path="res://screens/god_mode/god_menu.gd" id="2_mu52f"]
+[ext_resource type="Script" uid="uid://b5s4cu2f63n21" path="res://screens/god_mode/god_mode_apply_debuff.gd" id="4_dqmq2"]
 
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_bsh87"]
 bg_color = Color(0.08, 0.08, 0.08, 1)
@@ -77,7 +78,6 @@ text = "Back to Main Menu"
 
 [node name="GodMenu" type="PanelContainer" parent="CenterContainer" unique_id=752852077]
 unique_name_in_owner = true
-visible = false
 layout_mode = 2
 theme_override_styles/panel = SubResource("StyleBoxFlat_bsh87")
 script = ExtResource("2_mu52f")
@@ -127,12 +127,12 @@ theme_override_constants/separation = 24
 [node name="HBoxContainer" type="HBoxContainer" parent="CenterContainer/GodMenu/MarginContainer/VBoxContainer/DealDamageSection/PanelContainer/MarginContainer/VBoxContainer/OptionsHBox" unique_id=1995618896]
 layout_mode = 2
 
-[node name="Label" type="Label" parent="CenterContainer/GodMenu/MarginContainer/VBoxContainer/DealDamageSection/PanelContainer/MarginContainer/VBoxContainer/OptionsHBox/HBoxContainer" unique_id=720153453]
+[node name="DealDamageAmountLabel" type="Label" parent="CenterContainer/GodMenu/MarginContainer/VBoxContainer/DealDamageSection/PanelContainer/MarginContainer/VBoxContainer/OptionsHBox/HBoxContainer" unique_id=720153453]
 layout_mode = 2
 theme_override_colors/font_color = Color(0, 0, 0, 1)
 text = "Amount:"
 
-[node name="AmountInput" type="SpinBox" parent="CenterContainer/GodMenu/MarginContainer/VBoxContainer/DealDamageSection/PanelContainer/MarginContainer/VBoxContainer/OptionsHBox/HBoxContainer" unique_id=552302995]
+[node name="DealDamageAmountInput" type="SpinBox" parent="CenterContainer/GodMenu/MarginContainer/VBoxContainer/DealDamageSection/PanelContainer/MarginContainer/VBoxContainer/OptionsHBox/HBoxContainer" unique_id=552302995]
 unique_name_in_owner = true
 layout_mode = 2
 max_value = 10000.0
@@ -157,6 +157,50 @@ layout_mode = 2
 theme_override_constants/outline_size = 0
 text = "Deal Damage"
 
+[node name="ApplyDebuffSection" type="PanelContainer" parent="CenterContainer/GodMenu/MarginContainer/VBoxContainer" unique_id=448130928]
+layout_mode = 2
+theme_override_styles/panel = SubResource("StyleBoxFlat_b3lgo")
+script = ExtResource("4_dqmq2")
+
+[node name="PanelContainer" type="PanelContainer" parent="CenterContainer/GodMenu/MarginContainer/VBoxContainer/ApplyDebuffSection" unique_id=1498078796]
+layout_mode = 2
+size_flags_vertical = 3
+theme_override_styles/panel = SubResource("StyleBoxFlat_g56pd")
+
+[node name="MarginContainer" type="MarginContainer" parent="CenterContainer/GodMenu/MarginContainer/VBoxContainer/ApplyDebuffSection/PanelContainer" unique_id=1938470346]
+layout_mode = 2
+theme_override_constants/margin_left = 8
+theme_override_constants/margin_top = 8
+theme_override_constants/margin_right = 8
+theme_override_constants/margin_bottom = 8
+
+[node name="VBoxContainer" type="VBoxContainer" parent="CenterContainer/GodMenu/MarginContainer/VBoxContainer/ApplyDebuffSection/PanelContainer/MarginContainer" unique_id=1581931420]
+layout_mode = 2
+theme_override_constants/separation = 12
+
+[node name="OptionsHBox" type="HBoxContainer" parent="CenterContainer/GodMenu/MarginContainer/VBoxContainer/ApplyDebuffSection/PanelContainer/MarginContainer/VBoxContainer" unique_id=173533523]
+layout_mode = 2
+theme_override_constants/separation = 24
+
+[node name="HBoxContainer2" type="HBoxContainer" parent="CenterContainer/GodMenu/MarginContainer/VBoxContainer/ApplyDebuffSection/PanelContainer/MarginContainer/VBoxContainer/OptionsHBox" unique_id=1347690124]
+layout_mode = 2
+
+[node name="Label" type="Label" parent="CenterContainer/GodMenu/MarginContainer/VBoxContainer/ApplyDebuffSection/PanelContainer/MarginContainer/VBoxContainer/OptionsHBox/HBoxContainer2" unique_id=326605997]
+layout_mode = 2
+theme_override_colors/font_color = Color(0, 0, 0, 1)
+text = "Debuff:"
+
+[node name="DebuffOptionButton" type="OptionButton" parent="CenterContainer/GodMenu/MarginContainer/VBoxContainer/ApplyDebuffSection/PanelContainer/MarginContainer/VBoxContainer/OptionsHBox/HBoxContainer2" unique_id=1473785712]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_horizontal = 3
+search_bar_enabled = true
+
+[node name="ApplyDebuffButton" type="Button" parent="CenterContainer/GodMenu/MarginContainer/VBoxContainer/ApplyDebuffSection/PanelContainer/MarginContainer/VBoxContainer" unique_id=860459213]
+layout_mode = 2
+theme_override_constants/outline_size = 0
+text = "Apply Debuff"
+
 [node name="BackButton" type="Button" parent="CenterContainer/GodMenu/MarginContainer/VBoxContainer" unique_id=353262768]
 layout_mode = 2
 text = "Back"
@@ -165,4 +209,5 @@ text = "Back"
 [connection signal="pressed" from="CenterContainer/MainMenuContainer/RestartButton" to="." method="_on_restart_button_pressed"]
 [connection signal="pressed" from="CenterContainer/MainMenuContainer/MainMenuButton" to="." method="_on_main_menu_button_pressed"]
 [connection signal="pressed" from="CenterContainer/GodMenu/MarginContainer/VBoxContainer/DealDamageSection/PanelContainer/MarginContainer/VBoxContainer/DealDamageButton" to="CenterContainer/GodMenu/MarginContainer/VBoxContainer/DealDamageSection" method="_on_deal_damage_button_pressed"]
+[connection signal="pressed" from="CenterContainer/GodMenu/MarginContainer/VBoxContainer/ApplyDebuffSection/PanelContainer/MarginContainer/VBoxContainer/ApplyDebuffButton" to="CenterContainer/GodMenu/MarginContainer/VBoxContainer/ApplyDebuffSection" method="_on_apply_debuff_button_pressed"]
 [connection signal="pressed" from="CenterContainer/GodMenu/MarginContainer/VBoxContainer/BackButton" to="." method="_on_god_menu_back_button_pressed"]
