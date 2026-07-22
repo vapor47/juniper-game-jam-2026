@@ -6,6 +6,8 @@ class_name SlotMachine
 @onready var health_bar: HealthBar = %PlayerHealthBar
 @onready var phase_label: Label = %PhaseLabel
 
+var slots: Array[Slot] = []
+
 var num_slots_spinning: int = 0:
 	set(new_val):
 		#%LockInButton.disabled = new_val > 0
@@ -23,9 +25,11 @@ func _ready() -> void:
 	EventBus.slot_selected.connect(_on_slot_selected)
 	EventBus.reel_swapped.connect(_on_reel_swapped)
 	
-	var slots: Array[Node] = get_tree().get_nodes_in_group("slots")
-
-	for slot: Slot in slots:
+	var placeholder_slot: InstancePlaceholder = %Slot
+	for i in Global.player.total_slots:
+		slots.append(placeholder_slot.create_instance() as Slot)
+	
+	for slot: Slot in get_slots():
 		slot.started_spinning.connect(func() -> void: num_slots_spinning += 1)
 		slot.stopped_spinning.connect(func() -> void: num_slots_spinning -= 1)
 	
@@ -72,8 +76,8 @@ func _on_reel_swapped(reel_to_insert: Reel) -> void:
 	# Auto close Side Panel after swap
 	selected_slot = null
 	
-func get_slots() -> Array[Node]:
-	return %SlotGroupContainer.get_children()
+func get_slots() -> Array[Slot]:
+	return slots
 
 """
 onSpin: trigger onSpin for all child slots

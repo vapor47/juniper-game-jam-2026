@@ -210,7 +210,7 @@ func _on_loadout_confirmed(reels: Array[Reel], modal: LoadoutSelection) -> void:
 		push_error("Starting loadout greater than total slots")
 		return 
 	
-	var slots: Array[Node] = slot_machine.get_slots()
+	var slots: Array[Slot] = slot_machine.get_slots()
 	for i in reels.size():
 		if not reels[i]:
 			continue
@@ -221,7 +221,7 @@ func _on_loadout_confirmed(reels: Array[Reel], modal: LoadoutSelection) -> void:
 	_update_combo_legend()
 	
 func _init_starting_loadout() -> void:
-	var slots: Array[Node] = slot_machine.get_slots()
+	var slots: Array[Slot] = slot_machine.get_slots()
 
 	slots[0]._insert_reel(Global.reels.get("Attack"), false)
 	slots[1]._insert_reel(Global.reels.get("Attack"), false)

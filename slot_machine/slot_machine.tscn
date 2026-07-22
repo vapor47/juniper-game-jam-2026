@@ -2,7 +2,6 @@
 
 [ext_resource type="Script" uid="uid://buhxbaeopqhmm" path="res://slot_machine/slot_machine.gd" id="1_knkoj"]
 [ext_resource type="Script" uid="uid://bh5pt2mvktqve" path="res://slot_machine/respins_remaining_label.gd" id="2_7abct"]
-[ext_resource type="PackedScene" uid="uid://b8ijffcnh5eqd" path="res://slot_machine/slot.tscn" id="2_842tv"]
 [ext_resource type="Script" uid="uid://b0wlqw84eo3yf" path="res://slot_machine/slot_machine_lever.gd" id="3_7abct"]
 [ext_resource type="PackedScene" uid="uid://b6jd2c8y5spjl" path="res://slot_machine/combo_legend/combo_legend_button.tscn" id="3_84m6g"]
 [ext_resource type="Script" uid="uid://bosg5mx41nc4t" path="res://slot_machine/lock_in_button.gd" id="4_kpwbf"]
@@ -81,19 +80,8 @@ unique_name_in_owner = true
 layout_mode = 2
 alignment = 1
 
-[node name="Slot1" parent="MarginContainer/VBodyContainer/SlotsBodyContainer/PanelContainer/SlotGroupContainer" unique_id=1700477999 instance=ExtResource("2_842tv")]
-layout_mode = 2
-
-[node name="Slot2" parent="MarginContainer/VBodyContainer/SlotsBodyContainer/PanelContainer/SlotGroupContainer" unique_id=1729340720 instance=ExtResource("2_842tv")]
-layout_mode = 2
-
-[node name="Slot3" parent="MarginContainer/VBodyContainer/SlotsBodyContainer/PanelContainer/SlotGroupContainer" unique_id=816384910 instance=ExtResource("2_842tv")]
-layout_mode = 2
-
-[node name="Slot4" parent="MarginContainer/VBodyContainer/SlotsBodyContainer/PanelContainer/SlotGroupContainer" unique_id=1574252330 instance=ExtResource("2_842tv")]
-layout_mode = 2
-
-[node name="Slot5" parent="MarginContainer/VBodyContainer/SlotsBodyContainer/PanelContainer/SlotGroupContainer" unique_id=1904504209 instance=ExtResource("2_842tv")]
+[node name="Slot" parent="MarginContainer/VBodyContainer/SlotsBodyContainer/PanelContainer/SlotGroupContainer" unique_id=1700477999 instance_placeholder="res://slot_machine/slot.tscn"]
+unique_name_in_owner = true
 layout_mode = 2
 
 [node name="SlotMachineLever" type="Button" parent="MarginContainer/VBodyContainer/SlotsBodyContainer" unique_id=910737963]
