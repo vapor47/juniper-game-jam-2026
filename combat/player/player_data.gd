@@ -53,7 +53,9 @@ var gold: int = BASE_GOLD:
 var owned_souvenirs: Array[Souvenir] = []
 var active_drinks: Array[Drink] = []
 var expired_drinks: Array[Drink] = []
-var drinks_consumed: int = 0
+var drunkenness: float = 0.0:
+	set(value):
+		drunkenness = clampf(value, 0.0, 100.0)
 
 signal reel_inventory_updated(new_inventory: Dictionary[String, int])
 var _reel_inventory: Dictionary[String, int]
@@ -128,4 +130,15 @@ func remove_reel_from_inventory(reel: Reel) -> bool:
 	return true
 
 func apply_debuff(debuff: Debuff) -> void:
+	print_debug("Debuff Applied! (%s)" % debuff.display_name)
 	debuff.on_acquired(self)
+
+"""
+Debuff flavor line ideas: (First or Third person?)
+	You feel the alcohol getting to you.
+	Your vision begins to blur
+	I'm feeling a little dizzy
+	I'm good Ociffer! *belches*
+	Goddamn that shit got me fucked up
+	That one felt a little strong
+"""
