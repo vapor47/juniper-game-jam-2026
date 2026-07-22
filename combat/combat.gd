@@ -52,6 +52,9 @@ var initial_spin_completed: bool = false:
 
 
 func setup(e: Array[EnemyData]) -> void:
+	# TODO: dedupe
+	context = CombatContext.new()
+	context.enemies = e
 	enemies = e
 	for enemy in enemies:
 		enemy.died.connect(_on_entity_died)
@@ -194,7 +197,7 @@ func _ready() -> void:
 func _begin_combat() -> void:
 	curr_slot_press_action = SlotPressAction.NONE
 	Global.player.replenish_tokens()
-	context = CombatContext.new()
+	context.player = Global.player
 	
 	_open_loadout_selection_modal()
 	Global.player.broadcast("on_combat_started", [context])
@@ -371,7 +374,7 @@ func _end_enemy_turn() -> void:
 
 # TODO: these should emit signals and let scene manager handle
 func _end_combat(result: CombatResult) -> void:
-	Global.player.broadcast("on_combat_ended", [context])
+	Global.player.broadcast("on_combat_ended", [result, context])
 	
 	if result == CombatResult.VICTORY:
 		_show_post_combat()

@@ -53,6 +53,8 @@ var gold: int = BASE_GOLD:
 var owned_souvenirs: Array[Souvenir] = []
 var active_drinks: Array[Drink] = []
 var expired_drinks: Array[Drink] = []
+var active_debuffs: Array[Debuff] = []
+
 var drunkenness: float = 0.0:
 	set(value):
 		drunkenness = clampf(value, 0.0, 100.0)
@@ -61,7 +63,7 @@ signal reel_inventory_updated(new_inventory: Dictionary[String, int])
 var _reel_inventory: Dictionary[String, int]
 
 func get_active_effects() -> Array[RunEffect]:
-	return owned_souvenirs + active_drinks
+	return owned_souvenirs + active_drinks + active_debuffs
 
 func get_num_drinks_consumed() -> int:
 	return active_drinks.size() + expired_drinks.size()
@@ -133,6 +135,12 @@ func apply_debuff(debuff: Debuff) -> void:
 	print_debug("Debuff Applied! (%s)" % debuff.display_name)
 	Toast.show_debuff(debuff.display_name, debuff.description, "", "\"That one felt a little strong...\"")
 	debuff.on_acquired(self)
+	active_debuffs.append(debuff)
+
+func remove_debuff(debuff: Debuff) -> void:
+	active_debuffs.remove_at(active_debuffs.find(debuff))
+	debuff.on_removed(self)
+	
 
 """
 Debuff flavor line ideas: (First or Third person?)
