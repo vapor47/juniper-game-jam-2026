@@ -131,6 +131,7 @@ func remove_reel_from_inventory(reel: Reel) -> bool:
 
 func apply_debuff(debuff: Debuff) -> void:
 	print_debug("Debuff Applied! (%s)" % debuff.display_name)
+	Toast.show_debuff(debuff.display_name, debuff.description, "", "\"That one felt a little strong...\"")
 	debuff.on_acquired(self)
 
 """
