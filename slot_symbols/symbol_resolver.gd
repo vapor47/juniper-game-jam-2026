@@ -20,11 +20,7 @@ func resolve(ctx: ResolutionContext) -> Array:
 	for stop in selected_stops:
 		by_symbol.get_or_add(stop.slot_symbol, []).append(stop)
 
-	var totals: Dictionary[Action.Type, int] = {
-		#Action.Type.ATTACK: 0,
-		#Action.Type.DEFEND: 0,
-		#Action.Type.HEAL: 0
-	}
+	var totals: Dictionary[Action.Type, int] = {}
 	
 	for symbol: SlotSymbol in by_symbol:
 		var stops: Array = by_symbol[symbol]

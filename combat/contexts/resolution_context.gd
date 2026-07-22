@@ -25,11 +25,12 @@ var combo_symbols: Array[SlotSymbol] = []   # symbols that comboed this resoluti
 
 
 static func build(p_player: PlayerData, p_enemies: Array[EnemyData],
-		p_is_initial_spin: bool, p_selected_slots: Dictionary[Slot, bool]) -> ResolutionContext:
+		p_is_initial_spin: bool, p_selected_slots: Dictionary[Slot, bool], turn_context) -> ResolutionContext:
 	var ctx := ResolutionContext.new()
 	ctx.player = p_player
 	ctx.enemies = p_enemies
 	ctx.is_initial_spin = p_is_initial_spin
+	ctx.turn = turn_context
 	for slot: Slot in p_selected_slots:
 		var stop := slot.get_curr_stop()
 		ctx.selected_stops.append(stop)

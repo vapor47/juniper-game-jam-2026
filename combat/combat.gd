@@ -123,6 +123,9 @@ Perhapssss along individual respins? I think the idea of locking slots in place 
 
 const LOADOUT_SELECTION_MODAL = preload("res://combat/loadout/loadout_selection.tscn")
 
+var context: CombatContext
+var turn_context: TurnContext
+
 var max_active_slots: int = 3
 var selected_slots: Dictionary[Slot, bool] = {}:
 	set(new_val):
@@ -169,8 +172,6 @@ var slot_to_swap: Slot = null:
 				slot_to_swap.unselect()
 			slot_to_swap = new_val
 			new_val.select()
-
-var context: CombatContext
 
 func _on_side_panel_closed() -> void:
 	#slot_to_swap = null
@@ -233,6 +234,7 @@ func _init_starting_loadout() -> void:
 	slots[4]._insert_reel(Global.reels.get("Defend"), false)
 
 func _begin_player_turn() -> void:
+	turn_context = TurnContext.new(context)
 	_reset_player_turn_state()
 	Global.player.regen_tokens()
 	player_turn_started.emit()
@@ -293,7 +295,7 @@ func _begin_action_resolution_phase() -> void:
 	Calculate result of player's finalized symbols and
 		perform actions
 	"""
-	var res_context: ResolutionContext = ResolutionContext.build(Global.player, enemies, initial_spin_completed, selected_slots)
+	var res_context: ResolutionContext = ResolutionContext.build(Global.player, enemies, initial_spin_completed, selected_slots, turn_context)
 	res_context.actions = SymbolResolver.resolve(res_context)
 	
 	Global.player.broadcast("on_resolution", [res_context])

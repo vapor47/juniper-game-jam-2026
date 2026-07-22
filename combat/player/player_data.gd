@@ -74,7 +74,6 @@ func _init() -> void:
 	_reel_inventory = {
 		"Attack": 3,
 		"Defend": 3,
-		"Heal": 0,
 	}
 	
 func replenish_tokens() -> void:
