@@ -5,9 +5,9 @@ const BASE_CHARM_PRICE: int = 100
 var souvenir: Souvenir
 
 
-func on_purchase(_player: PlayerData) -> void:
-	Global.player.add_souvenir(souvenir)
-	souvenir.on_acquired()
+func on_purchase(player: PlayerData) -> void:
+	player.add_souvenir(souvenir)
+	souvenir.on_acquired(player)
 
 static func create(p_souvenir: Souvenir) -> SouvenirShopItemData:
 	var item := SouvenirShopItemData.new()

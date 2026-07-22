@@ -16,7 +16,9 @@ func modify_result_total(total: int, type: Action.Type, ctx: ResolutionContext) 
 func combo_count_bonus() -> int: return 0
 
 # -- lifecycle hooks (called by CombatManager/RunManager at the right seams) --
-func on_acquired() -> void: pass
+func on_acquired(player: PlayerData) -> void: pass
+func on_removed(player: PlayerData) -> void: pass
+
 func on_combat_started(ctx: CombatContext) -> void: pass
 func on_player_turn_started(ctx: CombatContext) -> void: pass
 func on_resolution(ctx: ResolutionContext) -> void: pass

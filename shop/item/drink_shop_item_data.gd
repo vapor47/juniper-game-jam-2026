@@ -6,7 +6,7 @@ var drink: Drink
 
 func on_purchase(player: PlayerData) -> void:
 	player.consume_drink(drink)
-	drink.on_acquired()
+	drink.on_acquired(player)
 
 static func create(p_drink: Drink) -> DrinkShopItemData:
 	var item := DrinkShopItemData.new()
