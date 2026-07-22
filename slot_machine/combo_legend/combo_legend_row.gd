@@ -21,4 +21,4 @@ func _init(p_symbol: SlotSymbol, p_count: int) -> void:
 	
 	category = p_symbol.get_symbol_type()
 	symbol = p_symbol
-	result = SymbolResolver._combo_value_from_sum(p_symbol.symbol_value, p_count)
+	result = SymbolResolver._combo_value_from_sum(p_symbol.symbol_value * p_count, p_count)

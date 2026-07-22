@@ -66,7 +66,7 @@ func resolve(ctx: ResolutionContext) -> Array:
 ## Locked combo formula, sum-based variant (Phase 1 already individualized stop
 ## values, so this takes the modified sum rather than symbol_value * count).
 ## combo = sum + (sum * 0.12 * scale) + scale, scale = (eff_count - 1)^1.3
-static func _combo_value_from_sum(value_sum: int, eff_count: int) -> int:
+func _combo_value_from_sum(value_sum: int, eff_count: int) -> int:
 	if eff_count <= 1:
 		return value_sum
 	var scale := pow(eff_count - 1, 1.3)

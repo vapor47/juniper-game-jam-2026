@@ -89,7 +89,7 @@ func _start_spin_animation() -> void:
 func _stop_spin_animation() -> void:
 	if not is_spinning:
 		return
-		
+	
 	is_spinning = false
 	await get_tree().process_frame
 	
