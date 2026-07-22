@@ -8,8 +8,6 @@ var is_held: bool = false
 var slot_reel: Reel = null
 var _curr_stop: ReelStop = null:
 	set(new_stop):
-		#print_debug("curr stop changed" + str(self))
-		#print_debug(new_stop.slot_symbol.symbol_name)
 		_curr_stop = new_stop
 		if new_stop:
 			if new_stop.slot_symbol.icon:
@@ -51,7 +49,7 @@ func spin(duration: float = Global.SLOT_SPIN_DURATION) -> ReelStop:
 	
 	_start_spin_animation()
 	await get_tree().create_timer(duration).timeout
-	_stop_spin_animation(_curr_stop)
+	_stop_spin_animation()
 	
 	return _curr_stop
 
@@ -88,19 +86,18 @@ func _start_spin_animation() -> void:
 			#break
 		# show random symbol name as placeholder
 		
-func _stop_spin_animation(final_stop: ReelStop) -> void:
+func _stop_spin_animation() -> void:
 	if not is_spinning:
 		return
 		
 	is_spinning = false
 	
-	#result_label.text = get_curr_stop().slot_symbol.symbol_name
 	_update_slot_icon_or_placeholder_label(get_curr_stop().slot_symbol)
 
 var is_selected: bool = false
 
 func _make_selected_stylebox() -> StyleBoxFlat:
-	var style = StyleBoxFlat.new()
+	var style := StyleBoxFlat.new()
 	style.bg_color = Color(0.2, 0.5, 0.9, 0.3)  # light blue tint, semi-transparent
 	style.border_color = Color(0.2, 0.5, 0.9)   # solid blue border
 	style.border_width_left = 3
@@ -147,7 +144,6 @@ func _insert_reel(reel: Reel, should_spin: bool = true) -> void:
 		return
 	if Global.player.get_reel_inventory()[reel.reel_name] <= 0:
 		push_error("Attempted to insert reel with 0 remaining in inventory.")
-	print_debug("Reel inserted")
 	slot_reel = reel
 	Global.player.remove_reel_from_inventory(reel)
 	
