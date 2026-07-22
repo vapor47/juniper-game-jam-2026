@@ -91,6 +91,7 @@ func _stop_spin_animation() -> void:
 		return
 		
 	is_spinning = false
+	await get_tree().process_frame
 	
 	_update_slot_icon_or_placeholder_label(get_curr_stop().slot_symbol)
 

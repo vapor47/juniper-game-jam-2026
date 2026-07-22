@@ -13,7 +13,6 @@ class_name Toast
 static func show_debuff(effect_name: String, description: String, duration_text: String = "", flavor_text: String = "") -> void:
 	var toast_scene: PackedScene = preload("res://toast.tscn")
 	var toast: Toast = toast_scene.instantiate()
-	#toast.position = Engine.get_main_loop().root.get_
 	Engine.get_main_loop().root.add_child(toast)
 	toast._play(flavor_text, effect_name, description, duration_text)
 
