@@ -103,6 +103,8 @@ func owns_souvenir(type: GDScript) -> bool:
 func broadcast(method: StringName, args: Array = []) -> void:
 	for e: RunEffect in get_active_effects():
 		e.callv(method, args)
+	if method == "on_combat_ended":
+		drunkenness -= 15
 	# sweep expirations after combat-end broadcasts
 	#active_drinks = active_drinks.filter(func(e): return not e.is_expired())
 	# (emit run_effect_removed for UI as needed)
