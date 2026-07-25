@@ -16,14 +16,24 @@ var health: int = max_health:
 		
 var block: int = 0
 
+## Latches on the killing blow so `died` fires exactly once. Without it every
+## later hit re-emits it, since `health <= 0` stays true.
+var is_dead: bool = false
+
+
 func take_damage(amount: int) -> int:
+	if is_dead:
+		return 0
+
 	var actual: int = max(0, amount - block)
 	block = max(0, block - amount)
-	health -= actual
-	if health <= 0:
-		died.emit(self)
+	health = max(0, health - actual)
 
 	reset_block()
+
+	if health <= 0:
+		is_dead = true
+		died.emit(self)
 	return actual
 
 func add_block(amount: int) -> int:

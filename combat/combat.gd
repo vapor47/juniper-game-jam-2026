@@ -40,6 +40,12 @@ var _tokens_spent_on_lines: int = 0
 ## them out of picking their free line.
 var _busy: bool = false
 
+## Latched the moment either side dies. Resolution stops immediately: the rest
+## of a payline must not keep swinging at a corpse, and every downstream step
+## (further actions, the encore repeat, the enemy turn, the next player turn)
+## has to become a no-op.
+var _combat_over: bool = false
+
 
 func setup(e: Array[EnemyData]) -> void:
 	context = CombatContext.new()
@@ -59,6 +65,8 @@ func _init_enemies() -> void:
 		enemy_container.add_child(enemy_ui)
 
 func _on_entity_died(who: CombatantData) -> void:
+	if _combat_over:
+		return
 	if who == Global.player:
 		_end_combat(CombatResult.LOSS)
 	else:
@@ -175,7 +183,7 @@ func _total_cost_for(count: int) -> int:
 func _on_line_clicked(payline: Payline) -> void:
 	# Selection is post-spin (§4) — there's no board to judge before then.
 	# Being broke never blocks selection: the first line is always free.
-	if _busy or not has_spun_this_turn:
+	if _busy or _combat_over or not has_spun_this_turn:
 		return
 
 	var next := selected_lines.duplicate()
@@ -228,7 +236,7 @@ func _refresh_paylines() -> void:
 
 
 func _on_lever_pulled() -> void:
-	if _busy or not has_spun_this_turn:
+	if _busy or _combat_over or not has_spun_this_turn:
 		return
 	var cost := _next_spin_cost()
 	if Global.player.tokens < cost:
@@ -241,7 +249,7 @@ func _on_lever_pulled() -> void:
 
 
 func _on_lock_in_pressed() -> void:
-	if _busy or not has_spun_this_turn or selected_lines.is_empty():
+	if _busy or _combat_over or not has_spun_this_turn or selected_lines.is_empty():
 		return
 	_busy = true
 	_set_controls_enabled(false)
@@ -270,15 +278,22 @@ func _on_lock_in_pressed() -> void:
 			encore = drink
 			break
 
-	if encore and encore.available:
+	# `enemies` is emptied on the killing blow, so this must not run afterwards.
+	if encore and encore.available and not _combat_over and not enemies.is_empty():
 		await _perform_actions(actions, Global.player, enemies[0])
 		encore.available = false
 
+	if _combat_over:
+		return
 	_end_player_turn()
 
 
 func _perform_actions(actions: Array[Action], source: CombatantData = Global.player, target: CombatantData = null) -> void:
 	for action in actions:
+		# The killing blow ends the turn. Remaining runs on the payline don't
+		# resolve — they'd hit a dead target and re-trigger the end of combat.
+		if _combat_over:
+			return
 		# Don't perform no ops
 		if action.value == 0:
 			continue
@@ -311,15 +326,21 @@ func _end_player_turn() -> void:
 	Global.player.broadcast("on_turn_ended", [context])
 
 	await get_tree().create_timer(2).timeout
+	if _combat_over:
+		return
 	_start_enemy_turn()
 
 
 func _start_enemy_turn() -> void:
 	enemy_turn_started.emit()
 	for enemy in enemies:
+		if _combat_over:
+			return
 		if is_instance_valid(enemy):
 			var actions := enemy.get_actions()
 			await _perform_actions(actions, enemy, Global.player)
+	if _combat_over:
+		return
 	_end_enemy_turn()
 
 
@@ -328,7 +349,14 @@ func _end_enemy_turn() -> void:
 
 
 # TODO: these should emit signals and let scene manager handle
+## Idempotent — only the first call does anything, so a stray second death
+## signal can never stack a second reward screen.
 func _end_combat(result: CombatResult) -> void:
+	if _combat_over:
+		return
+	_combat_over = true
+	_set_controls_enabled(false)
+
 	Global.player.broadcast("on_combat_ended", [result, context])
 
 	if result == CombatResult.VICTORY:
