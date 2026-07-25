@@ -2,7 +2,7 @@ extends RefCounted
 class_name StopModifier
 ## Base for all stop modifiers. Subclasses override the hooks they care about.
 ## Modifiers are stateless where possible; per-stop state (e.g. Ramping) is OK
-## since each StopModifier instance is owned by exactly one ReelStop.
+## since each StopModifier instance is owned by exactly one Stop.
 
 """
 What is required for a modifier?
@@ -32,19 +32,19 @@ var overlay_icon: Texture2D = null
 
 
 ## Can this modifier be applied to the given stop? Checked by the shop/edit flow.
-func can_apply(stop: ReelStop) -> bool:
+func can_apply(stop: Stop) -> bool:
 	return true
 
 
 ## HOOK A — modify this stop's own contributed value.
 ## Called once per resolution for the stop this modifier is attached to.
-func modify_stop_value(base_value: int, ctx: ResolutionContext, stop: ReelStop) -> int:
+func modify_stop_value(base_value: int, ctx: ResolutionContext, stop: Stop) -> int:
 	return base_value
 
 
 ## HOOK B — modify the final result total (runs after all stop values + combos).
 ## Called only if this modifier's stop was selected.
-func modify_result_total(total: int, ctx: ResolutionContext, stop: ReelStop) -> int:
+func modify_result_total(total: int, ctx: ResolutionContext, stop: Stop) -> int:
 	return total
 
 
@@ -55,10 +55,10 @@ func combo_count_bonus() -> int:
 
 ## HOOK D — side effects after resolution (gold, tokens, healing...).
 ## Called only if this modifier's stop was selected.
-func on_resolved(ctx: ResolutionContext, stop: ReelStop) -> void:
+func on_resolved(ctx: ResolutionContext, stop: Stop) -> void:
 	pass
 
 
 ## HOOK E — fired when this stop's slot is respun away (stop was showing, got rerolled).
-func on_spun_away(ctx: ResolutionContext, stop: ReelStop) -> void:
+func on_spun_away(ctx: ResolutionContext, stop: Stop) -> void:
 	pass

@@ -10,5 +10,5 @@ func _init() -> void:
 	description = "+1 to every stop value next combat"
 	rarity = Souvenir.Rarity.COMMON
 
-func modify_stop_value(v: int, _ctx: ResolutionContext, _stop: ReelStop) -> int:
+func modify_stop_value(v: int, _ctx: ResolutionContext, _stop: Stop) -> int:
 	return v + 1

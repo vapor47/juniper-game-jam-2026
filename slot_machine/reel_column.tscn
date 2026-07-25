@@ -1,0 +1,33 @@
+[gd_scene format=3 uid="uid://deld5mbn1asjy"]
+
+[ext_resource type="Script" uid="uid://dbnq1or3f4wyr" path="res://slot_machine/reel_column.gd" id="1_3ageh"]
+
+[node name="ReelColumn" type="Control" unique_id=1425705465]
+custom_minimum_size = Vector2(96, 0)
+layout_mode = 3
+anchors_preset = 0
+script = ExtResource("1_3ageh")
+
+[node name="VBoxContainer" type="VBoxContainer" parent="." unique_id=1610286337]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+size_flags_horizontal = 3
+size_flags_vertical = 3
+
+[node name="ScrollLayer" type="Control" parent="VBoxContainer" unique_id=1633007591]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(96, 288)
+clip_contents = true
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 4
+
+[node name="HoldButton" type="Button" parent="VBoxContainer" unique_id=287297480]
+unique_name_in_owner = true
+layout_mode = 2
+toggle_mode = true
+text = "HOLD"

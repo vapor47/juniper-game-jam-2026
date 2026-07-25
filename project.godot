@@ -19,7 +19,6 @@ config/icon="res://icon.svg"
 
 Global="*uid://c608tduws4047"
 EventBus="*uid://rj2vow142o5p"
-SymbolResolver="*uid://c70d3i8ju3pul"
 SceneManager="*uid://dmu08rwlathqs"
 RunManager="*uid://bu1kmbs68mdki"
 HoverLabel="*uid://dl0js3r45tm8c"
@@ -45,10 +44,7 @@ folder_colors={
 "res://combat/": "red",
 "res://combat/contexts/": "yellow",
 "res://combat/loadout/": "gray",
-"res://combat/player/": "blue",
-"res://slot_symbols/symbols/attack/": "red",
-"res://slot_symbols/symbols/defend/": "blue",
-"res://slot_symbols/symbols/heal/": "green"
+"res://combat/player/": "blue"
 }
 
 [gui]

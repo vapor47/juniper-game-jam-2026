@@ -5,81 +5,67 @@ class_name SlotMachine
 @onready var lock_in_button: Button = %LockInButton
 @onready var health_bar: HealthBar = %PlayerHealthBar
 @onready var phase_label: Label = %PhaseLabel
+@onready var payline_panel: PaylinePanel = %PaylinePanel
 
-var slots: Array[Slot] = []
+var reel_columns: Array[ReelColumn] = []
 
-var num_slots_spinning: int = 0:
-	set(new_val):
-		#%LockInButton.disabled = new_val > 0
-		num_slots_spinning = new_val
-
-var selected_slot: Slot = null:
-	set(value):
-		if value == null:
-			EventBus.close_side_panel.emit()
-		selected_slot = value
 
 func _ready() -> void:
-	EventBus.lever_pulled.connect(_on_lever_pulled)
-	lock_in_button.lock_in_pressed.connect(_confirm_slots)
-	EventBus.slot_selected.connect(_on_slot_selected)
-	EventBus.reel_swapped.connect(_on_reel_swapped)
-	
-	var placeholder_slot: InstancePlaceholder = %Slot
-	for i in Global.player.total_slots:
-		slots.append(placeholder_slot.create_instance() as Slot)
-	
-	for slot: Slot in get_slots():
-		slot.started_spinning.connect(func() -> void: num_slots_spinning += 1)
-		slot.stopped_spinning.connect(func() -> void: num_slots_spinning -= 1)
-	
+	var placeholder_col: InstancePlaceholder = %ReelColumn
+	for i in 5:
+		reel_columns.append(placeholder_col.create_instance())
+
 	health_bar.setup(Global.player)
 
-func _on_lever_pulled() -> void:
-	var slots: Array[Node] = get_tree().get_nodes_in_group("slots")
-	var unheld_slots := slots.filter(func(s: Slot) -> bool: return not s.is_held)
-	
-	for i in unheld_slots.size():
-		unheld_slots[i].spin(Global.SLOT_SPIN_DURATION + (i * Global.SLOT_REVEAL_STAGGER))
-		
-	# Emit spin completed (hacky)
-	var last_slot_duration := Global.SLOT_SPIN_DURATION + (slots.size() * Global.SLOT_REVEAL_STAGGER)
-	await get_tree().create_timer(last_slot_duration).timeout
+
+## Spins every non-held column, staggered per §8. Columns are started in order
+## with a delay between each, so the last one started is the last to land —
+## awaiting it awaits the whole batch.
+func spin_all() -> void:
+	var cols_to_spin: Array[ReelColumn] = reel_columns.filter(func(c: ReelColumn) -> bool: return not c.held)
+	if cols_to_spin.is_empty():
+		EventBus.spin_all_completed.emit()
+		return
+
+	for i in cols_to_spin.size() - 1:
+		cols_to_spin[i].spin(randi() % Global.strip.size())
+		await get_tree().create_timer(Global.SLOT_REVEAL_STAGGER).timeout
+
+	await cols_to_spin[-1].spin(randi() % Global.strip.size())
 	EventBus.spin_all_completed.emit()
 
 
-func _confirm_slots() -> void:
-	var reel_stops: Array[ReelStop] = []
-	for s in get_slots():
-		reel_stops.append(s.get_curr_stop())
-
-	EventBus.slots_locked_in.emit(reel_stops)
-
-
-func _on_slot_selected(slot: Slot) -> void:
-	print_debug("slot selected")
-	if slot == selected_slot:
-		selected_slot = null
+## Traces one line's path: its 5 cells lit (brighter where they're part of a
+## scoring run), everything else dimmed (§9). Pass null to clear.
+func highlight_payline(payline: Payline) -> void:
+	if payline == null:
+		for col: ReelColumn in reel_columns:
+			col.clear_cell_states()
 		return
-		
-	selected_slot = slot
+
+	var run_columns := {}
+	for run: PaylineScorer.Run in PaylineEvaluator.score_for(payline, reel_columns).matched_runs():
+		for i in run.count:
+			run_columns[run.start_column + i] = true
+
+	for col_idx in reel_columns.size():
+		var column: ReelColumn = reel_columns[col_idx]
+		var lit_row: int = payline.row_at(col_idx) if col_idx < payline.pattern.size() else -1
+		for row in Reel.VISIBLE_ROWS:
+			if row != lit_row:
+				column.set_cell_state(row, ReelColumn.CellState.DIMMED)
+			elif run_columns.has(col_idx):
+				column.set_cell_state(row, ReelColumn.CellState.IN_RUN)
+			else:
+				column.set_cell_state(row, ReelColumn.CellState.ON_LINE)
 
 
-func _on_reel_swapped(reel_to_insert: Reel) -> void:
-	print_debug("on reel swapped")
-	if selected_slot == null:
-		push_error("Error: no selected slot on reel swap")
-		return
-	
-	selected_slot.attempt_reel_swap(reel_to_insert, $"../..".curr_swap_cost)
-	
-	# Auto close Side Panel after swap
-	selected_slot = null
-	
-func get_slots() -> Array[Slot]:
-	return slots
-
-"""
-onSpin: trigger onSpin for all child slots
-onFinalize: calculate results from child slot values
-"""
+## Persistent, non-hover treatment: every cell on a purchased line stays lit
+## so the board still reads when the cursor is elsewhere.
+func show_selected_paylines(selected: Array[Payline]) -> void:
+	for col: ReelColumn in reel_columns:
+		col.clear_cell_states()
+	for payline: Payline in selected:
+		for col_idx in mini(payline.pattern.size(), reel_columns.size()):
+			reel_columns[col_idx].set_cell_state(
+					payline.row_at(col_idx), ReelColumn.CellState.ON_LINE)

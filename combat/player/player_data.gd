@@ -3,7 +3,16 @@ class_name PlayerData
 
 # BASE STATE
 const BASE_TOKEN_REGEN_PER_TURN = 1
-const BASE_MAX_TOKENS = 3
+## Tokens are a persistent pool across the fight, and every spend is meant to
+## be a comparison against future turns (§5). The cap has to leave room to
+## actually bank: a 3rd line costs 4 on top of the 2nd's 2, so a cap of 3
+## would make it unreachable and the line cap dead content. Line pricing
+## against real income is an explicit playtest question (§12).
+const BASE_MAX_TOKENS = 10
+## What each combat opens with — deliberately well under the cap, so banking
+## toward a second/third line is a real multi-turn decision rather than
+## something the opening hand already affords.
+const BASE_STARTING_TOKENS = 3
 const BASE_TOTAL_SLOTS = 5
 const BASE_MAX_ACTIVE_SLOTS = 3
 const BASE_GOLD = 1000
@@ -55,12 +64,18 @@ var active_drinks: Array[Drink] = []
 var expired_drinks: Array[Drink] = []
 var active_debuffs: Array[Debuff] = []
 
+## Pattern inventory (§4): which line *shapes* the run owns, grown permanently.
+## Distinct from how many are played in a given turn, which is bought per turn.
+var owned_paylines: Array[Payline] = []
+
+## Most lines playable in one turn (§4). Souvenirs raise the cap; they never
+## cut the price.
+const BASE_MAX_LINES_PER_TURN: int = 3
+var max_lines_per_turn: int = BASE_MAX_LINES_PER_TURN
+
 var drunkenness: float = 0.0:
 	set(value):
 		drunkenness = clampf(value, 0.0, 100.0)
-
-signal reel_inventory_updated(new_inventory: Dictionary[String, int])
-var _reel_inventory: Dictionary[String, int]
 
 func get_active_effects() -> Array[RunEffect]:
 	return owned_souvenirs + active_drinks + active_debuffs
@@ -71,13 +86,21 @@ func get_num_drinks_consumed() -> int:
 
 func _init() -> void:
 	display_name = "Player"
-	_reel_inventory = {
-		"Attack": 3,
-		"Defend": 3,
-	}
-	
+	owned_paylines = [PaylineCatalog.starting_payline()]
+
+
+func owns_payline(p: Payline) -> bool:
+	return p in owned_paylines
+
+
+func add_payline(p: Payline) -> bool:
+	if p == null or owns_payline(p):
+		return false
+	owned_paylines.append(p)
+	return true
+
 func replenish_tokens() -> void:
-	tokens = max_tokens
+	tokens = mini(BASE_STARTING_TOKENS, max_tokens)
 
 func regen_tokens() -> void:
 	tokens += token_regen_per_turn
@@ -108,29 +131,6 @@ func broadcast(method: StringName, args: Array = []) -> void:
 	# sweep expirations after combat-end broadcasts
 	#active_drinks = active_drinks.filter(func(e): return not e.is_expired())
 	# (emit run_effect_removed for UI as needed)
-
-func get_reel_inventory() -> Dictionary[String, int]:
-	return _reel_inventory
-
-func add_reel_to_inventory(reel: Reel) -> bool:
-	if RunManager.is_resetting:
-		return false
-	if not reel:
-		return false
-	_reel_inventory[reel.reel_name] = _reel_inventory.get(reel.reel_name, 0) + 1
-	reel_inventory_updated.emit(_reel_inventory)
-	return true
-
-func remove_reel_from_inventory(reel: Reel) -> bool:
-	if RunManager.is_resetting:
-		return false
-	if not reel:
-		return false
-	if _reel_inventory.get(reel.reel_name, 0) <= 0:
-		return false
-	_reel_inventory[reel.reel_name] -= 1
-	reel_inventory_updated.emit(_reel_inventory)
-	return true
 
 func apply_debuff(debuff: Debuff) -> void:
 	print_debug("Debuff Applied! (%s)" % debuff.display_name)

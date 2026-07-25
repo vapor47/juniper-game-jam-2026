@@ -1,14 +1,14 @@
 extends Control
 class_name Shop
 
-@onready var reel_modification_flow: ReelModificationFlow = $ReelModificationFlow
-@onready var reels_container := %ReelsContainer
 @onready var stat_upgrades_container := %StatUpgradesContainer
 @onready var emergency_heal_container := %EmergencyHealContainer
-@onready var reel_stop_modifiers_container := %ReelStopModifiersContainer
-@onready var remove_reel_stop_container := %RemoveReelStopContainer
+@onready var stops_container := %StopsContainer
+@onready var remove_stop_container := %RemoveStopContainer
 @onready var souvenirs_container := %SouvenirsContainer
 @onready var drinks_container := %DrinksContainer
+
+const STRIP_EDITOR_SCENE = preload("res://shop/strip_editor.tscn")
 
 const SHOP_ITEM_SCENE = preload("res://shop/item/shop_item.tscn")
 
@@ -49,12 +49,28 @@ func _on_item_purchased(item: ShopItemData) -> void:
 		return
 	
 	if item.requires_flow():
-		reel_modification_flow.start(item.mod_action, item.get_flow_payload())
-		reel_modification_flow.flow_finished.connect(_commit_purchase.bind(item), CONNECT_ONE_SHOT)
-		reel_modification_flow.flow_aborted.connect(_cancel_purchase.bind(item), CONNECT_ONE_SHOT)
+		_open_strip_editor(item)
 	else:
 		item.on_purchase(Global.player)
 		_commit_purchase(item)
+
+
+## Buy-a-stop-then-place, and the removal service, both resolve on the strip
+## itself — gold is only spent once an edit is actually committed (§6).
+func _open_strip_editor(item: ShopItemData) -> void:
+	var editor: StripEditor = STRIP_EDITOR_SCENE.instantiate()
+	if item is StopShopItemData:
+		editor.setup(StripEditor.Mode.PLACE, (item as StopShopItemData).symbol)
+	else:
+		editor.setup(StripEditor.Mode.REMOVE)
+
+	editor.edit_committed.connect(func() -> void:
+		editor.queue_free()
+		_commit_purchase(item))
+	editor.cancelled.connect(func() -> void:
+		editor.queue_free()
+		_cancel_purchase(item))
+	add_child(editor)
 
 func _commit_purchase(item: ShopItemData) -> void:
 	Global.player.gold -= display_price(item)
@@ -82,101 +98,31 @@ func display_price(item: ShopItemData) -> int:
 
 # ---------- MACHINE MODIFICATIONS ---------- #
 
+## Three verbs, all acting on the one shared strip (§6):
+##   Remove  — strongest, shortens the strip; separate, pricier service.
+##   Replace — the workhorse; same purchase and price as Add.
+##   Add     — weakest, charges dilution on everything else.
+## Replace and Add are the same buy: placement decides which one it was.
 func _populate_machine_modifications() -> void:
-	_populate_reels()
-	_populate_reel_modifications()
+	_populate_stops()
+	_populate_remove_stop()
 
-func _populate_reels() -> void:
-	var reels_for_sale := _get_reels_for_sale()
-	_populate_container(reels_container, reels_for_sale)
 
-func _get_reels_for_sale(num_reels: int = 2) -> Array[ShopItemData]:
-	"""
-	Semi-randomly select reels.
-	Weight factors:
-		base reel rarity?
-		if / how many reels of type player owns.
-			If they own == max possible slots, is there purpose to showing them more?
-			Can they benefit from more than max slots?
-				Selling, sacrificing, gambling, etc
-	"""
-	var reels: Array[ShopItemData] = []
-	for i in num_reels:
-		# Get (semi)random reel
-		# Create ShopItemData
-		var random_reel: Reel = Global.reels.values().pick_random()
-		reels.append(ReelShopItemData.create(random_reel))
-	return reels
+func _populate_stops() -> void:
+	_populate_container(stops_container, _get_stops_for_sale())
 
-func _populate_reel_modifications() -> void:
-	_populate_reel_stop_modifiers()
-	_populate_reel_stops()
-#	TODO: maybe change this to just button
-	_populate_remove_reel_stop()
 
-func _populate_reel_stop_modifiers() -> void:
-	var modifiers_for_sale := _get_reel_stop_modifiers_for_sale()
-	_populate_container(reel_stop_modifiers_container, modifiers_for_sale)
-
-func _get_reel_stop_modifiers_for_sale(num_modifiers: int = 3) -> Array[ShopItemData]:
+func _get_stops_for_sale(num_stops: int = 3) -> Array[ShopItemData]:
+	var pool := SymbolTable.purchasable()
+	pool.shuffle()
 	var items: Array[ShopItemData] = []
-	for m: StopModifier in ModifierPool.roll(num_modifiers):
-		items.append(ReelStopModifierShopItemData.create(m))
+	for symbol: Symbol in pool.slice(0, num_stops):
+		items.append(StopShopItemData.create(symbol))
 	return items
 
-func _populate_reel_stops() -> void:
-	var reel_stops_for_sale := _get_reel_stops_for_sale()
-	_populate_container(reel_stop_modifiers_container, reel_stops_for_sale)
 
-func _get_reel_stops_for_sale(num_stops: int = 3) -> Array[ShopItemData]:
-	var stops: Array[ShopItemData] = []
-	# Allow duplicate stops(?), but stop must belong to a reel that player currently owns
-	# Get eligible symbol types
-	var eligible_symbol_types_for_sale := _get_eligible_symbol_types()
-	
-	for i in num_stops:
-		var random_symbol: SlotSymbol = Global.slot_symbols.values().pick_random()
-		while random_symbol.get_symbol_type() not in eligible_symbol_types_for_sale:
-			random_symbol = Global.slot_symbols.values().pick_random()
-		
-		stops.append(ReelStopShopItemData.create(random_symbol))
-	
-	return stops
-
-func _get_eligible_symbol_types() -> Dictionary[Action.Type, bool]:
-	var types: Dictionary[Action.Type, bool] = {}
-	for reel_name: String in Global.player.get_reel_inventory():
-		if Global.player.get_reel_inventory()[reel_name] <= 0:
-			continue
-		var reel: Reel = Global.reels.get(reel_name)
-		for type in reel.allowed_symbol_types:
-			types[type] = true
-	return types
-	
-func _populate_remove_reel_stop() -> void:
-	_populate_container(remove_reel_stop_container, [RemoveReelStopShopItemData.create()])
-
-"""
-In all 3 cases, we need to open a modal.
-With add modifier, we need to pass the modifier
-With add stop, we need to pass the stop
-With remove, we don't need to pass anything.
-	We do need to prevent player from selecting a reel with only 1 stop
-
-Open Reel Select Modal for action -> Reel Selected (returns reel) ->
-Start specific flow with provided reel (can return to reel selection screen) ->
-
-For add modifier and remove stop, we need to highlight the stops themselves.
-	Each stop is a pie slice / wedge shaped button. Upon selection, we perform appropriate action
-		(either add modifier to stop, or remove stop)
-
-For add stop, we need to highlight inbetween (insertion point)
-	This can just be the index to insert at.
-	Buttons are lines between stops?
-
-
-Upon action completion, we exit all modals and return to shop screen.
-"""
+func _populate_remove_stop() -> void:
+	_populate_container(remove_stop_container, [RemoveStopShopItemData.create()])
 
 # ------------ MISC UPGRADES ------------ #
 

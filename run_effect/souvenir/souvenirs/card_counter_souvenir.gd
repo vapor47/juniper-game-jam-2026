@@ -8,5 +8,5 @@ func _init() -> void:
 	description = "+%dg whenever you land a combo" % GOLD_PER_COMBO
 	rarity = Souvenir.Rarity.UNCOMMON
 
-func on_combo_landed(_symbol: SlotSymbol, ctx: ResolutionContext) -> void:
-	ctx.combat.player.gold += GOLD_PER_COMBO
+func on_combo_landed(_symbol: Symbol, ctx: ResolutionContext) -> void:
+	ctx.turn.combat.player.gold += GOLD_PER_COMBO

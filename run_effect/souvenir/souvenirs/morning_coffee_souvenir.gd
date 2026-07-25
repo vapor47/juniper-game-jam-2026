@@ -11,4 +11,4 @@ func _init() -> void:
 
 func on_player_turn_started(ctx: CombatContext) -> void:
 	if ctx.turn_number == 1:
-		ctx.player.respin_tokens += TOKEN_BONUS
+		ctx.player.tokens += TOKEN_BONUS

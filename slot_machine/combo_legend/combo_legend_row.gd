@@ -1,24 +1,21 @@
 extends RefCounted
 class_name ComboLegendRow
 
-#class Result:
-	#var type: Action.Type
-	#var value: int
-	#
-	#func _init(p_symbol: SlotSymbol, p_count: int) -> void:
-		#type = p_symbol.get_symbol_type()
-		#value = SymbolResolver._combo_value_from_sum(p_symbol.symbol_value, p_count)
-
 var category: Action.Type
-var symbol: SlotSymbol
-var required_symbols: Array[SlotSymbol]
+var symbol: Symbol
+var required_symbols: Array[Symbol]
 var result: int
 
 
-func _init(p_symbol: SlotSymbol, p_count: int) -> void:
+## Mirrors PaylineScorer's per-run bonus (§4) — same formula, do not retune here.
+func _init(p_symbol: Symbol, p_count: int) -> void:
 	for i in p_count:
 		required_symbols.append(p_symbol)
-	
-	category = p_symbol.get_symbol_type()
+
+	category = p_symbol.type
 	symbol = p_symbol
-	result = SymbolResolver._combo_value_from_sum(p_symbol.symbol_value * p_count, p_count)
+	var run_value := p_symbol.value * p_count
+	if p_count >= 2:
+		var scale := pow(p_count - 1, 1.3)
+		run_value = roundi(run_value + run_value * 0.12 * scale + scale)
+	result = run_value

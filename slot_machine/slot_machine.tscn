@@ -6,6 +6,7 @@
 [ext_resource type="PackedScene" uid="uid://b6jd2c8y5spjl" path="res://slot_machine/combo_legend/combo_legend_button.tscn" id="3_84m6g"]
 [ext_resource type="Script" uid="uid://bosg5mx41nc4t" path="res://slot_machine/lock_in_button.gd" id="4_kpwbf"]
 [ext_resource type="PackedScene" uid="uid://c3oy8c5mnx4h3" path="res://HealthBar.tscn" id="5_84m6g"]
+[ext_resource type="Script" path="res://slot_machine/payline_panel.gd" id="6_paylp"]
 
 [sub_resource type="LabelSettings" id="LabelSettings_rwp5n"]
 
@@ -59,6 +60,7 @@ size_flags_horizontal = 3
 
 [node name="ComboLegendButton" parent="MarginContainer/VBodyContainer/HeaderInfoContainer" unique_id=1479265436 instance=ExtResource("3_84m6g")]
 unique_name_in_owner = true
+visible = false
 layout_mode = 2
 
 [node name="SlotsBodyContainer" type="HBoxContainer" parent="MarginContainer/VBodyContainer" unique_id=1893252390]
@@ -75,18 +77,27 @@ layout_mode = 2
 size_flags_horizontal = 3
 mouse_filter = 1
 
-[node name="SlotGroupContainer" type="HBoxContainer" parent="MarginContainer/VBodyContainer/SlotsBodyContainer/PanelContainer" unique_id=658891026]
+[node name="ReelColumns" type="HBoxContainer" parent="MarginContainer/VBodyContainer/SlotsBodyContainer/PanelContainer" unique_id=658891026]
 unique_name_in_owner = true
 layout_mode = 2
+theme_override_constants/separation = 12
 alignment = 1
 
-[node name="Slot" parent="MarginContainer/VBodyContainer/SlotsBodyContainer/PanelContainer/SlotGroupContainer" unique_id=1700477999 instance_placeholder="res://slot_machine/slot.tscn"]
+[node name="ReelColumn" parent="MarginContainer/VBodyContainer/SlotsBodyContainer/PanelContainer/ReelColumns" unique_id=1425705465 instance_placeholder="res://slot_machine/reel_column.tscn"]
 unique_name_in_owner = true
 layout_mode = 2
+
+[node name="PaylinePanel" type="PanelContainer" parent="MarginContainer/VBodyContainer/SlotsBodyContainer" unique_id=1120449311]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(360, 0)
+layout_mode = 2
+size_flags_vertical = 4
+script = ExtResource("6_paylp")
 
 [node name="SlotMachineLever" type="Button" parent="MarginContainer/VBodyContainer/SlotsBodyContainer" unique_id=910737963]
 unique_name_in_owner = true
 layout_mode = 2
+size_flags_vertical = 4
 text = "SPIN ALL"
 script = ExtResource("3_7abct")
 

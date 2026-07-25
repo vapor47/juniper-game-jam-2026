@@ -1,7 +1,7 @@
 extends RefCounted
 class_name Action
 
-enum Type { IDLE, ATTACK, DEFEND, HEAL }
+enum Type { NONE, ATTACK, DEFEND, HEAL }
 
 var type: Type
 var value: int

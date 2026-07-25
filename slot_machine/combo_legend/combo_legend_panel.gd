@@ -29,7 +29,7 @@ func _build_row(row: ComboLegendRow, symbols_area_width: int) -> Control:
 	symbols_box.alignment = BoxContainer.ALIGNMENT_BEGIN
 	symbols_box.size_flags_horizontal = Control.SIZE_SHRINK_BEGIN
 	
-	for symbol: SlotSymbol in row.required_symbols:
+	for symbol: Symbol in row.required_symbols:
 		var icon := TextureRect.new()
 		icon.texture = symbol.icon
 		icon.custom_minimum_size = Vector2(ICON_SIZE, ICON_SIZE)
@@ -173,9 +173,7 @@ func _build_category_column(category: Action.Type, category_rows: Array[ComboLeg
 	var symbols_area_width := (max_symbols * ICON_SIZE) + ((max_symbols - 1) * ICON_SPACING)
 
 	category_rows.sort_custom(func(a: ComboLegendRow, b: ComboLegendRow) -> bool:
-		if a.symbol.symbol_name.contains("Multiply"):
-			return false
-		return a.symbol.symbol_value < b.symbol.symbol_value
+		return a.symbol.value < b.symbol.value
 	)
 
 	for row in category_rows:
