@@ -233,6 +233,10 @@ Concretely, three Light Atks on one line pay **6** scattered, **8** as a pair pl
 - **Legibility requirement:** candidate patterns must be rendered against owned lines with shared
   cells highlighted. A coverage heat map of the board (how many owned lines touch each cell)
   doubles as the hold-decision aid, since a cell's worth is exactly its coverage count.
+  - **Carried entirely by the glyph, with no prose.** Each offer draws its shape as a 3×5 mini
+    grid and colours cells shared with an owned line hot. Spelling the same thing out in words
+    underneath ("concentrates — 2 shared cells") was cut: the picture already says it, and the
+    sentence just made the choice look more procedural than it is.
 
 ---
 
@@ -577,8 +581,9 @@ far arguably *should* look repetitive.
 15 cells re-scanned after every respin is a real cost, and the expensive part is **tracing the
 path**, not computing totals.
 
-- **On payline hover: highlight that line's 5 cells, dim everything else.** This is the primary
-  affordance. Belongs on the overlay layer.
+- **On payline hover: highlight that line's 5 cells, dim everything else**, and draw the path
+  itself cell-centre to cell-centre. Highlighting says *which* cells; the drawn line says the
+  order and the shape, which highlighting alone can't convey. Both belong on the overlay layer.
 - Text summary carries what highlighting can't — the split, the matched runs, the cost:
 
 ```
@@ -587,13 +592,28 @@ Line 4 — 3 tokens
 Med Atk ×2 matched (+3)
 ```
 
-- **Show block as a delta against intent** (`4 / 11 BLK` or `−7`), not a raw number. The
-  satisfice decision is a comparison; display the comparison.
-- **Preview *marginal* value once a line is already purchased.** With double-dip, a line's worth
-  depends on what's already bought — showing standalone totals is actively misleading.
-- Hover is absent on touch and slow when comparing 5+ candidate lines. Consider a persistent
-  compact list of available lines with `ATK/BLK` totals always visible, with hover reserved for
-  showing the *path*. Comparison becomes a glance rather than a sequence of hovers.
+- **The summary states the outcome and stops there.** It was originally specified to show block
+  as a delta against intent (`4 / 11 BLK`, `−7`), plus a *marginal* preview once a line was
+  purchased, on the reasoning that the satisfice decision is a comparison so the UI should
+  display the comparison. **Both were built, played, and cut.** Doing the comparison on the
+  player's behalf is doing their thinking for them: the intent is already telegraphed on the
+  enemy, and reading the board against it is the decision the whole turn is built around. The
+  readout gives ATK/BLK/HEAL and the matched runs; the weighing is the player's.
+  - Block overflow is still wasted at resolution (§10) — that rule didn't change, it just
+    isn't spelled out in the UI.
+  - Consequence to accept: with double-dip, a second block-heavy line can be worth much less
+    than its standalone number suggests, and nothing warns you. That's the intended cost.
+- **Hover a single cell to read that stop's effect** ("4 damage", "2 block") — one line, no
+  symbol name, no match table. Enough to answer "what is that", not a second summary.
+- Hover is absent on touch and slow when comparing 5+ candidate lines, so the list of owned
+  lines is persistent, with hover reserved for the *path* and the readout. Comparison becomes a
+  glance rather than a sequence of hovers.
+  - The rows carry **only the line's name.** Per-line numbers on every row were noise next to
+    the readout and the board.
+- **The readout must live outside the list container, at a fixed size.** If it shares a
+  container, its text growing on hover resizes the panel, pushes rows out from under the cursor,
+  and re-fires `mouse_exited`/`mouse_entered` — flickering between two states every frame. Hold
+  the size by hanging the labels off an anchored child, which contributes no minimum size.
 - The existing `HoverLabel` autoload (cursor-following, `show_dynamic`) already provides the
   plumbing.
 - **Make the free center line genuinely playable.** Depth should be available every turn, not
@@ -645,14 +665,14 @@ Med Atk ×2 matched (+3)
   therefore better routed into **strip composition and pattern inventory**, which are already
   two axes and need no retuning. If board width does become an upgrade, every number in §5 has
   to scale with it.
-- **Layout.** Board must stay centered (it's the primary click target), but a flanking enemy panel
-  was judged too small to read as a real opponent. With rows fixed at 3, the board is ~288px at
-  96px cells, which leaves substantial vertical room above — this is less contended than it was
-  when rows were a growth axis. **Upstream question: how large does the enemy actually need to
-  be?** A static portrait + HP bar + intent is ~400px; animated character art with attack
-  telegraphs is not. That art-direction commitment gates the rest of the layout.
-- **Symbol art** — the strip currently uses effect names (Light Atk etc.) as placeholders. Final
-  symbols should be classic slot iconography readable at ~72–96px.
+- **Layout.** Mostly settled. Cells landed at **144px**, so the board is 768×432 and the machine
+  1548×549, hugging its content with the grid's midpoint exactly on the screen centre — the
+  payline column and the lever bay are equal-width flanks, which is what holds that centring.
+  The remaining **upstream question is how large the enemy needs to be**: a static portrait +
+  HP bar + intent is ~400px; animated character art with attack telegraphs is not. That
+  art-direction commitment gates whatever fills the room above the machine.
+- **Symbol art** — the strip currently uses effect names (Light Atk etc.) as placeholders drawn
+  as coloured cells. Final symbols should be classic slot iconography, now readable at ~144px.
 
 ---
 
