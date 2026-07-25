@@ -64,7 +64,9 @@ func _build_cell_overlay() -> void:
 
 	for row in Reel.VISIBLE_ROWS:
 		var panel := Panel.new()
-		panel.mouse_filter = Control.MOUSE_FILTER_IGNORE
+		# STOP, per §7: these panels are the hit-test targets for the cells.
+		# They never scroll, so they stay put while symbols move under them.
+		panel.mouse_filter = Control.MOUSE_FILTER_STOP
 		_cell_overlay.add_child(panel)
 		panel.anchor_left = 0.0
 		panel.anchor_right = 1.0
@@ -74,6 +76,13 @@ func _build_cell_overlay() -> void:
 		panel.offset_bottom = (row + 1) * Reel.SYMBOL_HEIGHT
 		_cell_panels.append(panel)
 		set_cell_state(row, CellState.NEUTRAL)
+
+		# Per-stop inspection. The callable is re-evaluated every frame, so
+		# the readout follows whatever symbol currently occupies this row.
+		var this_row := row
+		panel.mouse_entered.connect(func() -> void:
+			HoverLabel.show_for(panel, func() -> String: return _stop_tooltip(this_row)))
+		panel.mouse_exited.connect(func() -> void: HoverLabel.hide_for(panel))
 
 
 ## Cells on a payline read as a glowing yellow border — never a wash of colour
@@ -136,3 +145,21 @@ func spin(target_stop: int) -> void:
 
 func get_stop_at_row(row: int) -> Stop:
 	return reel.visible_stops()[row]
+
+
+## Just this cell's effect, e.g. "4 damage". Blank while the reels are moving —
+## the symbol under the cursor changes several times a second mid-spin.
+func _stop_tooltip(row: int) -> String:
+	if reel == null or reel.strip.is_empty() or reel.is_spinning():
+		return ""
+
+	var symbol := get_stop_at_row(row).symbol
+	match symbol.type:
+		Action.Type.ATTACK:
+			return "%d damage" % symbol.value
+		Action.Type.DEFEND:
+			return "%d block" % symbol.value
+		Action.Type.HEAL:
+			return "%d heal" % symbol.value
+		_:
+			return "No effect"

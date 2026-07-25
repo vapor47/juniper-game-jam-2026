@@ -4,11 +4,13 @@ class_name PaylineScorer
 ## run 2. One Action per run (not merged by type) so each run resolves and
 ## animates independently, in left-to-right board order.
 ##
-## Bonus formula and both constants (0.12, 1.3) are locked per §4 —
-## do not retune here.
-
-const BONUS_RATE: float = 0.12
-const BONUS_EXPONENT: float = 1.3
+## §4 calls for retuning both knobs, noting that at the old 0.12 the additive
+## `+scale` floor carried almost all the weight at pairs — which is where most
+## matches land, so matching barely registered. At 0.35 the multiplicative
+## term dominates from a pair upward, and the steeper exponent widens the gap
+## between consolidating a run and merely collecting copies.
+const BONUS_RATE: float = 0.35
+const BONUS_EXPONENT: float = 1.35
 
 
 ## One contiguous same-symbol run along a line.
@@ -49,6 +51,17 @@ class LineResult extends RefCounted:
 		return runs.filter(func(r: Run) -> bool: return r.is_match())
 
 
+## What a run of `count` identical symbols pays, bonus included. The single
+## source of truth for the formula — the combo legend reads it too, so the two
+## can't drift apart.
+static func run_value(symbol: Symbol, count: int) -> int:
+	var flat := symbol.value * count
+	if count < 2:
+		return flat
+	var scale := pow(count - 1, BONUS_EXPONENT)
+	return roundi(flat + flat * BONUS_RATE * scale + scale)
+
+
 static func score_line(stops: Array[Stop]) -> LineResult:
 	var result := LineResult.new()
 	var i := 0
@@ -60,12 +73,8 @@ static func score_line(stops: Array[Stop]) -> LineResult:
 
 		if symbol.type != Action.Type.NONE:
 			var flat := symbol.value * run_len
-			var total := flat
-			var bonus := 0
-			if run_len >= 2:
-				var scale := pow(run_len - 1, BONUS_EXPONENT)
-				total = roundi(flat + flat * BONUS_RATE * scale + scale)
-				bonus = total - flat
+			var total := run_value(symbol, run_len)
+			var bonus := total - flat
 
 			if total != 0:
 				result.runs.append(Run.new(symbol, run_len, i, total, bonus))

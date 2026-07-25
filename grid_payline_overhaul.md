@@ -76,15 +76,22 @@ removal is a felt swing. At 40 it would be 2.5% and the shop's core verb would b
 
 | Symbol | Type | Value | Stops | P/cell |
 |---|---|---|---|---|
-| Light Atk | damage | 1 | 4 | 20% |
-| Med Atk | damage | 2 | 3 | 15% |
-| Heavy Atk | damage | 3 | 2 | 10% |
-| Mega Atk | damage | 5 | 1 | 5% |
-| Light Blk | block | 1 | 4 | 20% |
-| Med Blk | block | 2 | 2 | 10% |
-| Heavy Blk | block | 4 | 1 | 5% |
-| Heal | heal | 2 | 1 | 5% |
+| Light Atk | damage | 2 | 4 | 20% |
+| Med Atk | damage | 4 | 3 | 15% |
+| Heavy Atk | damage | 6 | 2 | 10% |
+| Mega Atk | damage | 10 | 1 | 5% |
+| Light Blk | block | 2 | 4 | 20% |
+| Med Blk | block | 4 | 2 | 10% |
+| Heavy Blk | block | 8 | 1 | 5% |
+| Heal | heal | 4 | 1 | 5% |
 | Blank | — | 0 | 2 | 10% |
+
+**Values were doubled from the original table in playtesting.** At the original scale a line
+averaged 8.75 across all three types, so a 100 HP enemy took ~20 turns and individual symbols
+read as rounding errors. Stop counts were deliberately left alone, so everything below that
+depends on *supply* rather than magnitude — the 50/35 damage/block ratio, the inverse
+value-to-frequency relationship, match frequency — is unchanged. The strip now averages
+**3.5/cell**, so a 5-cell line runs ~10.5 damage / 6 block / 1 heal before bonuses.
 
 **Damage 50% / block 35% is deliberate.** Block is capped by the intent number and overflow is
 wasted; damage is unbounded. Equal supply would make covering the hit trivial and kill the
@@ -100,9 +107,10 @@ raises average cell value but lowers match density. The 2 remaining blanks exist
 for the removal verb: an early obvious-good purchase that teaches what the shop does.
 
 **Heal participates in matching. Only Blank does not.** Heal is balanced against block by
-**value, not by rules**: at equal rarity, heal is worth less than block (1 stop of Heal = 2,
-1 stop of Heavy Blk = 4). Heal doesn't expire and has no cap, so it must pay less per cell to
-avoid dominating the defensive slot. Keep that ratio if either is retuned.
+**value, not by rules**: at equal rarity, heal is worth less than block (1 stop of Heal = 4,
+1 stop of Heavy Blk = 8). Heal doesn't expire and has no cap, so it must pay less per cell to
+avoid dominating the defensive slot. Keep that 1:2 ratio if either is retuned — the value
+doubling above preserved it exactly.
 
 **Note:** at 1 stop, heal matching is close to a technicality — a Heal pair is p² = 0.25% per
 adjacent position. If heal matching is meant to be a live consideration rather than a rare
@@ -143,8 +151,10 @@ count would matter.
 ### Line composition
 
 - A line takes **one cell per column**, left to right — always 5 cells, always 4 adjacent pairs.
-- The player starts the run owning **exactly one pattern: the straight center row.** Additional
-  *patterns* are acquired over the run and enter an inventory of options.
+- The player starts the run owning the **three straights — top, center and bottom.** (The
+  original spec was center-only; that gave the selection layer nothing to compare against until
+  the first reward landed, so the turn had no decision in it.) The other nine *patterns* are
+  acquired over the run and enter an inventory of options.
 - **Each turn, the player selects one payline for free** from their owned patterns. Selecting
   *additional* paylines in the same turn costs tokens (see Multi-line below).
 
@@ -165,14 +175,23 @@ Bonus per run, reusing the existing combo formula's **scaling terms only** (the 
 already paid by the line's base sum — including it would double-count):
 
 ```
-bonus = flat_sum * 0.12 * scale + scale
+bonus = flat_sum * 0.35 * scale + scale
 where flat_sum = symbol_value * count
-      scale     = (count - 1) ^ 1.3
+      scale     = (count - 1) ^ 1.35
 ```
 
-**Retune both knobs.** On the old 3-slot board `scale` topped out at 2.46; runs of 5 now give
-6.06. The additive `+scale` floor term carries almost all the weight at pairs, which is where
-most matches will land.
+**Both knobs have been retuned** (from `0.12` / `1.3`). The original rate left the additive
+`+scale` floor carrying **81%** of the bonus at a pair — which is where most matches land, so
+matching barely registered. At `0.35` the floor is down to **42%** and the multiplicative term
+drives the payout from a pair upward. The steeper exponent widens the gap between consolidating
+a run and merely collecting copies:
+
+| | run of 2 | 3 | 4 | 5 |
+|---|---|---|---|---|
+| bonus as % of flat | +50% | +133% | +213% | +290% |
+
+Concretely, three Light Atks on one line pay **6** scattered, **8** as a pair plus a single, and
+**14** consolidated into a run of 3 — so where the copies land is worth spending a hold on.
 
 ### Why consecutive + min 2
 
@@ -260,9 +279,18 @@ Price as a **multiple of per-turn token income**, not in absolute numbers.
   else — a bank-and-spike decision, not a per-turn tax)
 - 3rd line ≈ **3–4 turns of income** (a genuine event you save toward and usually skip)
 
-Sanity check against intent: strip averages ~1.75/cell, so a random 5-cell line is ~8.75 before
-bonus; the best line on a board runs ~11–13 with bonus. If typical intent is 10–12, one line
-roughly covers a turn's demand and the second converts a survived turn into a won one.
+**As implemented:** income is 1 token/turn, so the 2nd line costs **2** and the 3rd costs **4**
+(6 tokens to hold all three at once). The token cap had to rise from 3 to **10** for this to
+mean anything — a cap below the price of a single purchase makes "bank against future turns"
+impossible and leaves the 3-line cap as dead content. Combats open at **3** tokens, well under
+the cap, so banking stays a real multi-turn decision rather than something the opening hand
+already affords.
+
+Sanity check against intent: the strip averages 3.5/cell, so a random 5-cell line is ~17.5
+before bonus — but split across types, which is the part that matters. The block share is
+~6 per line against a typical intent of 10, so an average line covers **~60%** of the hit.
+Defense stays slightly scarce relative to demand, which is the point (§3); damage is where the
+surplus goes.
 
 If players buy the 2nd line nearly every turn, **cut income rather than raising the price** —
 income also gates respins.
@@ -605,7 +633,11 @@ Med Atk ×2 matched (+3)
 ## 12. Open / Undecided
 
 - **Respin cost curve** and whether it scales with lines purchased. Playtest question.
-- **Line pricing** against real income numbers. Playtest question. Do not block implementation.
+- **Line pricing** against real income numbers. First pass is in (§5) and holding; still the
+  most likely thing to need moving once fights are played end to end.
+- **Enemy numbers.** Untouched by the value retune: enemies are 100 HP with intents of 10–35,
+  so a single line now kills in ~5–7 turns instead of ~20. If fights read as too short, enemy
+  HP is the lever — not the symbol values, which are what makes block scarce against intent.
 - **Board growth, if any.** Rows are fixed at 3, so the board's only remaining size axis is
   columns — and columns are the expensive one. Every added column shifts match probability
   (7 adjacent pairs at width 8 pushes match frequency past 60%), extends `scale`'s ceiling,

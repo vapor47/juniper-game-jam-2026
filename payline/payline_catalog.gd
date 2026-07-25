@@ -45,3 +45,29 @@ static func all() -> Array[Payline]:
 ## Patterns the player doesn't already own, for reward/acquisition offers.
 static func acquirable(owned: Array[Payline]) -> Array[Payline]:
 	return all().filter(func(p: Payline) -> bool: return p not in owned)
+
+
+## Listing order for the selection panel: highest line on the board first, so
+## the three straights read top / center / bottom the way they sit on the grid.
+## Inventory order stays acquisition order — this is presentation only.
+static func sorted_for_display(lines: Array[Payline]) -> Array[Payline]:
+	var catalog := all()
+	var out := lines.duplicate()
+	out.sort_custom(func(a: Payline, b: Payline) -> bool:
+		var height_a := _height_key(a)
+		var height_b := _height_key(b)
+		if not is_equal_approx(height_a, height_b):
+			return height_a < height_b
+		return catalog.find(a) < catalog.find(b))
+	return out
+
+
+## Mean row of the pattern. Row.TOP is 0 and Row.BOTTOM is 2, so a smaller
+## key means the line sits higher on the board.
+static func _height_key(payline: Payline) -> float:
+	if payline.pattern.is_empty():
+		return 0.0
+	var total := 0
+	for row: int in payline.pattern:
+		total += row
+	return float(total) / float(payline.pattern.size())

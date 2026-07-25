@@ -115,40 +115,43 @@ func _begin_player_turn() -> void:
 	player_turn_started.emit()
 	Global.player.broadcast("on_player_turn_started", [context])
 
-	# The turn opens on the lever, not on an automatic spin — pulling it is
-	# the player's first act.
-	_set_controls_enabled(true)
+	# The turn opens with a free automatic spin. Everything stays locked (and
+	# reads as locked) until it lands — there's no board to judge until then.
+	_set_controls_enabled(false)
 	_refresh_paylines()
+	await _spin_all()
 
 
-## Free initial spin, or a paid respin. Locks the controls while the reels are
-## in motion, then re-enables them once everything lands.
+## The turn's free opening spin, or a paid respin. Locks the controls while the
+## reels are in motion, then re-enables them once everything lands.
 func _spin_all() -> void:
 	_busy = true
 	_set_controls_enabled(false)
 
 	await slot_machine.spin_all()
 
+	has_spun_this_turn = true
 	_busy = false
 	_set_controls_enabled(true)
 	_refresh_paylines()
 
 
 func _set_controls_enabled(enabled: bool) -> void:
-	# Nothing to hold or resolve until the reels have been spun this turn.
+	# `live` means there's a settled board to act on. Nothing is available
+	# before the opening spin lands — including reading or picking paylines,
+	# since selection is post-spin by design (§4).
+	var live := enabled and has_spun_this_turn
 	for col: ReelColumn in slot_machine.reel_columns:
-		col.hold_button.disabled = not enabled or not has_spun_this_turn
-	slot_machine.lock_in_button.disabled = not enabled or not has_spun_this_turn \
-			or selected_lines.is_empty()
-	slot_machine.lever.disabled = not enabled or Global.player.tokens < _next_spin_cost()
-	slot_machine.lever.text = "SPIN ALL" if not has_spun_this_turn \
-			else "RESPIN (%d)" % _next_spin_cost()
+		col.hold_button.disabled = not live
+	slot_machine.lock_in_button.disabled = not live or selected_lines.is_empty()
+	slot_machine.lever.disabled = not live or Global.player.tokens < _next_spin_cost()
+	slot_machine.lever.text = "RESPIN (%d)" % _next_spin_cost()
+	slot_machine.payline_panel.set_interactive(live)
 
 
-## First spin of the turn is free; the nth respin after that costs n (§5).
+## The opening spin is free and automatic, so the lever is always a respin:
+## the nth respin of a turn costs n (§5).
 func _next_spin_cost() -> int:
-	if not has_spun_this_turn:
-		return 0
 	return respins_this_turn + 1
 
 
@@ -225,7 +228,7 @@ func _refresh_paylines() -> void:
 
 
 func _on_lever_pulled() -> void:
-	if _busy:
+	if _busy or not has_spun_this_turn:
 		return
 	var cost := _next_spin_cost()
 	if Global.player.tokens < cost:
@@ -233,10 +236,7 @@ func _on_lever_pulled() -> void:
 		return
 
 	Global.player.tokens -= cost
-	if has_spun_this_turn:
-		respins_this_turn += 1
-	else:
-		has_spun_this_turn = true
+	respins_this_turn += 1
 	await _spin_all()
 
 
@@ -286,11 +286,18 @@ func _perform_actions(actions: Array[Action], source: CombatantData = Global.pla
 		match action.type:
 			Action.Type.ATTACK:
 				var actual_dmg := target.take_damage(action.value)
-				action.display_string = "%s dealt %d damage to %s!" % [source.display_name, actual_dmg, target.display_name]
+				action.display_string = "%s dealt %d damage to %s!" % [
+						source.display_name, actual_dmg, target.display_name]
 			Action.Type.DEFEND:
 				source.add_block(action.value)
+				action.display_string = "%s gained %d block! (%d total)" % [
+						source.display_name, action.value, source.block]
 			Action.Type.HEAL:
-				source.heal(action.value)
+				var actual_heal := source.heal(action.value)
+				if actual_heal > 0:
+					action.display_string = "%s healed %d!" % [source.display_name, actual_heal]
+				else:
+					action.display_string = "%s is already at full health!" % source.display_name
 
 		_display_action(action)
 		await get_tree().create_timer(1.3).timeout

@@ -7,6 +7,7 @@
 [ext_resource type="Script" uid="uid://bosg5mx41nc4t" path="res://slot_machine/lock_in_button.gd" id="4_kpwbf"]
 [ext_resource type="PackedScene" uid="uid://c3oy8c5mnx4h3" path="res://HealthBar.tscn" id="5_84m6g"]
 [ext_resource type="Script" path="res://slot_machine/payline_panel.gd" id="6_paylp"]
+[ext_resource type="Script" path="res://slot_machine/payline_summary_panel.gd" id="7_paysm"]
 
 [sub_resource type="LabelSettings" id="LabelSettings_rwp5n"]
 
@@ -73,12 +74,30 @@ size_flags_vertical = 4
 theme_override_constants/separation = 20
 alignment = 1
 
-[node name="PaylinePanel" type="PanelContainer" parent="MarginContainer/VBodyContainer/SlotsBodyContainer" unique_id=1120449311]
-unique_name_in_owner = true
+[node name="LeftFlank" type="VBoxContainer" parent="MarginContainer/VBodyContainer/SlotsBodyContainer" unique_id=1120449313]
+editor_description = "Fixed-size readout above the payline list. The readout must not
+share a container with the rows, or its text changing on hover would resize
+the list and shuffle rows out from under the cursor."
 custom_minimum_size = Vector2(360, 0)
 layout_mode = 2
 size_flags_horizontal = 0
 size_flags_vertical = 4
+theme_override_constants/separation = 8
+
+[node name="PaylineSummary" type="PanelContainer" parent="MarginContainer/VBodyContainer/SlotsBodyContainer/LeftFlank" unique_id=1120449314]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(360, 116)
+layout_mode = 2
+size_flags_horizontal = 0
+size_flags_vertical = 0
+script = ExtResource("7_paysm")
+
+[node name="PaylinePanel" type="PanelContainer" parent="MarginContainer/VBodyContainer/SlotsBodyContainer/LeftFlank" unique_id=1120449311]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(360, 0)
+layout_mode = 2
+size_flags_horizontal = 0
+size_flags_vertical = 0
 script = ExtResource("6_paylp")
 
 [node name="PanelContainer" type="PanelContainer" parent="MarginContainer/VBodyContainer/SlotsBodyContainer" unique_id=1538499312]

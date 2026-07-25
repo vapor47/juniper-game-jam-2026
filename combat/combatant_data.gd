@@ -26,11 +26,16 @@ func take_damage(amount: int) -> int:
 	reset_block()
 	return actual
 
-func add_block(amount: int) -> void:
+func add_block(amount: int) -> int:
 	block += amount
+	return amount
 
-func heal(amount: int) -> void:
-	health += amount
+## Returns how much health was actually restored — healing at full stops at
+## max_health rather than running past it.
+func heal(amount: int) -> int:
+	var actual: int = min(amount, max(0, max_health - health))
+	health += actual
+	return actual
 
 func reset_block() -> void:
 	block = 0

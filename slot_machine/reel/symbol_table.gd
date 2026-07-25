@@ -3,21 +3,25 @@ class_name SymbolTable
 ## §3 symbol table + strip order. One singleton Symbol instance per symbol type,
 ## reused across every stop so exact-symbol matching can compare by reference.
 
-static var LIGHT_ATK := Symbol.new("Light Atk", Action.Type.ATTACK, 1,
+## Values are 2x the §3 table. Stop counts are untouched, so the 50/35
+## damage/block supply ratio and the inverse value-to-frequency relationship
+## both hold. Heal stays at half of Heavy Blk at equal rarity, the ratio §3
+## says to preserve if either is retuned.
+static var LIGHT_ATK := Symbol.new("Light Atk", Action.Type.ATTACK, 2,
 		preload("res://assets/icons/light_attack_icon.svg"))
-static var MED_ATK := Symbol.new("Med Atk", Action.Type.ATTACK, 2,
+static var MED_ATK := Symbol.new("Med Atk", Action.Type.ATTACK, 4,
 		preload("res://assets/icons/medium_attack_icon.svg"))
-static var HEAVY_ATK := Symbol.new("Heavy Atk", Action.Type.ATTACK, 3,
+static var HEAVY_ATK := Symbol.new("Heavy Atk", Action.Type.ATTACK, 6,
 		preload("res://assets/icons/heavy_attack_icon.svg"))
-static var MEGA_ATK := Symbol.new("Mega Atk", Action.Type.ATTACK, 5,
+static var MEGA_ATK := Symbol.new("Mega Atk", Action.Type.ATTACK, 10,
 		preload("res://assets/icons/multiply_attack_icon.svg"))
-static var LIGHT_BLK := Symbol.new("Light Blk", Action.Type.DEFEND, 1,
+static var LIGHT_BLK := Symbol.new("Light Blk", Action.Type.DEFEND, 2,
 		preload("res://assets/icons/defend/light_defend_icon.svg"))
-static var MED_BLK := Symbol.new("Med Blk", Action.Type.DEFEND, 2,
+static var MED_BLK := Symbol.new("Med Blk", Action.Type.DEFEND, 4,
 		preload("res://assets/icons/defend/medium_defend_icon.svg"))
-static var HEAVY_BLK := Symbol.new("Heavy Blk", Action.Type.DEFEND, 4,
+static var HEAVY_BLK := Symbol.new("Heavy Blk", Action.Type.DEFEND, 8,
 		preload("res://assets/icons/defend/heavy_defend_icon.svg"))
-static var HEAL := Symbol.new("Heal", Action.Type.HEAL, 2)
+static var HEAL := Symbol.new("Heal", Action.Type.HEAL, 4)
 static var BLANK := Symbol.new("Blank", Action.Type.NONE, 0)
 
 

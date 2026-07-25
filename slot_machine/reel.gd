@@ -48,6 +48,10 @@ func _ready() -> void:
 	_layout()
 
 
+func is_spinning() -> bool:
+	return _spin_tween != null and _spin_tween.is_valid() and _spin_tween.is_running()
+
+
 ## Center-row strip index at rest.
 func current_stop() -> int:
 	return wrapi(int(floor(scroll_pos)), 0, strip.size())
