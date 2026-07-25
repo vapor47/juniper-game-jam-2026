@@ -230,7 +230,6 @@ func _refresh_paylines() -> void:
 			Global.player.owned_paylines,
 			selected_lines,
 			slot_machine.reel_columns,
-			PaylineEvaluator.incoming_damage(enemies),
 			costs)
 	slot_machine.show_selected_paylines(selected_lines)
 

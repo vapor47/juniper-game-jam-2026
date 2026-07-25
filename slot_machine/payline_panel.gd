@@ -7,9 +7,9 @@ class_name PaylinePanel
 ## one. Keeping it out of this container is what stops hover from resizing the
 ## list and shuffling rows out from under the cursor.
 ##
-## Totals shown are *marginal* once something is already selected: with
-## double-dip, attack is additive but block is capped by intent and overflow
-## is wasted, so a standalone block number can be actively misleading (§9).
+## The readout states what the selected lines pay, and nothing else — the
+## enemy's intent is shown on the enemy, and weighing one against the other is
+## the player's decision to make.
 
 signal line_clicked(payline: Payline)
 signal line_hovered(payline: Payline)  # null when nothing hovered
@@ -27,7 +27,6 @@ var _list: VBoxContainer
 var _owned: Array[Payline] = []
 var _selected: Array[Payline] = []
 var _columns: Array[ReelColumn] = []
-var _incoming: int = 0
 var _costs: Dictionary = {}
 var _hovered: Payline = null
 var _interactive: bool = false
@@ -55,11 +54,10 @@ func _ready() -> void:
 ## Rebuilds the list. `costs` maps a payline to what clicking it costs right
 ## now (0 = free, negative = refund on deselect).
 func refresh(owned: Array[Payline], selected: Array[Payline],
-		columns: Array[ReelColumn], incoming: int, costs: Dictionary) -> void:
+		columns: Array[ReelColumn], costs: Dictionary) -> void:
 	_owned = owned
 	_selected = selected
 	_columns = columns
-	_incoming = incoming
 	_costs = costs
 	if _hovered != null and _hovered not in owned:
 		_hovered = null
@@ -69,7 +67,7 @@ func refresh(owned: Array[Payline], selected: Array[Payline],
 	_rows.clear()
 
 	for payline: Payline in PaylineCatalog.sorted_for_display(owned):
-		_rows.append(_build_row(payline, selected, columns, incoming, costs))
+		_rows.append(_build_row(payline, selected))
 
 	_update_summary()
 
@@ -99,7 +97,7 @@ func _update_summary() -> void:
 	if _readout == null:
 		return
 	if not _interactive:
-		_readout.set_content("Spinning…", "", "")
+		_readout.set_content("Spinning…", "")
 		return
 	if _hovered != null:
 		_show_line_preview(_hovered)
@@ -110,8 +108,7 @@ func _update_summary() -> void:
 ## Just the line's name. Per-line numbers live in the summary below the list
 ## and on the board itself (hover traces the path, cells glow), so repeating
 ## them on every row was noise.
-func _build_row(payline: Payline, selected: Array[Payline], _columns: Array[ReelColumn],
-		_incoming: int, _costs: Dictionary) -> Control:
+func _build_row(payline: Payline, selected: Array[Payline]) -> Control:
 	var button := Button.new()
 	button.flat = true
 	button.focus_mode = Control.FOCUS_NONE
@@ -141,57 +138,45 @@ func _build_row(payline: Payline, selected: Array[Payline], _columns: Array[Reel
 	return button
 
 
-## What the turn currently resolves to, with nothing hovered.
+## What the selected lines resolve to. Nothing about the enemy's intent: the
+## readout states the outcome, and judging it against the incoming hit is the
+## player's call.
 func _show_selection_summary() -> void:
 	if _selected.is_empty():
-		_readout.set_content("Hover a line to preview it.", "", "")
+		_readout.set_content("Hover a line to preview it.", "")
 		return
-
-	var block := PaylineEvaluator.total_block(_selected, _columns)
-	var body := "%d ATK · %d BLK" % [
-			PaylineEvaluator.total_attack(_selected, _columns), block]
-	var match_bits := _match_text(_selected)
-	if not match_bits.is_empty():
-		body += "\n" + match_bits
 
 	_readout.set_content(
 			"Playing %d line%s" % [_selected.size(), "" if _selected.size() == 1 else "s"],
-			body,
-			_block_text(block))
+			_outcome_text(_selected))
 
 
-## What this line is worth *right now*, before spending anything on it.
-## Attack is additive under double-dip, so its marginal value equals its
-## standalone value. Block isn't: it's capped by the intent and the overflow
-## is wasted, so a line's block can be worth much less than it reads (§9).
+## What this line pays, on its own.
 func _show_line_preview(payline: Payline) -> void:
-	var result := PaylineEvaluator.score_for(payline, _columns)
-	var is_selected := payline in _selected
-
-	var others := _selected.duplicate()
-	others.erase(payline)
-	var block_without := PaylineEvaluator.total_block(others, _columns)
-	var block_with := block_without + result.block
-	var marginal_block := PaylineEvaluator.effective_block(block_with, _incoming) \
-			- PaylineEvaluator.effective_block(block_without, _incoming)
-
 	var tag := "selected"
-	if not is_selected:
+	if payline not in _selected:
 		var cost: int = _costs.get(payline, 0)
 		tag = "free" if cost <= 0 else "%d tokens" % cost
 
-	var body := "%d ATK · %d BLK" % [result.attack, result.block]
-	# Only worth calling out when part of the block would be thrown away.
-	if marginal_block != result.block:
-		body += "\n(adds %d ATK · %d BLK)" % [result.attack, marginal_block]
+	_readout.set_content("%s — %s" % [payline.display_name, tag],
+			_outcome_text([payline] as Array[Payline]))
 
-	var match_bits := _match_text([payline] as Array[Payline])
+
+func _outcome_text(lines: Array[Payline]) -> String:
+	var text := "%d ATK · %d BLK" % [
+			PaylineEvaluator.total_attack(lines, _columns),
+			PaylineEvaluator.total_block(lines, _columns)]
+
+	var heal := 0
+	for line: Payline in lines:
+		heal += PaylineEvaluator.score_for(line, _columns).heal
+	if heal > 0:
+		text += " · %d HEAL" % heal
+
+	var match_bits := _match_text(lines)
 	if not match_bits.is_empty():
-		body += "\n" + match_bits
-
-	var shown_block: int = block_with if not is_selected \
-			else PaylineEvaluator.total_block(_selected, _columns)
-	_readout.set_content("%s — %s" % [payline.display_name, tag], body, _block_text(shown_block))
+		text += "\n" + match_bits
+	return text
 
 
 func _match_text(lines: Array[Payline]) -> String:
@@ -200,13 +185,3 @@ func _match_text(lines: Array[Payline]) -> String:
 		for run: PaylineScorer.Run in PaylineEvaluator.score_for(line, _columns).matched_runs():
 			bits.append("%s x%d matched (+%d)" % [run.symbol.symbol_name, run.count, run.bonus])
 	return "\n".join(bits)
-
-
-## Block reads as a comparison against the hit, never a raw number (§9).
-func _block_text(block: int) -> String:
-	if _incoming <= 0:
-		return "BLOCK %d" % block
-	var delta := block - _incoming
-	if delta >= 0:
-		return "BLOCK %d / %d  (covered, %d wasted)" % [block, _incoming, delta]
-	return "BLOCK %d / %d  (%d)" % [block, _incoming, delta]

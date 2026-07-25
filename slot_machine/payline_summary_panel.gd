@@ -11,11 +11,10 @@ class_name PaylineSummaryPanel
 ## contents hang off an anchored child, which contributes no minimum size of
 ## its own — so text length can never affect the box.
 
-const BOX_SIZE := Vector2(360, 116)
+const BOX_SIZE := Vector2(360, 96)
 
 var _title: Label
 var _body: Label
-var _block: Label
 
 
 func _ready() -> void:
@@ -42,8 +41,7 @@ func _ready() -> void:
 
 	_title = _make_label()
 	_body = _make_label()
-	_block = _make_label()
-	for label in [_title, _body, _block]:
+	for label in [_title, _body]:
 		vbox.add_child(label)
 
 
@@ -54,11 +52,10 @@ func _make_label() -> Label:
 	return label
 
 
-func set_content(title: String, body: String, block: String) -> void:
+func set_content(title: String, body: String) -> void:
 	_title.text = title
 	_body.text = body
-	_block.text = block
 
 
 func clear() -> void:
-	set_content("", "", "")
+	set_content("", "")

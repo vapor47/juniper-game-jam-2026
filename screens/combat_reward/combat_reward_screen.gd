@@ -51,20 +51,14 @@ func _build_reward_button(payline: Payline) -> Button:
 	name_label.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	vbox.add_child(name_label)
 
-	var overlap_label := Label.new()
-	overlap_label.text = _overlap_text(payline)
-	overlap_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
-	overlap_label.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
-	overlap_label.mouse_filter = Control.MOUSE_FILTER_IGNORE
-	vbox.add_child(overlap_label)
-
 	button.pressed.connect(func() -> void:
 		Global.player.add_payline(payline)
 		SceneManager.combat_reward_chosen.emit())
 	return button
 
 
-## Cells shared with any already-owned line, per column.
+## Cells shared with any already-owned line, per column. The glyph draws these
+## hot, which is the whole concentrate-vs-spread read — no prose needed.
 func _shared_columns(payline: Payline) -> Dictionary:
 	var shared := {}
 	for owned: Payline in Global.player.owned_paylines:
@@ -72,11 +66,3 @@ func _shared_columns(payline: Payline) -> Dictionary:
 			if payline.row_at(col) == owned.row_at(col):
 				shared[col] = true
 	return shared
-
-
-func _overlap_text(payline: Payline) -> String:
-	var shared := _shared_columns(payline).size()
-	if shared == 0:
-		return "spreads — no shared cells\n(more of the board live)"
-	return "concentrates — %d shared cell%s\n(holds pay into both)" % [
-			shared, "" if shared == 1 else "s"]
