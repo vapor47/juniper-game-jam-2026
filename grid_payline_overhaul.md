@@ -330,7 +330,7 @@ improves, with no tuning.
 Removal stays a separate service (it isn't buying a symbol), matching the existing gift shop's
 remove-stop wall sign.
 
-### Placement position matters and must be surfaced
+### Placement position matters
 
 - **Every insertion edits the adjacency graph** — which symbols can co-occur in a column window.
   That's the layer that makes column holds interesting.
@@ -338,7 +338,22 @@ remove-stop wall sign.
   two copies inside the same column window can never both score on a line. Two Heavy Atks at
   stops 10 and 11 occupy 4 of 20 possible windows; the same two at 10 and 1 occupy 6 of 20 —
   50% better for the same stop count.
-- This is invisible without UI support. Show it.
+
+**Show the strip, not the analysis.** This originally read "invisible without UI support, show
+it", and a full readout was built: window coverage before and after, dilution percentages, the
+new column window, on-board odds at each strip length. It was **cut on sight in playtesting.**
+Two problems, and the second is the real one:
+
+- It stated conclusions the player should be reaching themselves. Working out that copies want
+  spreading *is* the build layer; a label that says "spread copies apart" hands over the answer
+  and leaves only data entry.
+- It read as machine-written — dense, hedged, explaining its own reasoning at the player.
+
+The editor now shows the strip in order, with each stop's symbol, and insertion points between
+them. That's the whole surface. The adjacency consequence is legible from the strip itself,
+because the strip is *right there in order* — which is the UI support the original note was
+reaching for. Keep any future addition here concrete and short (a symbol, a position, a count);
+never a sentence explaining what a number implies.
 
 ### Do not scale symbol price by how many copies are already on the strip
 

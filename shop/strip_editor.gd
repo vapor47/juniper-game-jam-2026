@@ -20,8 +20,6 @@ var symbol: Symbol  # what's being placed, in PLACE mode
 
 var _strip_row: HBoxContainer
 var _title: Label
-var _detail: Label
-var _coverage: Label
 
 
 func setup(p_mode: Mode, p_symbol: Symbol = null) -> void:
@@ -33,7 +31,6 @@ func _ready() -> void:
 	layer = 10
 	_build_ui()
 	_rebuild_strip()
-	_show_idle_detail()
 
 
 func _build_ui() -> void:
@@ -73,15 +70,6 @@ func _build_ui() -> void:
 	_strip_row.add_theme_constant_override("separation", 0)
 	scroll.add_child(_strip_row)
 
-	_detail = Label.new()
-	_detail.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
-	_detail.custom_minimum_size.y = 40
-	vbox.add_child(_detail)
-
-	_coverage = Label.new()
-	_coverage.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
-	vbox.add_child(_coverage)
-
 	var cancel := Button.new()
 	cancel.text = "Cancel"
 	cancel.size_flags_horizontal = Control.SIZE_SHRINK_CENTER
@@ -107,8 +95,6 @@ func _build_gap(index: int) -> Control:
 	button.text = "+"
 	button.tooltip_text = "Insert here"
 	button.pressed.connect(func() -> void: _commit_insert(index))
-	button.mouse_entered.connect(func() -> void: _preview_insert(index))
-	button.mouse_exited.connect(_show_idle_detail)
 	return button
 
 
@@ -125,14 +111,11 @@ func _build_stop(index: int) -> Control:
 
 	if mode == Mode.PLACE:
 		button.pressed.connect(func() -> void: _commit_replace(index))
-		button.mouse_entered.connect(func() -> void: _preview_replace(index))
 	else:
 		var can_remove := Global.strip.size() > Reel.POOL_SIZE
 		button.disabled = not can_remove
 		button.tooltip_text = "" if can_remove else "Strip is already at its minimum length"
 		button.pressed.connect(func() -> void: _commit_remove(index))
-		button.mouse_entered.connect(func() -> void: _preview_remove(index))
-	button.mouse_exited.connect(_show_idle_detail)
 	return button
 
 
@@ -146,68 +129,6 @@ func _color_for(s: Symbol) -> Color:
 			return Color(0.16, 0.38, 0.2)
 		_:
 			return Color(0.13, 0.13, 0.13)
-
-
-# ------------------------------------------------------------------ previews
-
-func _show_idle_detail() -> void:
-	var size := Global.strip.size()
-	_detail.text = "Strip: %d stops · any given stop is on the board %.0f%% of spins." % [
-			size, StripAnalysis.on_board_chance(size) * 100.0]
-	if mode == Mode.PLACE:
-		var have := StripAnalysis.count_of(Global.strip, symbol)
-		_coverage.text = "%s on strip: %d · windows covered: %d / %d" % [
-				symbol.symbol_name, have,
-				StripAnalysis.windows_covered(Global.strip, symbol), size]
-	else:
-		_coverage.text = "Removing shortens the strip, which makes everything left more consistent."
-
-
-func _preview_replace(index: int) -> void:
-	var after := StripAnalysis.preview_replace(Global.strip, index, symbol)
-	_detail.text = "REPLACE stop %d (%s -> %s). Strip stays %d long — no dilution." % [
-			index + 1, Global.strip[index].symbol.symbol_name, symbol.symbol_name, after.size()]
-	_report_coverage(after, "replace")
-
-
-func _preview_insert(index: int) -> void:
-	var after := StripAnalysis.preview_insert(Global.strip, index, symbol)
-	_detail.text = "INSERT %s at position %d. Strip grows to %d — every other symbol is diluted (a stop is on the board %.0f%% of spins, down from %.0f%%)." % [
-			symbol.symbol_name, index + 1, after.size(),
-			StripAnalysis.on_board_chance(after.size()) * 100.0,
-			StripAnalysis.on_board_chance(Global.strip.size()) * 100.0]
-	_report_coverage(after, "insert")
-
-
-func _preview_remove(index: int) -> void:
-	if Global.strip.size() <= Reel.POOL_SIZE:
-		return
-	var after := StripAnalysis.preview_remove(Global.strip, index)
-	_detail.text = "REMOVE stop %d (%s). Strip shrinks to %d — a stop is on the board %.0f%% of spins, up from %.0f%%." % [
-			index + 1, Global.strip[index].symbol.symbol_name, after.size(),
-			StripAnalysis.on_board_chance(after.size()) * 100.0,
-			StripAnalysis.on_board_chance(Global.strip.size()) * 100.0]
-	_coverage.text = _window_preview_text(after, index)
-
-
-## The concentrate-vs-spread read: how many windows this symbol reaches after
-## the edit, plus what the new neighbourhood looks like.
-func _report_coverage(after: Array[Stop], verb: String) -> void:
-	var before_cov := StripAnalysis.windows_covered(Global.strip, symbol)
-	var after_cov := StripAnalysis.windows_covered(after, symbol)
-	var delta := after_cov - before_cov
-	var sign_str := "+" if delta >= 0 else ""
-	_coverage.text = "%s reaches %d of %d windows after this %s (%s%d). Spread copies apart — two in one window can never both score on a line." % [
-			symbol.symbol_name, after_cov, after.size(), verb, sign_str, delta]
-
-
-func _window_preview_text(after: Array[Stop], index: int) -> String:
-	if after.is_empty():
-		return ""
-	var names: Array[String] = []
-	for stop: Stop in StripAnalysis.window_at(after, wrapi(index, 0, after.size())):
-		names.append(stop.symbol.symbol_name)
-	return "That column window becomes: %s" % " / ".join(names)
 
 
 # ------------------------------------------------------------------- commits
