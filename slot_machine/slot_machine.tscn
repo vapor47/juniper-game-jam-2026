@@ -82,7 +82,6 @@ size_flags_vertical = 4
 script = ExtResource("6_paylp")
 
 [node name="PanelContainer" type="PanelContainer" parent="MarginContainer/VBodyContainer/SlotsBodyContainer" unique_id=1538499312]
-custom_minimum_size = Vector2(0, 400)
 layout_mode = 2
 size_flags_horizontal = 4
 mouse_filter = 1

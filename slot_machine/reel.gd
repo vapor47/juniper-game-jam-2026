@@ -9,8 +9,8 @@ signal spin_finished(stops: Array[Stop])
 const VISIBLE_ROWS: int = 3
 const BUFFER: int = 1
 const POOL_SIZE: int = VISIBLE_ROWS + BUFFER * 2
-const SYMBOL_WIDTH: float = 96.0
-const SYMBOL_HEIGHT: float = 96.0
+const SYMBOL_WIDTH: float = 144.0
+const SYMBOL_HEIGHT: float = 144.0
 const EXTRA_LOOPS: int = 3
 const SPIN_DURATION: float = 1.2
 const CURVATURE_SPINNING: float = 0.28

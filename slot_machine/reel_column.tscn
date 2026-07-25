@@ -3,7 +3,7 @@
 [ext_resource type="Script" uid="uid://dbnq1or3f4wyr" path="res://slot_machine/reel_column.gd" id="1_3ageh"]
 
 [node name="ReelColumn" type="Control" unique_id=1425705465]
-custom_minimum_size = Vector2(96, 0)
+custom_minimum_size = Vector2(144, 0)
 layout_mode = 3
 anchors_preset = 0
 script = ExtResource("1_3ageh")
@@ -20,7 +20,7 @@ size_flags_vertical = 3
 
 [node name="ScrollLayer" type="Control" parent="VBoxContainer" unique_id=1633007591]
 unique_name_in_owner = true
-custom_minimum_size = Vector2(96, 288)
+custom_minimum_size = Vector2(144, 432)
 layout_mode = 2
 size_flags_horizontal = 3
 size_flags_vertical = 4

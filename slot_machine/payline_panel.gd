@@ -61,89 +61,29 @@ func refresh(owned: Array[Payline], selected: Array[Payline],
 	_refresh_summary(selected, columns, incoming)
 
 
-func _build_row(payline: Payline, selected: Array[Payline], columns: Array[ReelColumn],
-		incoming: int, costs: Dictionary) -> Control:
-	var is_selected := payline in selected
-	var result := PaylineEvaluator.score_for(payline, columns)
-
+## Just the line's name. Per-line numbers live in the summary below the list
+## and on the board itself (hover traces the path, cells glow), so repeating
+## them on every row was noise.
+func _build_row(payline: Payline, selected: Array[Payline], _columns: Array[ReelColumn],
+		_incoming: int, _costs: Dictionary) -> Control:
 	var button := Button.new()
 	button.flat = true
-	button.toggle_mode = false
 	button.focus_mode = Control.FOCUS_NONE
-	button.custom_minimum_size.y = 34
-	if is_selected:
+	button.alignment = HORIZONTAL_ALIGNMENT_LEFT
+	button.custom_minimum_size.y = 30
+	button.text = payline.display_name
+
+	if payline in selected:
 		var box := StyleBoxFlat.new()
 		box.bg_color = ROW_BG_SELECTED
 		button.add_theme_stylebox_override("normal", box)
+
 	_list.add_child(button)
-
-	var hbox := HBoxContainer.new()
-	hbox.add_theme_constant_override("separation", 8)
-	hbox.mouse_filter = Control.MOUSE_FILTER_IGNORE
-	hbox.set_anchors_preset(Control.PRESET_FULL_RECT)
-	button.add_child(hbox)
-
-	var glyph := PaylineGlyph.new()
-	glyph.payline = payline
-	glyph.shared_columns = _shared_columns(payline, selected)
-	hbox.add_child(glyph)
-
-	var name_label := Label.new()
-	name_label.text = payline.display_name
-	name_label.custom_minimum_size.x = 96
-	name_label.mouse_filter = Control.MOUSE_FILTER_IGNORE
-	hbox.add_child(name_label)
-
-	var totals := Label.new()
-	totals.text = _totals_text(payline, result, selected, columns, incoming, is_selected)
-	totals.mouse_filter = Control.MOUSE_FILTER_IGNORE
-	hbox.add_child(totals)
-
-	var spacer := Control.new()
-	spacer.size_flags_horizontal = Control.SIZE_EXPAND_FILL
-	spacer.mouse_filter = Control.MOUSE_FILTER_IGNORE
-	hbox.add_child(spacer)
-
-	var cost_label := Label.new()
-	var cost: int = costs.get(payline, 0)
-	if is_selected:
-		cost_label.text = "SELECTED"
-	elif cost <= 0:
-		cost_label.text = "FREE"
-	else:
-		cost_label.text = "%d tok" % cost
-	cost_label.mouse_filter = Control.MOUSE_FILTER_IGNORE
-	hbox.add_child(cost_label)
 
 	button.pressed.connect(func() -> void: line_clicked.emit(payline))
 	button.mouse_entered.connect(func() -> void: line_hovered.emit(payline))
 	button.mouse_exited.connect(func() -> void: line_hovered.emit(null))
 	return button
-
-
-## Attack is additive under double-dip, so marginal == standalone. Block is
-## only worth what the intent doesn't already have covered.
-func _totals_text(payline: Payline, result: PaylineScorer.LineResult,
-		selected: Array[Payline], columns: Array[ReelColumn],
-		incoming: int, is_selected: bool) -> String:
-	if is_selected or selected.is_empty():
-		return "%d ATK · %d BLK" % [result.attack, result.block]
-
-	var marginal := PaylineEvaluator.marginal_block(payline, selected, columns, incoming)
-	if marginal == result.block:
-		return "%d ATK · %d BLK" % [result.attack, result.block]
-	return "+%d ATK · +%d BLK (of %d)" % [result.attack, marginal, result.block]
-
-
-func _shared_columns(payline: Payline, selected: Array[Payline]) -> Dictionary:
-	var shared := {}
-	for other: Payline in selected:
-		if other == payline:
-			continue
-		for col in payline.pattern.size():
-			if payline.row_at(col) == other.row_at(col):
-				shared[col] = true
-	return shared
 
 
 func _refresh_summary(selected: Array[Payline], columns: Array[ReelColumn], incoming: int) -> void:
