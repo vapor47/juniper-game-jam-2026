@@ -21,7 +21,6 @@ size_flags_vertical = 3
 [node name="ScrollLayer" type="Control" parent="VBoxContainer" unique_id=1633007591]
 unique_name_in_owner = true
 custom_minimum_size = Vector2(96, 288)
-clip_contents = true
 layout_mode = 2
 size_flags_horizontal = 3
 size_flags_vertical = 4

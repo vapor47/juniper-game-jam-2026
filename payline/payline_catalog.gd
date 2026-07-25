@@ -28,9 +28,11 @@ static var FROWN := Payline.new("Frown", [C, T, T, T, C] as Array[int])
 static var PULSE := Payline.new("Pulse", [C, T, C, B, C] as Array[int])
 
 
-## The line every run starts with (§4).
-static func starting_payline() -> Payline:
-	return CENTER_LINE
+## What a run opens with. §4 specifies center-only; the three straights are
+## owned from the start so the selection layer has something to compare
+## against before any rewards land.
+static func starting_paylines() -> Array[Payline]:
+	return [CENTER_LINE, TOP_LINE, BOTTOM_LINE]
 
 
 static func all() -> Array[Payline]:

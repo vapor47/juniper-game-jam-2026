@@ -7,12 +7,8 @@ class_name ReelColumn
 ## Visual state of a single cell, driven by the payline UI (§9).
 enum CellState { NEUTRAL, DIMMED, ON_LINE, IN_RUN }
 
-const _STATE_COLORS := {
-	CellState.NEUTRAL: Color(1, 1, 1, 0),
-	CellState.DIMMED: Color(0, 0, 0, 0.62),
-	CellState.ON_LINE: Color(1, 0.85, 0.3, 0.30),
-	CellState.IN_RUN: Color(1, 0.85, 0.3, 0.60),
-}
+const GLOW_COLOR := Color(1.0, 0.87, 0.25)
+const DIM_COLOR := Color(0, 0, 0, 0.62)
 
 @onready var hold_button: Button = %HoldButton
 @onready var scroll_layer: Control = %ScrollLayer
@@ -28,17 +24,26 @@ var _cell_overlay: Control
 var _cell_panels: Array[Panel] = []
 
 
+## This is a plain Control whose children are anchor-positioned, so it does
+## not derive a minimum size from them on its own — report the VBox's instead.
+## Without this the column collapses to nothing whenever an ancestor stops
+## forcing a size, and the clipped reel draws outside its container.
+func _get_minimum_size() -> Vector2:
+	var vbox := get_node_or_null("VBoxContainer")
+	if vbox:
+		return (vbox as Control).get_combined_minimum_size()
+	return Vector2(Reel.SYMBOL_WIDTH, Reel.SYMBOL_HEIGHT * Reel.VISIBLE_ROWS)
+
+
 func _ready() -> void:
-	# The reel is the column's whole visual body — without a real minimum the
-	# VBoxContainer reports zero width and every column collapses.
-	custom_minimum_size.x = Reel.SYMBOL_WIDTH
 	scroll_layer.custom_minimum_size = Vector2(
 			Reel.SYMBOL_WIDTH, Reel.SYMBOL_HEIGHT * Reel.VISIBLE_ROWS)
+	update_minimum_size()
 
 	reel = Reel.new()
 	reel.strip = Global.strip
 	scroll_layer.add_child(reel)
-	reel.set_anchors_preset(Control.PRESET_FULL_RECT)
+	reel.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
 
 	_build_cell_overlay()
 
@@ -53,7 +58,9 @@ func _build_cell_overlay() -> void:
 	_cell_overlay = Control.new()
 	_cell_overlay.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	scroll_layer.add_child(_cell_overlay)
-	_cell_overlay.set_anchors_preset(Control.PRESET_FULL_RECT)
+	# Anchors alone leave the offsets untouched, which collapses this to zero
+	# width — the row panels then draw their border as an invisible sliver.
+	_cell_overlay.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
 
 	for row in Reel.VISIBLE_ROWS:
 		var panel := Panel.new()
@@ -69,18 +76,44 @@ func _build_cell_overlay() -> void:
 		set_cell_state(row, CellState.NEUTRAL)
 
 
+## Cells on a payline read as a glowing yellow border — never a wash of colour
+## over the symbol, which would fight the thing you're trying to read.
 func set_cell_state(row: int, state: CellState) -> void:
 	if row < 0 or row >= _cell_panels.size():
 		return
+	_cell_panels[row].add_theme_stylebox_override("panel", _style_for(state))
+
+
+func _style_for(state: CellState) -> StyleBoxFlat:
 	var box := StyleBoxFlat.new()
-	box.bg_color = _STATE_COLORS[state]
-	if state == CellState.IN_RUN:
-		box.border_width_left = 3
-		box.border_width_right = 3
-		box.border_width_top = 3
-		box.border_width_bottom = 3
-		box.border_color = Color(1, 0.9, 0.45, 0.95)
-	_cell_panels[row].add_theme_stylebox_override("panel", box)
+	box.draw_center = false
+	box.anti_aliasing = true
+
+	match state:
+		CellState.DIMMED:
+			box.draw_center = true
+			box.bg_color = DIM_COLOR
+		CellState.ON_LINE:
+			_apply_glow(box, 2, Color(GLOW_COLOR, 0.9), 7, 0.30)
+		CellState.IN_RUN:
+			_apply_glow(box, 3, Color(GLOW_COLOR, 1.0), 12, 0.55)
+		_:
+			pass  # NEUTRAL: nothing drawn
+	return box
+
+
+func _apply_glow(box: StyleBoxFlat, width: int, color: Color,
+		glow_size: int, glow_alpha: float) -> void:
+	box.border_width_left = width
+	box.border_width_right = width
+	box.border_width_top = width
+	box.border_width_bottom = width
+	box.border_color = color
+	box.set_corner_radius_all(3)
+	# StyleBoxFlat's shadow, centred and un-offset, reads as a soft halo.
+	box.shadow_color = Color(GLOW_COLOR, glow_alpha)
+	box.shadow_size = glow_size
+	box.shadow_offset = Vector2.ZERO
 
 
 func clear_cell_states() -> void:

@@ -8,12 +8,21 @@ class_name SlotMachine
 @onready var payline_panel: PaylinePanel = %PaylinePanel
 
 var reel_columns: Array[ReelColumn] = []
+var payline_overlay: PaylineOverlay
 
 
 func _ready() -> void:
 	var placeholder_col: InstancePlaceholder = %ReelColumn
 	for i in 5:
 		reel_columns.append(placeholder_col.create_instance())
+
+	# Sits above the columns so it can draw a path across all of them. Added
+	# after ReelColumns so it renders on top; PanelContainer fits both to the
+	# same rect, so overlay-local coordinates line up with the grid.
+	payline_overlay = PaylineOverlay.new()
+	payline_overlay.columns = reel_columns
+	var grid_panel: Control = (%ReelColumns as Control).get_parent()
+	grid_panel.add_child(payline_overlay)
 
 	health_bar.setup(Global.player)
 
@@ -38,6 +47,7 @@ func spin_all() -> void:
 ## Traces one line's path: its 5 cells lit (brighter where they're part of a
 ## scoring run), everything else dimmed (§9). Pass null to clear.
 func highlight_payline(payline: Payline) -> void:
+	payline_overlay.focused_line = payline
 	if payline == null:
 		for col: ReelColumn in reel_columns:
 			col.clear_cell_states()
@@ -63,6 +73,8 @@ func highlight_payline(payline: Payline) -> void:
 ## Persistent, non-hover treatment: every cell on a purchased line stays lit
 ## so the board still reads when the cursor is elsewhere.
 func show_selected_paylines(selected: Array[Payline]) -> void:
+	payline_overlay.selected_lines = selected
+	payline_overlay.focused_line = null
 	for col: ReelColumn in reel_columns:
 		col.clear_cell_states()
 	for payline: Payline in selected:

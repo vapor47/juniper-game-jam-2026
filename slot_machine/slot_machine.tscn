@@ -64,17 +64,27 @@ visible = false
 layout_mode = 2
 
 [node name="SlotsBodyContainer" type="HBoxContainer" parent="MarginContainer/VBodyContainer" unique_id=1893252390]
-editor_description = "Container for:
-- Slot Group Container
-- Slot Machine Lever"
+editor_description = "PaylinePanel | reel grid | LeverBay.
+Centred and hugging its content: the two flanks are equal width so the grid
+lands on the screen centre without the row stretching to fill."
 layout_mode = 2
+size_flags_horizontal = 4
 size_flags_vertical = 4
 theme_override_constants/separation = 20
+alignment = 1
+
+[node name="PaylinePanel" type="PanelContainer" parent="MarginContainer/VBodyContainer/SlotsBodyContainer" unique_id=1120449311]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(360, 0)
+layout_mode = 2
+size_flags_horizontal = 0
+size_flags_vertical = 4
+script = ExtResource("6_paylp")
 
 [node name="PanelContainer" type="PanelContainer" parent="MarginContainer/VBodyContainer/SlotsBodyContainer" unique_id=1538499312]
-custom_minimum_size = Vector2(600, 400)
+custom_minimum_size = Vector2(0, 400)
 layout_mode = 2
-size_flags_horizontal = 3
+size_flags_horizontal = 4
 mouse_filter = 1
 
 [node name="ReelColumns" type="HBoxContainer" parent="MarginContainer/VBodyContainer/SlotsBodyContainer/PanelContainer" unique_id=658891026]
@@ -87,17 +97,16 @@ alignment = 1
 unique_name_in_owner = true
 layout_mode = 2
 
-[node name="PaylinePanel" type="PanelContainer" parent="MarginContainer/VBodyContainer/SlotsBodyContainer" unique_id=1120449311]
-unique_name_in_owner = true
+[node name="LeverBay" type="CenterContainer" parent="MarginContainer/VBodyContainer/SlotsBodyContainer" unique_id=1120449312]
+editor_description = "Mirrors PaylinePanel's width so the grid stays centered on screen."
 custom_minimum_size = Vector2(360, 0)
 layout_mode = 2
+size_flags_horizontal = 0
 size_flags_vertical = 4
-script = ExtResource("6_paylp")
 
-[node name="SlotMachineLever" type="Button" parent="MarginContainer/VBodyContainer/SlotsBodyContainer" unique_id=910737963]
+[node name="SlotMachineLever" type="Button" parent="MarginContainer/VBodyContainer/SlotsBodyContainer/LeverBay" unique_id=910737963]
 unique_name_in_owner = true
 layout_mode = 2
-size_flags_vertical = 4
 text = "SPIN ALL"
 script = ExtResource("3_7abct")
 
@@ -124,5 +133,5 @@ layout_mode = 2
 text = "LOCK IN"
 script = ExtResource("4_kpwbf")
 
-[connection signal="pressed" from="MarginContainer/VBodyContainer/SlotsBodyContainer/SlotMachineLever" to="MarginContainer/VBodyContainer/SlotsBodyContainer/SlotMachineLever" method="_on_pressed"]
+[connection signal="pressed" from="MarginContainer/VBodyContainer/SlotsBodyContainer/LeverBay/SlotMachineLever" to="MarginContainer/VBodyContainer/SlotsBodyContainer/LeverBay/SlotMachineLever" method="_on_pressed"]
 [connection signal="pressed" from="MarginContainer/VBodyContainer/FooterContainer/LockInButton" to="MarginContainer/VBodyContainer/FooterContainer/LockInButton" method="_on_pressed"]

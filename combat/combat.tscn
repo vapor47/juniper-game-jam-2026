@@ -32,4 +32,5 @@ alignment = 1
 [node name="SlotMachine" parent="VBoxContainer" unique_id=1382522530 instance=ExtResource("2_p5meg")]
 unique_name_in_owner = true
 layout_mode = 2
+size_flags_horizontal = 4
 size_flags_vertical = 10

@@ -19,7 +19,9 @@ const ENEMY_SCENE = preload("res://combat/enemies/enemy.tscn")
 var context: CombatContext
 var turn_context: TurnContext
 
-## Respins cost 1/2/3... incrementing within a turn (§5); resets each turn.
+## The turn's first spin is free; respins then cost 1/2/3... incrementing
+## within the turn (§5). Both reset each turn.
+var has_spun_this_turn: bool = false
 var respins_this_turn: int = 0
 
 ## Cost of the Nth line played in a turn. The first is free; the rest are
@@ -31,6 +33,12 @@ const LINE_COSTS: Array[int] = [0, 2, 4]
 ## permanent (§4). Reset every turn.
 var selected_lines: Array[Payline] = []
 var _tokens_spent_on_lines: int = 0
+
+## True while the reels are moving or the turn is resolving. Tracked explicitly
+## rather than inferred from button states: "every control is disabled" is also
+## true when the player has simply run out of tokens, which would wrongly lock
+## them out of picking their free line.
+var _busy: bool = false
 
 
 func setup(e: Array[EnemyData]) -> void:
@@ -95,9 +103,11 @@ func _begin_player_turn() -> void:
 	# Block expires between turns; excess is wasted (§10).
 	Global.player.reset_block()
 	Global.player.regen_tokens()
+	has_spun_this_turn = false
 	respins_this_turn = 0
 	selected_lines.clear()
 	_tokens_spent_on_lines = 0
+	_busy = false
 
 	for col: ReelColumn in slot_machine.reel_columns:
 		col.held = false
@@ -105,27 +115,41 @@ func _begin_player_turn() -> void:
 	player_turn_started.emit()
 	Global.player.broadcast("on_player_turn_started", [context])
 
-	await _spin_all()
+	# The turn opens on the lever, not on an automatic spin — pulling it is
+	# the player's first act.
+	_set_controls_enabled(true)
+	_refresh_paylines()
 
 
 ## Free initial spin, or a paid respin. Locks the controls while the reels are
 ## in motion, then re-enables them once everything lands.
 func _spin_all() -> void:
+	_busy = true
 	_set_controls_enabled(false)
 
 	await slot_machine.spin_all()
 
+	_busy = false
 	_set_controls_enabled(true)
 	_refresh_paylines()
 
 
 func _set_controls_enabled(enabled: bool) -> void:
+	# Nothing to hold or resolve until the reels have been spun this turn.
 	for col: ReelColumn in slot_machine.reel_columns:
-		col.hold_button.disabled = not enabled
-	# A line must be selected before the turn can resolve.
-	slot_machine.lock_in_button.disabled = not enabled or selected_lines.is_empty()
-	# Respins cost 1/2/3... within a turn (§5) — no lever without the tokens for the next one.
-	slot_machine.lever.disabled = not enabled or Global.player.tokens < (respins_this_turn + 1)
+		col.hold_button.disabled = not enabled or not has_spun_this_turn
+	slot_machine.lock_in_button.disabled = not enabled or not has_spun_this_turn \
+			or selected_lines.is_empty()
+	slot_machine.lever.disabled = not enabled or Global.player.tokens < _next_spin_cost()
+	slot_machine.lever.text = "SPIN ALL" if not has_spun_this_turn \
+			else "RESPIN (%d)" % _next_spin_cost()
+
+
+## First spin of the turn is free; the nth respin after that costs n (§5).
+func _next_spin_cost() -> int:
+	if not has_spun_this_turn:
+		return 0
+	return respins_this_turn + 1
 
 
 ## ---------------- Line selection (post-spin, perfect information) ---------------- ##
@@ -146,9 +170,10 @@ func _total_cost_for(count: int) -> int:
 
 
 func _on_line_clicked(payline: Payline) -> void:
-	if slot_machine.lock_in_button.disabled and selected_lines.is_empty() \
-			and slot_machine.lever.disabled:
-		return  # mid-spin
+	# Selection is post-spin (§4) — there's no board to judge before then.
+	# Being broke never blocks selection: the first line is always free.
+	if _busy or not has_spun_this_turn:
+		return
 
 	var next := selected_lines.duplicate()
 	if payline in next:
@@ -200,19 +225,25 @@ func _refresh_paylines() -> void:
 
 
 func _on_lever_pulled() -> void:
-	var cost := respins_this_turn + 1
+	if _busy:
+		return
+	var cost := _next_spin_cost()
 	if Global.player.tokens < cost:
 		slot_machine.lever.disabled = true
 		return
 
 	Global.player.tokens -= cost
-	respins_this_turn += 1
+	if has_spun_this_turn:
+		respins_this_turn += 1
+	else:
+		has_spun_this_turn = true
 	await _spin_all()
 
 
 func _on_lock_in_pressed() -> void:
-	if selected_lines.is_empty():
+	if _busy or not has_spun_this_turn or selected_lines.is_empty():
 		return
+	_busy = true
 	_set_controls_enabled(false)
 	slot_machine.show_selected_paylines(selected_lines)
 

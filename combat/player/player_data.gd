@@ -86,7 +86,7 @@ func get_num_drinks_consumed() -> int:
 
 func _init() -> void:
 	display_name = "Player"
-	owned_paylines = [PaylineCatalog.starting_payline()]
+	owned_paylines = PaylineCatalog.starting_paylines()
 
 
 func owns_payline(p: Payline) -> bool:
