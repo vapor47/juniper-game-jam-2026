@@ -19,6 +19,18 @@ static func create(p_symbol: Symbol) -> StopShopItemData:
 	item.resource_name = item.display_name
 	item.price = SymbolTable.price_of(p_symbol)
 	item.icon = p_symbol.icon
-	item.description = "Add a %s stop (value %d). Place it over a stop to replace, or between two to insert." % [
-			p_symbol.symbol_name, p_symbol.value]
+	item.description = "Adds a %s stop (%s)" % [
+			p_symbol.symbol_name, _effect_text(p_symbol)]
 	return item
+
+
+static func _effect_text(symbol: Symbol) -> String:
+	match symbol.type:
+		Action.Type.ATTACK:
+			return "%d damage" % symbol.value
+		Action.Type.DEFEND:
+			return "%d block" % symbol.value
+		Action.Type.HEAL:
+			return "%d heal" % symbol.value
+		_:
+			return "no effect"

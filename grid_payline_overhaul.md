@@ -23,6 +23,28 @@ damage-heavy 50/35 strip ratio (§3), same-price replace-vs-insert (§6), or pri
 inherent quality rather than by copies owned (§6). If you believe one is wrong, **flag it with
 your reasoning and wait** — do not change it as part of the build.
 
+**Never explain the game's reasoning to the player. Anywhere.** This binds every screen, label,
+tooltip and description in the game, not just the sections that mention UI.
+
+- **State facts, never implications.** "8 block" — not "8 block, which covers most of the
+  incoming hit". "Removes one stop" — not "removes one stop, so everything left shows up more
+  often". The moment a string explains what a number *means for your decision*, it has taken
+  the decision over. Working the implications out is the game.
+- **Prefer UI over prose for anything that does need conveying.** If the player must understand
+  something, build the affordance: draw the payline path, glow the cells on it, colour shared
+  cells in a pattern glyph, put a "+" on the insertion points. Reach for a sentence only when no
+  visual will carry it, and then keep it to a fragment.
+- **Concrete and short.** A symbol, a position, a count, a state. `RESPIN (2)`, `4 damage`,
+  `No line selected`, `22 ATK · 8 BLK`. Not sentences, not hedges, not rationale.
+- **Match the existing voice.** Souvenirs and modifiers already do this well — "+4 if an adjacent
+  stop shares this symbol", "Start each combat with 5 block". Rules, stated flat, no commentary.
+
+Prose that explains itself also reads as machine-written, which is its own reason to cut it.
+Several readouts were built against earlier drafts of this document, played, and removed for
+exactly this: the block-vs-intent delta and marginal preview (§9), the pattern-offer overlap
+description (§4), and the reel editor's coverage and dilution analysis (§6). Each is documented
+where it was cut. **Assume a readout you are about to add is one of these.**
+
 **Build in one pass, following the §13 phase order.** The phases are internal ordering to reach a
 playable loop early; they do not gate on approval. Build straight through Phases 1–4.
 

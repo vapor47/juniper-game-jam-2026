@@ -143,7 +143,7 @@ func _build_row(payline: Payline, selected: Array[Payline]) -> Control:
 ## player's call.
 func _show_selection_summary() -> void:
 	if _selected.is_empty():
-		_readout.set_content("Hover a line to preview it.", "")
+		_readout.set_content("No line selected", "")
 		return
 
 	_readout.set_content(

@@ -17,5 +17,5 @@ static func create() -> RemoveStopShopItemData:
 	item.display_name = "Remove a Stop"
 	item.resource_name = item.display_name
 	item.price = BASE_REMOVE_PRICE
-	item.description = "Take a stop off the strip for good. Shortens the reel, so everything remaining shows up more often."
+	item.description = "Permanently removes one stop from the reel"
 	return item

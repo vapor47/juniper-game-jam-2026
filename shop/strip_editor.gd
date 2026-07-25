@@ -55,9 +55,10 @@ func _build_ui() -> void:
 	vbox.add_theme_constant_override("separation", 12)
 	margin.add_child(vbox)
 
+	# The affordances carry the interaction: gaps are "+" buttons, stops are
+	# labelled tiles. The heading only names what you're doing.
 	_title = Label.new()
-	_title.text = ("Place %s — click a stop to replace it, or a gap to insert" % symbol.symbol_name) \
-			if mode == Mode.PLACE else "Remove which stop?"
+	_title.text = ("Place %s" % symbol.symbol_name) if mode == Mode.PLACE else "Remove a stop"
 	vbox.add_child(_title)
 
 	var scroll := ScrollContainer.new()
