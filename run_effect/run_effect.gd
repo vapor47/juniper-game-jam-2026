@@ -28,6 +28,10 @@ func on_combat_ended(result, ctx: CombatContext) -> void: pass
 
 # -- economy --
 func modify_shop_price(price: int, item: ShopItemData) -> int: return price
+## How many items the shop stocks in a category ("drinks", "souvenirs",
+## "stops", "upgrades"). Lets an effect widen the shelf rather than only
+## discount it.
+func modify_shop_stock(count: int, category: StringName) -> int: return count
 
 # -- lifetime --
 func is_expired() -> bool: return false   # souvenirs: never; drinks: after their combat

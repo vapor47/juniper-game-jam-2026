@@ -6,6 +6,7 @@ static var ENTRIES := [
 	{ "drink": OldFashionedDrink, "rarity": Rarity.COMMON },
 	{ "drink": TheEncoreDrink, "rarity": Rarity.COMMON },
 	{ "drink": DasBootDrink, "rarity": Rarity.COMMON },
+	{ "drink": RetailTherapyDrink, "rarity": Rarity.COMMON },
 ]
 
 const RARITY_WEIGHTS := {

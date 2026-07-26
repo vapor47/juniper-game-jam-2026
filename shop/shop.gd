@@ -91,6 +91,15 @@ func _cancel_purchase(_item: ShopItemData) -> void:
 func _mark_sold(item: ShopItemData) -> void:
 	item.purchased = true
 
+## How many items to stock in a category, after any effect that widens the
+## shelf (Retail Therapy).
+func _stock_for(category: StringName, base: int) -> int:
+	var count := base
+	for effect: RunEffect in Global.player.get_active_effects():
+		count = effect.modify_shop_stock(count, category)
+	return maxi(0, count)
+
+
 ## Runs the price through every owned effect's modify_shop_price hook, so any
 ## souvenir can discount. Loyalty Card used to be hardcoded here, which left
 ## Frequent Flyer — whose only effect is that hook — doing nothing at all.
@@ -121,7 +130,7 @@ func _get_stops_for_sale(num_stops: int = 3) -> Array[ShopItemData]:
 	var pool := SymbolTable.purchasable()
 	pool.shuffle()
 	var items: Array[ShopItemData] = []
-	for symbol: Symbol in pool.slice(0, num_stops):
+	for symbol: Symbol in pool.slice(0, _stock_for(&"stops", num_stops)):
 		items.append(StopShopItemData.create(symbol))
 	return items
 
@@ -143,7 +152,8 @@ func _populate_stat_upgrades() -> void:
 func _get_upgrades_for_sale(num_upgrades: int = 2) -> Array[ShopItemData]:
 	var upgrades: Array[ShopItemData] = []
 	# TODO: prevent picking irrelevant / non-applicable upgrades
-	for i in num_upgrades:
+	var wanted := mini(_stock_for(&"upgrades", num_upgrades), UPGRADE_POOL.size())
+	for i in wanted:
 		var upgrade: ShopItemData = UPGRADE_POOL.pick_random()
 		while upgrade in upgrades:
 			upgrade = UPGRADE_POOL.pick_random()
@@ -156,7 +166,7 @@ func _populate_souvenirs() -> void:
 
 func _get_souvenirs_for_sale(count: int = 2) -> Array[ShopItemData]:
 	var items: Array[ShopItemData] = []
-	for c: Souvenir in SouvenirPool.roll(count):
+	for c: Souvenir in SouvenirPool.roll(_stock_for(&"souvenirs", count)):
 		items.append(SouvenirShopItemData.create(c))
 	return items
 
@@ -176,7 +186,7 @@ func _populate_drinks() -> void:
 
 func _get_drinks_for_sale(count: int = 5) -> Array[ShopItemData]:
 	var items: Array[ShopItemData] = []
-	for d: Drink in DrinkPool.roll(count):
+	for d: Drink in DrinkPool.roll(_stock_for(&"drinks", count)):
 		items.append(DrinkShopItemData.create(d))
 	return items
 	
