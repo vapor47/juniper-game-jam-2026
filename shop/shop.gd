@@ -145,7 +145,7 @@ func _populate_modifiers() -> void:
 	_populate_container(modifiers_container, _get_modifiers_for_sale())
 
 
-func _get_modifiers_for_sale(num_modifiers: int = 2) -> Array[ShopItemData]:
+func _get_modifiers_for_sale(num_modifiers: int = 3) -> Array[ShopItemData]:
 	var items: Array[ShopItemData] = []
 	for m: StopModifier in ModifierPool.roll(_stock_for(&"modifiers", num_modifiers)):
 		items.append(StopModifierShopItemData.create(m))
@@ -165,7 +165,7 @@ const SYMBOL_RARITY_WEIGHTS := {
 
 ## Rarity-weighted and distinct, so a Wild doesn't turn up as often as a Light
 ## Atk now that the shop sells fifteen symbols.
-func _get_stops_for_sale(num_stops: int = 3) -> Array[ShopItemData]:
+func _get_stops_for_sale(num_stops: int = 6) -> Array[ShopItemData]:
 	var items: Array[ShopItemData] = []
 	for symbol in PoolRoller.draw(SymbolTable.purchasable(),
 			_stock_for(&"stops", num_stops), SYMBOL_RARITY_WEIGHTS,
@@ -210,7 +210,7 @@ func _populate_souvenirs() -> void:
 	var souvenirs_for_sale := _get_souvenirs_for_sale()
 	_populate_container(souvenirs_container, souvenirs_for_sale)
 
-func _get_souvenirs_for_sale(count: int = 2) -> Array[ShopItemData]:
+func _get_souvenirs_for_sale(count: int = 3) -> Array[ShopItemData]:
 	var items: Array[ShopItemData] = []
 	for c: Souvenir in SouvenirPool.roll(_stock_for(&"souvenirs", count)):
 		items.append(SouvenirShopItemData.create(c))
