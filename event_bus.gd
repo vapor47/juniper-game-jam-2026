@@ -5,7 +5,6 @@ extends Node
 signal lever_pulled
 signal slot_selection_confirmed
 signal spin_all_completed
-signal combo_legend_updated(new_rows: Array[ComboLegendRow])
 signal token_count_updated(new_value: int)
 
 signal shop_exited

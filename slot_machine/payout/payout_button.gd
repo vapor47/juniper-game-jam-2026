@@ -1,7 +1,7 @@
 extends Button
-class_name ComboLegendButton
+class_name PayoutButton
 
-@onready var legend_panel: ComboLegendPanel = $ComboLegendPanel  # sibling popup, initially hidden
+@onready var legend_panel: PayoutPanel = $PayoutPanel  # popup child, initially hidden
 
 var button_hovered := false:
 	set(new_val):
@@ -20,7 +20,7 @@ var panel_hovered := false:
 var _update_pending := false
 
 func _ready() -> void:
-	$ComboLegendPanel.panel_updated.connect(_on_panel_updated)
+	legend_panel.panel_updated.connect(_on_panel_updated)
 	legend_panel.hide()
 	mouse_entered.connect(func() -> void: button_hovered = true)
 	mouse_exited.connect(func() -> void: button_hovered = false)

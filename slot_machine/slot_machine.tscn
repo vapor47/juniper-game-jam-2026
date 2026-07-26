@@ -3,7 +3,7 @@
 [ext_resource type="Script" uid="uid://buhxbaeopqhmm" path="res://slot_machine/slot_machine.gd" id="1_knkoj"]
 [ext_resource type="Script" uid="uid://bh5pt2mvktqve" path="res://slot_machine/respins_remaining_label.gd" id="2_7abct"]
 [ext_resource type="Script" uid="uid://b0wlqw84eo3yf" path="res://slot_machine/slot_machine_lever.gd" id="3_7abct"]
-[ext_resource type="PackedScene" uid="uid://b6jd2c8y5spjl" path="res://slot_machine/combo_legend/combo_legend_button.tscn" id="3_84m6g"]
+[ext_resource type="PackedScene" uid="uid://b6jd2c8y5spjl" path="res://slot_machine/payout/payout_button.tscn" id="3_84m6g"]
 [ext_resource type="Script" uid="uid://bosg5mx41nc4t" path="res://slot_machine/lock_in_button.gd" id="4_kpwbf"]
 [ext_resource type="PackedScene" uid="uid://c3oy8c5mnx4h3" path="res://HealthBar.tscn" id="5_84m6g"]
 [ext_resource type="Script" path="res://slot_machine/payline_panel.gd" id="6_paylp"]
@@ -59,7 +59,7 @@ script = SubResource("GDScript_84m6g")
 layout_mode = 2
 size_flags_horizontal = 3
 
-[node name="ComboLegendButton" parent="MarginContainer/VBodyContainer/HeaderInfoContainer" unique_id=1479265436 instance=ExtResource("3_84m6g")]
+[node name="PayoutButton" parent="MarginContainer/VBodyContainer/HeaderInfoContainer" unique_id=1479265436 instance=ExtResource("3_84m6g")]
 unique_name_in_owner = true
 visible = false
 layout_mode = 2

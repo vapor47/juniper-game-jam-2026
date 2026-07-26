@@ -69,14 +69,16 @@ func _refresh() -> void:
 	if not is_inside_tree() or not stop:
 		return
 	var symbol := stop.symbol
-	_value.text = _headline(symbol)
+	_value.text = headline(symbol)
 	_tag.text = symbol.symbol_name
-	_bg.color = _color_for(symbol)
+	_bg.color = color_for(symbol)
 
 
 ## The number leads, because within a type the number is the whole difference.
 ## Symbols that have no meaningful value say what they are instead.
-func _headline(symbol: Symbol) -> String:
+## Static so the payout legend can label its rows the same way the board does —
+## the legend is only useful if a row is recognisably the same thing as a cell.
+static func headline(symbol: Symbol) -> String:
 	if symbol.is_wild:
 		return "W"
 	if not symbol.payout.is_empty():
@@ -90,8 +92,9 @@ func _headline(symbol: Symbol) -> String:
 
 ## Hue carries the type, weight carries the tier — the higher the value the
 ## darker and denser the cell, so a Mega reads as heavier than a Light before
-## you've read either number.
-func _color_for(symbol: Symbol) -> Color:
+## you've read either number. Shared with the payout legend, for the same
+## reason headline() is.
+static func color_for(symbol: Symbol) -> Color:
 	if symbol.is_wild:
 		return Color(0.42, 0.2, 0.5)
 

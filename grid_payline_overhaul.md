@@ -369,6 +369,18 @@ symbols feel weightier, but discounts are percentage-based and integer-rounded: 
 content. The price ladder also needs the resolution to say that Light Atk is cheap and Wild is a
 commitment. The two scales are already consistent — payouts were sized against these prices.
 
+### Open: payline acquisition is too frequent
+
+One new line after every combat is a lot of cognitive load — the set of
+available lines never settles long enough to be learned, and a player tracking
+which lines they own is not reading the board. The first line should still be
+an immediate choice, but the rest want spacing: a combat counter, a level
+threshold, or a shop offer competing against the other things gold buys.
+
+Blocked on run length. At four encounters there is no room to space anything
+out, so this can only be judged once the run is long enough for the gap between
+acquisitions to be felt.
+
 ---
 
 ## 6. Shop Verbs
