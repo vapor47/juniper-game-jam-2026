@@ -168,10 +168,19 @@ func _outcome_text(lines: Array[Payline]) -> String:
 			PaylineEvaluator.total_block(lines, _columns)]
 
 	var heal := 0
+	var gold := 0
+	var tokens := 0
 	for line: Payline in lines:
-		heal += PaylineEvaluator.score_for(line, _columns).heal
+		var r := PaylineEvaluator.score_for(line, _columns)
+		heal += r.heal
+		gold += r.gold
+		tokens += r.tokens
 	if heal > 0:
 		text += " · %d HEAL" % heal
+	if gold > 0:
+		text += " · %dg" % gold
+	if tokens > 0:
+		text += " · %d TOK" % tokens
 
 	var match_bits := _match_text(lines)
 	if not match_bits.is_empty():

@@ -1,7 +1,9 @@
 extends RefCounted
 class_name Action
 
-enum Type { NONE, ATTACK, DEFEND, HEAL }
+## GOLD and TOKEN let economy symbols ride the same run/combo/popup machinery
+## as combat ones — a run of Coins pays more gold for free.
+enum Type { NONE, ATTACK, DEFEND, HEAL, GOLD, TOKEN }
 
 var type: Type
 var value: int

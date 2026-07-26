@@ -49,6 +49,11 @@ class LineResult extends RefCounted:
 	var attack: int = 0
 	var block: int = 0
 	var heal: int = 0
+	var gold: int = 0
+	var tokens: int = 0
+	## Payouts that don't map to a single typed run — a Lucky Seven line pays
+	## tokens *and* gold off one run.
+	var extra: Array[Action] = []
 
 	## One Action per run, in left-to-right board order.
 	func to_actions() -> Array[Action]:
@@ -56,6 +61,7 @@ class LineResult extends RefCounted:
 		for run: Run in runs:
 			if run.value != 0:
 				actions.append(Action.new(run.symbol.type, run.value, ""))
+		actions.append_array(extra)
 		return actions
 
 	func matched_runs() -> Array[Run]:
@@ -98,39 +104,105 @@ static func score_line(stops: Array[Stop], ctx: ResolutionContext = null) -> Lin
 		values.append(v)
 
 	var result := LineResult.new()
-	var i := 0
-	while i < stops.size():
-		var symbol := stops[i].symbol
-		var run_len := 1
-		while i + run_len < stops.size() and stops[i + run_len].symbol == symbol:
-			run_len += 1
+	for span: Array in _runs_in(stops):
+		var symbol: Symbol = span[0]
+		var from: int = span[1]
+		var run_len: int = span[2]
 
-		if symbol.type != Action.Type.NONE:
-			var flat := 0
-			for j in range(i, i + run_len):
-				flat += values[j]
+		# Jackpot symbols pay from a table and nothing below their threshold.
+		if not symbol.payout.is_empty():
+			if run_len >= symbol.min_run:
+				_award_jackpot(result, symbol, run_len, from)
+			continue
 
-			# Count bonuses only deepen an existing match; they never turn a
-			# single cell into one (§ HOOK C).
-			var effective := run_len
-			if run_len >= 2:
-				for j in range(i, i + run_len):
-					for modifier: StopModifier in stops[j].modifiers:
-						effective += modifier.combo_count_bonus()
-				for effect: RunEffect in effects:
-					effective += effect.combo_count_bonus()
+		if symbol.type == Action.Type.NONE or run_len < symbol.min_run and run_len < 2:
+			continue
 
-			var total := _payout(flat, effective)
-			if total != 0:
-				result.runs.append(Run.new(symbol, run_len, effective, i, total, total - flat))
-				_accumulate(result, symbol.type, total)
-				if run_len >= 2 and symbol not in context.combo_symbols:
-					context.combo_symbols.append(symbol)
+		# A wild pays as whatever it stands in for, so its own (zero) value is
+		# replaced by the adopted symbol's.
+		var flat := 0
+		for j in range(from, from + run_len):
+			flat += values[j] if not stops[j].symbol.is_wild else symbol.value
 
-		i += run_len
+		# Count bonuses only deepen an existing match; they never turn a
+		# single cell into one (§ HOOK C).
+		var effective := run_len
+		if run_len >= 2 and symbol.combos:
+			for j in range(from, from + run_len):
+				for modifier: StopModifier in stops[j].modifiers:
+					effective += modifier.combo_count_bonus()
+			for effect: RunEffect in effects:
+				effective += effect.combo_count_bonus()
+
+		# Flat-only symbols (tokens) pay their face value however many land.
+		var total := flat if not symbol.combos else _payout(flat, effective)
+		if total != 0:
+			result.runs.append(Run.new(symbol, run_len, effective, from, total, total - flat))
+			_accumulate(result, symbol.type, total)
+			if run_len >= 2 and symbol not in context.combo_symbols:
+				context.combo_symbols.append(symbol)
 
 	_apply_result_totals(result, stops, context)
 	return result
+
+
+## Runs along the line as [symbol, start, length].
+##
+## A wild substitutes for whatever it sits beside, so it belongs to every run
+## it touches: between two Light Atks it makes one run of three, and between a
+## Light Atk and a Med Blk it makes a pair of each. That means runs can overlap
+## on a wild cell, which is exactly the intent — the wild is being two symbols
+## at once.
+static func _runs_in(stops: Array[Stop]) -> Array:
+	var runs: Array = []
+	var n := stops.size()
+	var i := 0
+	while i < n:
+		if stops[i].symbol.is_wild:
+			i += 1
+			continue
+
+		var symbol := stops[i].symbol
+		# Reach backwards over wilds, then forwards over matches and wilds.
+		var from := i
+		while from > 0 and stops[from - 1].symbol.is_wild:
+			from -= 1
+		var to := i
+		var probe := i + 1
+		while probe < n and (stops[probe].symbol == symbol or stops[probe].symbol.is_wild):
+			if stops[probe].symbol == symbol:
+				to = probe
+			probe += 1
+		# Trailing wilds join the run too — they stand in for this symbol.
+		while to + 1 < n and stops[to + 1].symbol.is_wild:
+			to += 1
+
+		runs.append([symbol, from, to - from + 1])
+		# Resume after the last real match, so a wild between two different
+		# symbols is reconsidered for the run on its right.
+		i = probe
+	return runs
+
+
+## Pays straight from the symbol's table, clamped to its longest listed run.
+static func _award_jackpot(result: LineResult, symbol: Symbol, run_len: int, from: int) -> void:
+	var best := 0
+	for length: int in symbol.payout:
+		if length <= run_len and length > best:
+			best = length
+	if best == 0:
+		return
+
+	var pair: Array = symbol.payout[best]
+	var tokens: int = pair[0]
+	var gold: int = pair[1]
+	result.runs.append(Run.new(symbol, run_len, run_len, from, 0, 0))
+	if tokens > 0:
+		result.tokens += tokens
+		result.extra.append(Action.new(Action.Type.TOKEN, tokens, ""))
+	if gold > 0:
+		result.gold += gold
+		result.extra.append(Action.new(Action.Type.GOLD, gold, ""))
 
 
 static func _accumulate(result: LineResult, type: Action.Type, amount: int) -> void:
@@ -141,6 +213,10 @@ static func _accumulate(result: LineResult, type: Action.Type, amount: int) -> v
 			result.block += amount
 		Action.Type.HEAL:
 			result.heal += amount
+		Action.Type.GOLD:
+			result.gold += amount
+		Action.Type.TOKEN:
+			result.tokens += amount
 
 
 ## HOOK B — a stop on the line can adjust the line's total for its own type.

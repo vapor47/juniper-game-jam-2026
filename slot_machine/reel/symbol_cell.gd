@@ -45,5 +45,9 @@ func _color_for_type(type: Action.Type) -> Color:
 			return Color(0.16, 0.3, 0.5)
 		Action.Type.HEAL:
 			return Color(0.2, 0.45, 0.25)
+		Action.Type.GOLD:
+			return Color(0.55, 0.45, 0.12)
+		Action.Type.TOKEN:
+			return Color(0.42, 0.28, 0.5)
 		_:
 			return Color(0.15, 0.15, 0.15)

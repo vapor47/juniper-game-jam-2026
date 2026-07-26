@@ -114,9 +114,20 @@ func broadcast(method: StringName, args: Array = []) -> void:
 		e.callv(method, args)
 	if method == "on_combat_ended":
 		drunkenness -= 15
-	# sweep expirations after combat-end broadcasts
-	#active_drinks = active_drinks.filter(func(e): return not e.is_expired())
-	# (emit run_effect_removed for UI as needed)
+		_sweep_expired_drinks()
+
+
+## Drinks last a combat. combats_remaining was counting down but nothing acted
+## on it, so every drink was permanent.
+func _sweep_expired_drinks() -> void:
+	var still_active: Array[Drink] = []
+	for d: Drink in active_drinks:
+		if d.is_expired():
+			d.on_removed(self)
+			expired_drinks.append(d)
+		else:
+			still_active.append(d)
+	active_drinks = still_active
 
 func apply_debuff(debuff: Debuff) -> void:
 	print_debug("Debuff Applied! (%s)" % debuff.display_name)

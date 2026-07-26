@@ -19,18 +19,18 @@ static func create(p_symbol: Symbol) -> StopShopItemData:
 	item.resource_name = item.display_name
 	item.price = SymbolTable.price_of(p_symbol)
 	item.icon = p_symbol.icon
-	item.description = "Adds a %s stop (%s)" % [
-			p_symbol.symbol_name, _effect_text(p_symbol)]
+	item.description = "Adds a %s stop (%s)" % [p_symbol.symbol_name, _blurb(p_symbol)]
 	return item
 
 
-static func _effect_text(symbol: Symbol) -> String:
-	match symbol.type:
-		Action.Type.ATTACK:
-			return "%d damage" % symbol.value
-		Action.Type.DEFEND:
-			return "%d block" % symbol.value
-		Action.Type.HEAL:
-			return "%d heal" % symbol.value
-		_:
-			return "no effect"
+static func _blurb(symbol: Symbol) -> String:
+	if symbol.is_wild:
+		return "counts as whatever it sits beside"
+	if not symbol.payout.is_empty():
+		return "%d in a row pays big" % symbol.min_run
+	if symbol == SymbolTable.CHIP:
+		return "%d gold each turn it shows" % SymbolTable.CHIP_GOLD_PER_COPY
+	if symbol == SymbolTable.PENNY:
+		return "%d gold on a line, %d more every spin it shows" % [
+				symbol.value, SymbolTable.PENNY_GOLD_PER_COPY]
+	return symbol.effect_text()

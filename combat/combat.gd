@@ -147,6 +147,13 @@ func _spin_all() -> void:
 	await slot_machine.spin_all()
 
 	has_spun_this_turn = true
+
+	# Symbols that pay just for showing up (§ Penny). Every spin, including
+	# respins — the escalating respin cost is what keeps it from being farmed.
+	var trickle := BoardEffects.apply(slot_machine.reel_columns, Symbol.Trigger.ON_SPIN)
+	if trickle > 0:
+		spawn_popup("+%dg from the board" % trickle)
+
 	_busy = false
 	_set_controls_enabled(true)
 	_refresh_paylines()
@@ -280,6 +287,11 @@ func _on_lock_in_pressed() -> void:
 	res_context.actions = actions
 	Global.player.broadcast("on_resolution", [res_context])
 
+	# Board payouts that land once per turn (§ Chip), before the line resolves.
+	var board_gold := BoardEffects.apply(slot_machine.reel_columns, Symbol.Trigger.ON_LOCK)
+	if board_gold > 0:
+		spawn_popup("+%dg from the board" % board_gold)
+
 	await _perform_actions(actions, Global.player, enemies[0])
 
 	var encore: TheEncoreDrink = null
@@ -323,6 +335,15 @@ func _perform_actions(actions: Array[Action], source: CombatantData = Global.pla
 					action.display_string = "%s healed %d!" % [source.display_name, actual_heal]
 				else:
 					action.display_string = "%s is already at full health!" % source.display_name
+			Action.Type.GOLD:
+				Global.player.gold += action.value
+				action.display_string = "+%dg!" % action.value
+			Action.Type.TOKEN:
+				var before := Global.player.tokens
+				Global.player.tokens += action.value
+				var gained := Global.player.tokens - before
+				action.display_string = "+%d token%s!" % [gained, "" if gained == 1 else "s"] \
+						if gained > 0 else "Already at the token cap!"
 
 		_display_action(action)
 		await get_tree().create_timer(1.3).timeout

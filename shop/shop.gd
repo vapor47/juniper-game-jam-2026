@@ -156,11 +156,20 @@ func _populate_stops() -> void:
 	_populate_container(stops_container, _get_stops_for_sale())
 
 
+const SYMBOL_RARITY_WEIGHTS := {
+	Symbol.Rarity.COMMON: 0.60,
+	Symbol.Rarity.UNCOMMON: 0.30,
+	Symbol.Rarity.RARE: 0.10,
+}
+
+
+## Rarity-weighted and distinct, so a Wild doesn't turn up as often as a Light
+## Atk now that the shop sells fifteen symbols.
 func _get_stops_for_sale(num_stops: int = 3) -> Array[ShopItemData]:
-	var pool := SymbolTable.purchasable()
-	pool.shuffle()
 	var items: Array[ShopItemData] = []
-	for symbol: Symbol in pool.slice(0, _stock_for(&"stops", num_stops)):
+	for symbol in PoolRoller.draw(SymbolTable.purchasable(),
+			_stock_for(&"stops", num_stops), SYMBOL_RARITY_WEIGHTS,
+			func(sym: Symbol) -> int: return sym.rarity):
 		items.append(StopShopItemData.create(symbol))
 	return items
 

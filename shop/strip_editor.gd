@@ -162,6 +162,10 @@ func _color_for(s: Symbol) -> Color:
 			return Color(0.14, 0.26, 0.44)
 		Action.Type.HEAL:
 			return Color(0.16, 0.38, 0.2)
+		Action.Type.GOLD:
+			return Color(0.46, 0.38, 0.1)
+		Action.Type.TOKEN:
+			return Color(0.36, 0.24, 0.44)
 		_:
 			return Color(0.13, 0.13, 0.13)
 

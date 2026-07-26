@@ -154,12 +154,10 @@ func _stop_tooltip(row: int) -> String:
 		return ""
 
 	var symbol := get_stop_at_row(row).symbol
-	match symbol.type:
-		Action.Type.ATTACK:
-			return "%d damage" % symbol.value
-		Action.Type.DEFEND:
-			return "%d block" % symbol.value
-		Action.Type.HEAL:
-			return "%d heal" % symbol.value
-		_:
-			return "No effect"
+	if symbol.is_wild:
+		return "Wild"
+	if not symbol.payout.is_empty():
+		return "%d in a row pays" % symbol.min_run
+	if symbol == SymbolTable.CHIP:
+		return "%d gold" % SymbolTable.CHIP_GOLD_PER_COPY
+	return symbol.effect_text()
