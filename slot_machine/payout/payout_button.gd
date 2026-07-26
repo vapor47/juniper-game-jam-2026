@@ -1,7 +1,13 @@
 extends Button
 class_name PayoutButton
+## Hover target for the paytable. The panel stays up while the cursor is on
+## either the button or the panel itself, so the table can be read and
+## scrolled without it closing underneath the pointer.
 
-@onready var legend_panel: PayoutPanel = $PayoutPanel  # popup child, initially hidden
+const GAP := 6.0
+const MARGIN := 8.0
+
+@onready var legend_panel: PayoutPanel = $PayoutPanel  # popup child, hidden until hovered
 
 var button_hovered := false:
 	set(new_val):
@@ -17,41 +23,52 @@ var panel_hovered := false:
 		panel_hovered = new_val
 		_update_visibility()
 
-var _update_pending := false
 
 func _ready() -> void:
-	legend_panel.panel_updated.connect(_on_panel_updated)
+	# Drawn in screen space rather than inside the header's layout: the button
+	# lives in an HBoxContainer, so a panel positioned in local space is both
+	# clipped by the machine's margins and z-ordered under its siblings.
+	legend_panel.top_level = true
+	legend_panel.z_index = 100
 	legend_panel.hide()
+	legend_panel.panel_updated.connect(_reposition)
+	legend_panel.resized.connect(_reposition)
 	mouse_entered.connect(func() -> void: button_hovered = true)
 	mouse_exited.connect(func() -> void: button_hovered = false)
 	legend_panel.mouse_entered.connect(func() -> void: panel_hovered = true)
 	legend_panel.mouse_exited.connect(func() -> void: panel_hovered = false)
 
 
-func _request_update() -> void:
-	if _update_pending:
-		return
-	_update_pending = true
-	await get_tree().process_frame  # let all enter/exit events settle this frame
-	_update_visibility()
-	_update_pending = false
-
-
 func _update_visibility() -> void:
 	if button_hovered or panel_hovered:
-		_show_legend()
+		legend_panel.build_legend()
+		legend_panel.show()
+		_reposition()
 	else:
 		legend_panel.hide()
 
-func _show_legend() -> void:
-	legend_panel.build_legend()
-	legend_panel.show()
-	
-	#await get_tree().process_frame  # let size resolve after building content
-	#
-	## local position, relative to this button's parent — no global/screen coords needed
-	#legend_panel.position = Vector2(-legend_panel.size.x + size.x, -legend_panel.size.y - 4)  # anchor above button, local space
 
-func _on_panel_updated() -> void:
-	await get_tree().process_frame
-	legend_panel.position = Vector2(-legend_panel.size.x + size.x, -legend_panel.size.y - 4)  # anchor above button, local space
+## Hangs below the button and right-aligned to it, then clamped into the
+## viewport. The button sits in the machine's header, so the old placement
+## above it put an eleven-row table off the top of the screen.
+func _reposition() -> void:
+	await get_tree().process_frame  # let the rebuilt table settle its size
+	if not is_instance_valid(legend_panel) or not legend_panel.visible:
+		return
+
+	var panel_size := legend_panel.get_combined_minimum_size()
+	panel_size.x = maxf(panel_size.x, legend_panel.size.x)
+	panel_size.y = maxf(panel_size.y, legend_panel.size.y)
+
+	var screen := get_viewport_rect().size
+	var pos := global_position + Vector2(size.x - panel_size.x, size.y + GAP)
+
+	# Below if it fits, above if it doesn't, then clamped either way so the
+	# table is never partly off-screen.
+	if pos.y + panel_size.y > screen.y - MARGIN:
+		var above := global_position.y - panel_size.y - GAP
+		pos.y = above if above >= MARGIN else MARGIN
+
+	pos.x = clampf(pos.x, MARGIN, maxf(MARGIN, screen.x - panel_size.x - MARGIN))
+	pos.y = clampf(pos.y, MARGIN, maxf(MARGIN, screen.y - panel_size.y - MARGIN))
+	legend_panel.global_position = pos
