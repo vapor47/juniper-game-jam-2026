@@ -27,7 +27,12 @@ var respins_this_turn: int = 0
 ## Cost of the Nth line played in a turn. The first is free; the rest are
 ## priced as multiples of per-turn token income (§5). Souvenirs raise the
 ## line cap, they never cut these prices.
-const LINE_COSTS: Array[int] = [0, 2, 4]
+##
+## At 2/4 an extra line was bought on essentially every turn, which is the
+## exact condition §5 says to correct. At 4/8, against 1 token/turn regen, a
+## second line is several turns of banking and a third is a genuine event —
+## the bank-and-spike decision rather than a per-turn tax.
+const LINE_COSTS: Array[int] = [0, 4, 8]
 
 ## Lines played this turn — distinct from the pattern inventory, which is
 ## permanent (§4). Reset every turn.
