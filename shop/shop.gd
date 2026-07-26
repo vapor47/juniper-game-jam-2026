@@ -4,6 +4,7 @@ class_name Shop
 @onready var stat_upgrades_container := %StatUpgradesContainer
 @onready var emergency_heal_container := %EmergencyHealContainer
 @onready var stops_container := %StopsContainer
+@onready var modifiers_container := %ModifiersContainer
 @onready var remove_stop_container := %RemoveStopContainer
 @onready var souvenirs_container := %SouvenirsContainer
 @onready var drinks_container := %DrinksContainer
@@ -64,6 +65,8 @@ func _open_strip_editor(item: ShopItemData) -> void:
 	var editor: StripEditor = STRIP_EDITOR_SCENE.instantiate()
 	if item is StopShopItemData:
 		editor.setup(StripEditor.Mode.PLACE, (item as StopShopItemData).symbol)
+	elif item is StopModifierShopItemData:
+		editor.setup_modifier((item as StopModifierShopItemData).modifier)
 	else:
 		editor.setup(StripEditor.Mode.REMOVE)
 
@@ -119,7 +122,19 @@ func display_price(item: ShopItemData) -> int:
 ## Replace and Add are the same buy: placement decides which one it was.
 func _populate_machine_modifications() -> void:
 	_populate_stops()
+	_populate_modifiers()
 	_populate_remove_stop()
+
+
+func _populate_modifiers() -> void:
+	_populate_container(modifiers_container, _get_modifiers_for_sale())
+
+
+func _get_modifiers_for_sale(num_modifiers: int = 2) -> Array[ShopItemData]:
+	var items: Array[ShopItemData] = []
+	for m: StopModifier in ModifierPool.roll(_stock_for(&"modifiers", num_modifiers)):
+		items.append(StopModifierShopItemData.create(m))
+	return items
 
 
 func _populate_stops() -> void:

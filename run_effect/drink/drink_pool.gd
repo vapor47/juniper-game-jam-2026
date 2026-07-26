@@ -1,35 +1,23 @@
 class_name DrinkPool
 
-enum Rarity { COMMON, UNCOMMON, RARE }
-
 static var ENTRIES := [
-	{ "drink": OldFashionedDrink, "rarity": Rarity.COMMON },
-	{ "drink": TheEncoreDrink, "rarity": Rarity.COMMON },
-	{ "drink": DasBootDrink, "rarity": Rarity.COMMON },
-	{ "drink": RetailTherapyDrink, "rarity": Rarity.COMMON },
+	{ "drink": OldFashionedDrink, "rarity": Drink.Rarity.COMMON },
+	{ "drink": TheEncoreDrink, "rarity": Drink.Rarity.COMMON },
+	{ "drink": RetailTherapyDrink, "rarity": Drink.Rarity.COMMON },
+	{ "drink": DasBootDrink, "rarity": Drink.Rarity.UNCOMMON },
 ]
 
 const RARITY_WEIGHTS := {
-	Souvenir.Rarity.COMMON: 0.60,
-	Souvenir.Rarity.UNCOMMON: 0.30,
-	Souvenir.Rarity.RARE: 0.10,
+	Drink.Rarity.COMMON: 0.60,
+	Drink.Rarity.UNCOMMON: 0.30,
+	Drink.Rarity.RARE: 0.10,
 }
 
+
+## Distinct drinks — the bar never stocks the same bottle twice in one visit.
 static func roll(count: int) -> Array[Drink]:
 	var out: Array[Drink] = []
-	for i in count:
-		var rarity := _roll_rarity()
-		var matches := ENTRIES.filter(func(e): return e["rarity"] == rarity)
-		if matches.is_empty():
-			continue
-		out.append(matches.pick_random()["drink"].new())
+	for entry in PoolRoller.draw(ENTRIES, count, RARITY_WEIGHTS,
+			func(e: Dictionary) -> int: return e["rarity"]):
+		out.append(entry["drink"].new())
 	return out
-
-static func _roll_rarity() -> Rarity:
-	#var r := randf()
-	#var cumulative := 0.0
-	#for rarity: Rarity in RARITY_WEIGHTS:
-		#cumulative += RARITY_WEIGHTS[rarity]
-		#if r <= cumulative:
-			#return rarity
-	return Rarity.COMMON

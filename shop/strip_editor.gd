@@ -5,18 +5,20 @@ class_name StripEditor
 ## do I have something worth sacrificing, or do I eat the dilution?
 ##
 ## Removal is a separate service (it isn't buying a symbol), so this same
-## editor also runs in REMOVE mode.
+## editor also runs in REMOVE mode, and in MODIFY mode for attaching a bought
+## modifier to a stop.
 
 signal edit_committed
 signal cancelled
 
-enum Mode { PLACE, REMOVE }
+enum Mode { PLACE, REMOVE, MODIFY }
 
 const STOP_SIZE := Vector2(64, 64)
 const GAP_SIZE := Vector2(16, 64)
 
 var mode: Mode = Mode.PLACE
-var symbol: Symbol  # what's being placed, in PLACE mode
+var symbol: Symbol            # what's being placed, in PLACE mode
+var modifier: StopModifier    # what's being attached, in MODIFY mode
 
 var _strip_row: HBoxContainer
 var _title: Label
@@ -25,6 +27,11 @@ var _title: Label
 func setup(p_mode: Mode, p_symbol: Symbol = null) -> void:
 	mode = p_mode
 	symbol = p_symbol
+
+
+func setup_modifier(p_modifier: StopModifier) -> void:
+	mode = Mode.MODIFY
+	modifier = p_modifier
 
 
 func _ready() -> void:
@@ -58,7 +65,13 @@ func _build_ui() -> void:
 	# The affordances carry the interaction: gaps are "+" buttons, stops are
 	# labelled tiles. The heading only names what you're doing.
 	_title = Label.new()
-	_title.text = ("Place %s" % symbol.symbol_name) if mode == Mode.PLACE else "Remove a stop"
+	match mode:
+		Mode.PLACE:
+			_title.text = "Place %s" % symbol.symbol_name
+		Mode.MODIFY:
+			_title.text = "Attach %s" % modifier.display_name
+		_:
+			_title.text = "Remove a stop"
 	vbox.add_child(_title)
 
 	var scroll := ScrollContainer.new()
@@ -103,20 +116,41 @@ func _build_stop(index: int) -> Control:
 	var stop: Stop = Global.strip[index]
 	var button := Button.new()
 	button.custom_minimum_size = STOP_SIZE
-	button.text = "%d\n%s" % [index + 1, stop.symbol.symbol_name]
 	button.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
+	# A dot per attached modifier, so an already-modified stop is visible
+	# without having to hover every tile.
+	var marks := "\n%s" % "*".repeat(stop.modifiers.size()) if not stop.modifiers.is_empty() else ""
+	button.text = "%d\n%s%s" % [index + 1, stop.symbol.symbol_name, marks]
 
 	var box := StyleBoxFlat.new()
 	box.bg_color = _color_for(stop.symbol)
+	if not stop.modifiers.is_empty():
+		box.set_border_width_all(2)
+		box.border_color = Color(1, 0.85, 0.3, 0.9)
 	button.add_theme_stylebox_override("normal", box)
 
-	if mode == Mode.PLACE:
-		button.pressed.connect(func() -> void: _commit_replace(index))
-	else:
-		var can_remove := Global.strip.size() > Reel.POOL_SIZE
-		button.disabled = not can_remove
-		button.tooltip_text = "" if can_remove else "Strip is already at its minimum length"
-		button.pressed.connect(func() -> void: _commit_remove(index))
+	# Whatever is already on the stop, named — the player is deciding where a
+	# modifier goes, so what's there matters.
+	var existing: Array[String] = []
+	for m: StopModifier in stop.modifiers:
+		existing.append("%s — %s" % [m.display_name, m.description])
+	if not existing.is_empty():
+		HoverLabel.attach_to(button, "\n".join(existing))
+
+	match mode:
+		Mode.PLACE:
+			button.pressed.connect(func() -> void: _commit_replace(index))
+		Mode.MODIFY:
+			var allowed := modifier.can_apply(stop)
+			button.disabled = not allowed
+			if not allowed:
+				button.tooltip_text = "%s can't go on this stop" % modifier.display_name
+			button.pressed.connect(func() -> void: _commit_modifier(index))
+		_:
+			var can_remove := Global.strip.size() > Reel.POOL_SIZE
+			button.disabled = not can_remove
+			button.tooltip_text = "" if can_remove else "Strip is already at its minimum length"
+			button.pressed.connect(func() -> void: _commit_remove(index))
 	return button
 
 
@@ -141,6 +175,13 @@ func _commit_replace(index: int) -> void:
 
 func _commit_insert(index: int) -> void:
 	Global.strip.insert(index, Stop.new(symbol))
+	edit_committed.emit()
+
+
+func _commit_modifier(index: int) -> void:
+	if not modifier.can_apply(Global.strip[index]):
+		return
+	Global.strip[index].modifiers.append(modifier)
 	edit_committed.emit()
 
 

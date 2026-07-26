@@ -6,7 +6,10 @@ enum Rarity { COMMON, UNCOMMON, RARE }
 
 var display_name: String
 var description: String
-static var rarity: Rarity = Rarity.COMMON
+## Per-instance. This was static, which meant every RunEffect in the game
+## shared one value and whichever was constructed last overwrote it for all of
+## them.
+var rarity: Rarity = Rarity.COMMON
 var icon: Texture2D
 
 @warning_ignore_start("unused_parameter")
@@ -36,7 +39,7 @@ func modify_shop_stock(count: int, category: StringName) -> int: return count
 # -- lifetime --
 func is_expired() -> bool: return false   # souvenirs: never; drinks: after their combat
 
-static func get_rarity() -> Rarity:
+func get_rarity() -> Rarity:
 	return rarity
 """
 Effect Ideas (map these to whatever drinks/souvenirs feel best):

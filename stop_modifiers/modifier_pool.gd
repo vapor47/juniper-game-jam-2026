@@ -3,23 +3,24 @@ class_name ModifierPool
 ## each shop offer constructs a FRESH modifier (stateful mods like Ramping
 ## must never share instances across stops).
 
-## rarity -> array of zero-arg factory Callables
-static var _pool: Dictionary = {
-	StopModifier.Rarity.COMMON: [
-		func() -> StopModifier: return PolishedModifier.new(2),
-		func() -> StopModifier: return PolishedModifier.new(4),   # Gilded
-		func() -> StopModifier: return WeightedPayoutModifier.new(),
-	],
-	StopModifier.Rarity.UNCOMMON: [
-		func() -> StopModifier: return BeginnersLuckModifier.new(),
-		func() -> StopModifier: return HouseCreditModifier.new(),
-		func() -> StopModifier: return GoodNeighborModifier.new(),
-	],
-	StopModifier.Rarity.RARE: [
-		func() -> StopModifier: return LoadedDiceModifier.new(),
-		func() -> StopModifier: return MatchingCufflinksModifier.new(),
-	],
-}
+static var ENTRIES := [
+	{ "make": func() -> StopModifier: return PolishedModifier.new(2),
+	  "rarity": StopModifier.Rarity.COMMON },
+	{ "make": func() -> StopModifier: return PolishedModifier.new(4),   # Gilded
+	  "rarity": StopModifier.Rarity.COMMON },
+	{ "make": func() -> StopModifier: return WeightedPayoutModifier.new(),
+	  "rarity": StopModifier.Rarity.COMMON },
+	{ "make": func() -> StopModifier: return BeginnersLuckModifier.new(),
+	  "rarity": StopModifier.Rarity.UNCOMMON },
+	{ "make": func() -> StopModifier: return HouseCreditModifier.new(),
+	  "rarity": StopModifier.Rarity.UNCOMMON },
+	{ "make": func() -> StopModifier: return GoodNeighborModifier.new(),
+	  "rarity": StopModifier.Rarity.UNCOMMON },
+	{ "make": func() -> StopModifier: return LoadedDiceModifier.new(),
+	  "rarity": StopModifier.Rarity.RARE },
+	{ "make": func() -> StopModifier: return MatchingCufflinksModifier.new(),
+	  "rarity": StopModifier.Rarity.RARE },
+]
 
 const RARITY_WEIGHTS := {
 	StopModifier.Rarity.COMMON: 0.60,
@@ -28,18 +29,17 @@ const RARITY_WEIGHTS := {
 }
 
 
+## Distinct modifiers — the same one is never offered twice in a visit.
+## Polished and Gilded are separate entries, so both can appear.
+##
+## Rarity is stamped on from the entry rather than set inside each modifier:
+## none of them declared one, so every modifier defaulted to COMMON and priced
+## the same regardless of tier. The pool is the one place that knows.
 static func roll(count: int) -> Array[StopModifier]:
 	var out: Array[StopModifier] = []
-	for i in count:
-		out.append(_pool[_roll_rarity()].pick_random().call())
+	for entry in PoolRoller.draw(ENTRIES, count, RARITY_WEIGHTS,
+			func(e: Dictionary) -> int: return e["rarity"]):
+		var modifier: StopModifier = (entry["make"] as Callable).call()
+		modifier.rarity = entry["rarity"]
+		out.append(modifier)
 	return out
-
-
-static func _roll_rarity() -> StopModifier.Rarity:
-	var r := randf()
-	var cumulative := 0.0
-	for rarity: StopModifier.Rarity in RARITY_WEIGHTS:
-		cumulative += RARITY_WEIGHTS[rarity]
-		if r <= cumulative:
-			return rarity
-	return StopModifier.Rarity.COMMON

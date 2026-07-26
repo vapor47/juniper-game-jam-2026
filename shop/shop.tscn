@@ -72,7 +72,8 @@ layout_mode = 2
 size_flags_horizontal = 3
 alignment = 1
 
-[node name="ReelStopContainer" type="HBoxContainer" parent="MarginContainer/VBoxContainer/ShopContents/MachineModificationsContainer/ReelModificationsContainer" unique_id=1467011792]
+[node name="ModifiersContainer" type="HBoxContainer" parent="MarginContainer/VBoxContainer/ShopContents/MachineModificationsContainer/ReelModificationsContainer" unique_id=1467011792]
+unique_name_in_owner = true
 layout_mode = 2
 size_flags_horizontal = 3
 alignment = 1

@@ -1,39 +1,31 @@
-# souvenir_pool.gd
 class_name SouvenirPool
 
-enum Rarity { COMMON, UNCOMMON, RARE }
-
 static var ENTRIES := [
-	{ "souvenir": LoyaltyCardSouvenir,   "rarity": Rarity.COMMON },
-	{ "souvenir": RabbitsFootSouvenir,   "rarity": Rarity.COMMON },
-	{ "souvenir": MorningCoffeeSouvenir, "rarity": Rarity.COMMON },
-	{ "souvenir": TipJarSouvenir,        "rarity": Rarity.UNCOMMON },
-	{ "souvenir": FrequentFlyerSouvenir, "rarity": Rarity.UNCOMMON },
-	{ "souvenir": CardCounterSouvenir,   "rarity": Rarity.RARE },
-	{ "souvenir": HealthSouvenir,        "rarity": Rarity.COMMON },
+	{ "souvenir": LoyaltyCardSouvenir,   "rarity": Souvenir.Rarity.COMMON },
+	{ "souvenir": RabbitsFootSouvenir,   "rarity": Souvenir.Rarity.COMMON },
+	{ "souvenir": MorningCoffeeSouvenir, "rarity": Souvenir.Rarity.COMMON },
+	{ "souvenir": HealthSouvenir,        "rarity": Souvenir.Rarity.COMMON },
+	{ "souvenir": TipJarSouvenir,        "rarity": Souvenir.Rarity.UNCOMMON },
+	{ "souvenir": FrequentFlyerSouvenir, "rarity": Souvenir.Rarity.UNCOMMON },
+	{ "souvenir": CardCounterSouvenir,   "rarity": Souvenir.Rarity.RARE },
 ]
 
 static var RARITY_WEIGHTS := {
-	Rarity.COMMON: 0.60,
-	Rarity.UNCOMMON: 0.30,
-	Rarity.RARE: 0.10,
+	Souvenir.Rarity.COMMON: 0.60,
+	Souvenir.Rarity.UNCOMMON: 0.30,
+	Souvenir.Rarity.RARE: 0.10,
 }
 
-static func roll(count: int) -> Array[Souvenir]:
-	var out: Array[Souvenir] = []
-	for i in count:
-		var rarity := _roll_rarity()
-		var matches := ENTRIES.filter(func(e): return e["rarity"] == rarity)
-		if matches.is_empty():
-			continue
-		out.append(matches.pick_random()["souvenir"].new())
-	return out
 
-static func _roll_rarity() -> Rarity:
-	var r := randf()
-	var cumulative := 0.0
-	for rarity: Rarity in RARITY_WEIGHTS:
-		cumulative += RARITY_WEIGHTS[rarity]
-		if r <= cumulative:
-			return rarity
-	return Rarity.COMMON
+## Distinct souvenirs, and never one the player already owns — each is a
+## permanent one-of, so offering a duplicate would be offering nothing.
+static func roll(count: int) -> Array[Souvenir]:
+	var available := ENTRIES.filter(
+			func(e: Dictionary) -> bool:
+				return Global.player == null or not Global.player.owns_souvenir(e["souvenir"]))
+
+	var out: Array[Souvenir] = []
+	for entry in PoolRoller.draw(available, count, RARITY_WEIGHTS,
+			func(e: Dictionary) -> int: return e["rarity"]):
+		out.append(entry["souvenir"].new())
+	return out
