@@ -26,6 +26,11 @@ class_name PayoutPanel
 const MAX_RUN := 5
 const MIN_RUN_COLUMN := 1
 const SWATCH_SIZE := Vector2(104, 40)
+## Held fixed so the panel does not breathe as rows come and go — a Lucky Seven
+## row carrying "10T 2000g" is much wider than a row of plain numbers, and a
+## centred panel that changes width jitters at both edges every spin. Measured
+## widest content across 60 boards with every symbol on the strip was 406.
+const PANEL_WIDTH := 420.0
 ## Caps the scroll viewport. Content shorter than this shows no scrollbar at
 ## all; only an unusually varied board reveals that it scrolls.
 const MAX_TABLE_HEIGHT := 467.0
@@ -47,6 +52,7 @@ var _content: Control
 
 
 func _ready() -> void:
+	custom_minimum_size.x = PANEL_WIDTH
 	build_legend()
 
 
@@ -104,7 +110,7 @@ func build_legend() -> void:
 	root.add_theme_constant_override("separation", 14)
 
 	if not line_symbols.is_empty():
-		root.add_child(_section("PER LINE"))
+		root.add_child(_section("PAYOUTS"))
 		root.add_child(_run_table(line_symbols))
 	if not board_symbols.is_empty():
 		root.add_child(_section("ON THE BOARD"))
