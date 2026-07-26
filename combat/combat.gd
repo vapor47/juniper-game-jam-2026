@@ -29,10 +29,11 @@ var respins_this_turn: int = 0
 ## line cap, they never cut these prices.
 ##
 ## At 2/4 an extra line was bought on essentially every turn, which is the
-## exact condition §5 says to correct. At 4/8, against 1 token/turn regen, a
-## second line is several turns of banking and a third is a genuine event —
-## the bank-and-spike decision rather than a per-turn tax.
-const LINE_COSTS: Array[int] = [0, 4, 8]
+## exact condition §5 says to correct. 4/8 overcorrected: a second line ate a
+## whole early turn's budget, so those turns collapsed to one line and no
+## respins. At 3/6 the second line stays the normal purchase while the third
+## becomes something you bank for — the bank-and-spike decision §5 wanted.
+const LINE_COSTS: Array[int] = [0, 3, 6]
 
 ## Lines played this turn — distinct from the pattern inventory, which is
 ## permanent (§4). Reset every turn.
