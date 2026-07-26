@@ -82,7 +82,7 @@ theme_override_constants/separation = 8
 [node name="PayoutPanel" parent="MarginContainer/VBodyContainer/SlotsBodyContainer/LeftFlank" unique_id=1120449315 instance=ExtResource("3_84m6g")]
 unique_name_in_owner = true
 layout_mode = 2
-size_flags_horizontal = 0
+size_flags_horizontal = 4
 size_flags_vertical = 0
 
 [node name="PanelContainer" type="PanelContainer" parent="MarginContainer/VBodyContainer/SlotsBodyContainer" unique_id=1538499312]
