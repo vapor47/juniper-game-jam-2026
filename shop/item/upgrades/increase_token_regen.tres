@@ -4,7 +4,8 @@
 
 [resource]
 script = ExtResource("1_1jtgh")
-stat_type = 3
+stat_type = 2
 display_name = "Increase Token Regen"
+description = "+1 token at the start of each turn"
 price = 100
 metadata/_custom_type_script = "uid://bhphjbf5nyek7"

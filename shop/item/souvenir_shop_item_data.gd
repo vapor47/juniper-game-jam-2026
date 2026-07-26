@@ -12,6 +12,8 @@ func on_purchase(player: PlayerData) -> void:
 static func create(p_souvenir: Souvenir) -> SouvenirShopItemData:
 	var item := SouvenirShopItemData.new()
 	item.display_name = p_souvenir.display_name
+	item.description = p_souvenir.description
+	item.icon = p_souvenir.icon
 	item.resource_name = item.display_name
 	item.price = BASE_CHARM_PRICE
 	item.souvenir = p_souvenir

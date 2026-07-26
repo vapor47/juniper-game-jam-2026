@@ -13,6 +13,7 @@ func on_purchase(player: PlayerData) -> void:
 static func create() -> EmergencyHealShopItemData:
 	var item := EmergencyHealShopItemData.new()
 	item.display_name = "Emergency Heal (one-time use!)"
+	item.description = "Restores you to full health. Once per run"
 	item.resource_name = item.display_name
 	item.price = BASE_EMERGENCY_HEAL_PRICE
 	return item

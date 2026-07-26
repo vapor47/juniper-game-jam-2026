@@ -13,8 +13,7 @@ const STRIP_EDITOR_SCENE = preload("res://shop/strip_editor.tscn")
 const SHOP_ITEM_SCENE = preload("res://shop/item/shop_item.tscn")
 
 const UPGRADE_POOL: Array[ShopItemData] = [
-	preload("res://shop/item/upgrades/increase_active_slots.tres"),
-	preload("res://shop/item/upgrades/increase_total_slots.tres"),
+	preload("res://shop/item/upgrades/increase_line_cap.tres"),
 	preload("res://shop/item/upgrades/increase_token_cap.tres"),
 	preload("res://shop/item/upgrades/increase_token_regen.tres"),
 ]
@@ -40,6 +39,11 @@ func _populate_container(container: BoxContainer, items: Array[ShopItemData]) ->
 		item.setup(item_data)
 		item.purchase_requested.connect(_on_item_purchased)
 		container.add_child(item)
+		# ShopItem._ready() fills tooltip_text from the description; clear it so
+		# the built-in tooltip doesn't double up with the HoverLabel, which
+		# follows the cursor and appears without a delay.
+		item.tooltip_text = ""
+		HoverLabel.attach_to(item, item_data.description)
 
 func _on_item_purchased(item: ShopItemData) -> void:
 	if not Global.player.can_afford(item):
@@ -160,18 +164,13 @@ func _populate_consumables() -> void:
 	_populate_emergency_heal()
 	
 func _populate_drinks() -> void:
-	var drinks_for_sale := _get_drinks_for_sale()
-	#_populate_container(drinks_container, drinks_for_sale)
-	for item_data: ShopItemData in drinks_for_sale:
-		var item: ShopItem = SHOP_ITEM_SCENE.instantiate()
-		item.setup(item_data)
-		item.purchase_requested.connect(_on_item_purchased)
-		drinks_container.add_child(item)
-		item.tooltip_text = ""
-		HoverLabel.attach_to(item, item_data.description)
+	_populate_container(drinks_container, _get_drinks_for_sale())
+	# Drinks sit low against the bar art, so pin their readout above the card
+	# rather than letting it follow the cursor down off the shelf.
+	for item: ShopItem in drinks_container.get_children():
 		item.mouse_entered.connect(
 			func() -> void:
-				HoverLabel.set_target_relative_pos(item, Vector2(-100,-100))
+				HoverLabel.set_target_relative_pos(item, Vector2(-100, -100))
 		)
 
 func _get_drinks_for_sale(count: int = 5) -> Array[ShopItemData]:
