@@ -64,8 +64,14 @@ const PENNY_GOLD_PER_COPY := 1
 ##
 ## Wilds have no identity of their own, so ordinarily an all-wild line scores
 ## nothing; this turns the one hand that should feel best into the one that
-## paid least. At five Wilds on a 20-stop strip it lands about once in a
-## thousand spins per line, so it is sized to be run-defining when it does.
+## paid least.
+##
+## PROBABILITY, and the trap in it: all five columns are independent windows
+## into the SAME strip, so one stop can show in every column at once. A single
+## Wild is enough to make this possible — copies are not required, they only
+## shorten the odds. Each payline cell is a uniform draw from the strip, so an
+## all-Wild line is (wilds / strip_size) ^ 5: about 1 in 3,200,000 with one
+## Wild on a 20-stop strip, 1 in 100,000 with two, 1 in 13,000 with three.
 const WILD_JACKPOT := {
 	"attack": 250,
 	"block": 100,
@@ -76,13 +82,23 @@ const WILD_JACKPOT := {
 
 
 ## run length -> [tokens, gold]
+##
+## Sized against measured odds, not guessed ones. Three in a row on a single
+## line runs 1 in 2,500 with one stop on the strip, 1 in 380 with two and 1 in
+## 112 with three — each payline cell is a uniform draw from the shared strip,
+## so a run of three is roughly (stops / strip_size) ^ 3. An earlier table was
+## priced against a much looser figure that belonged to a different, discarded
+## design where sevens counted across the whole grid.
+##
+## Token grants above the player's cap are simply lost, so the weight sits in
+## gold past the first tier.
 static func _jackpot() -> Symbol:
 	var s := _make("Lucky Seven", Action.Type.NONE, 0, Symbol.Rarity.UNCOMMON)
 	s.min_run = 3
 	s.payout = {
-		3: [4, 100],
-		4: [8, 250],
-		5: [15, 600],
+		3: [6, 400],
+		4: [10, 900],
+		5: [10, 2000],
 	}
 	return s
 
@@ -121,7 +137,7 @@ static var PRICES := {
 	LIGHT_ATK: 40, MED_ATK: 70, HEAVY_ATK: 110, MEGA_ATK: 200,
 	LIGHT_BLK: 45, MED_BLK: 80, HEAVY_BLK: 150, HEAL: 90,
 	MEGA_BLK: 200, WILD: 300, COIN: 120, PENNY: 90,
-	TOKEN: 220, CHIP: 80, LUCKY_SEVEN: 100,
+	TOKEN: 220, CHIP: 80, LUCKY_SEVEN: 70,
 }
 
 

@@ -89,6 +89,25 @@ not the point.
 
 **Rows are fixed at 3.** Not an upgrade axis, not configurable.
 
+### Computing odds on a shared strip
+
+All five columns are independent windows into the **same** strip, so one stop
+can appear in several columns at once — even in all five. A single copy of a
+symbol is enough to make any board pattern *possible*; extra copies only shorten
+the odds. Two consequences worth holding onto, because both have already been
+got wrong once:
+
+- **On a payline**, each cell is an independent uniform draw from the strip, so
+  P(cell) = `stops / strip_size`. Five of a kind on a line is `p^5`, and three
+  in a row across five cells is `3p³ − 2p⁴`. With one Wild on a 20-stop strip an
+  all-Wild line is `(1/20)^5` — 1 in 3.2 million, not impossible.
+- **On the grid**, a column shows a 3-stop window, so P(a column shows a given
+  stop) = `3 / strip_size` — a different and much larger number than the
+  per-cell one. Grid-wide effects and payline effects therefore have completely
+  different odds, and a payout tuned for one is badly wrong for the other.
+
+Measure rather than derive when a payout depends on it.
+
 ---
 
 ## 3. The Strip
