@@ -6,7 +6,7 @@ class_name SlotMachine
 @onready var health_bar: HealthBar = %PlayerHealthBar
 @onready var phase_label: Label = %PhaseLabel
 @onready var payline_panel: PaylinePanel = %PaylinePanel
-@onready var payout_button: PayoutButton = %PayoutButton
+@onready var payout_panel: PayoutPanel = %PayoutPanel
 
 var reel_columns: Array[ReelColumn] = []
 var payline_overlay: PaylineOverlay
@@ -30,8 +30,10 @@ func _ready() -> void:
 	health_bar.setup(Global.player)
 
 	# The paytable reads its rows off the settled board, so it has to know the
-	# columns and be rebuilt whenever they land.
-	payout_button.legend_panel.columns = reel_columns
+	# columns and be rebuilt whenever they land. It built once already in its
+	# own _ready with no columns set, which falls back to the whole strip.
+	payout_panel.columns = reel_columns
+	payout_panel.build_legend()
 	EventBus.spin_all_completed.connect(_refresh_payouts)
 
 
@@ -95,5 +97,4 @@ func show_selected_paylines(selected: Array[Payline]) -> void:
 ## change several times a second, and a table flickering through rows is worse
 ## than one that simply matches the board once it stops.
 func _refresh_payouts() -> void:
-	if payout_button.legend_panel.visible:
-		payout_button.legend_panel.build_legend()
+	payout_panel.build_legend()

@@ -24,8 +24,7 @@ class_name PayoutPanel
 ## the same failure the payline readout hit when its box resized on hover.
 
 const MAX_RUN := 5
-## A run of one pays the symbol's own value, which the swatch already prints.
-const MIN_RUN_COLUMN := 2
+const MIN_RUN_COLUMN := 1
 const SWATCH_SIZE := Vector2(104, 40)
 ## Caps the scroll viewport. Content shorter than this shows no scrollbar at
 ## all; only an unusually varied board reveals that it scrolls.
