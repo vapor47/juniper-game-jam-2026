@@ -74,11 +74,12 @@ func _build_row(row: ComboLegendRow, symbols_area_width: int) -> Control:
 func _get_result_texture(type: Action.Type) -> Texture2D:
 	match type:
 		Action.Type.ATTACK:
-			return preload("res://at-icons_v1.3.0/addons/at-icons/node3d/cutlass.svg")
+			return preload("res://assets/icons/attack_icon.svg")
 		Action.Type.DEFEND:
-			return preload("res://at-icons_v1.3.0/addons/at-icons/node2d/shield.svg")
+			return preload("res://assets/icons/defend_icon.svg")
 		Action.Type.HEAL:
-			return preload("res://at-icons_v1.3.0/addons/at-icons/control/plus_sign_in_square.svg")
+			# No heal art of our own yet; falls through to the generic icon.
+			return preload("res://assets/icons/icon.svg")
 		_:
 			return preload("res://assets/icons/icon.svg")
 
