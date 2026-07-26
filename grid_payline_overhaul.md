@@ -348,9 +348,9 @@ if it needs a lever, scale respin cost by lines purchased rather than raising th
 
 Two sources, deliberately: a flat payout for winning, and whatever the strip pays out.
 
-**As implemented:** the player starts with **150g** and each win pays **100 ± 25**. Shop prices
+**As implemented:** the player starts with **300g** and each win pays **100 ± 25**. Shop prices
 sit at 50 (drink) / 100 (souvenir, stat upgrade) / 120 (remove) / 40–300 (stops), so a win is
-about one item and the opening balance is a single real choice. It started at 1000g for testing,
+about one item and the opening balance is about two. It started at 1000g for testing,
 which is ten purchases — the first shop wasn't a decision, it was a supply run.
 
 **The band is house variance, not a performance grade.** Scaling the payout by how fast the fight

@@ -105,13 +105,33 @@ layout_mode = 2
 size_flags_horizontal = 4
 mouse_filter = 1
 
-[node name="ReelColumns" type="HBoxContainer" parent="MarginContainer/VBodyContainer/SlotsBodyContainer/PanelContainer" unique_id=658891026]
+[node name="GridStack" type="VBoxContainer" parent="MarginContainer/VBodyContainer/SlotsBodyContainer/PanelContainer" unique_id=658891027]
+editor_description = "Health bar stacked directly on the grid. It lives inside the
+grid's own panel so it spans exactly the content rect ReelColumns spans, which
+is what makes its ends line up with the outer columns."
+layout_mode = 2
+theme_override_constants/separation = 8
+
+[node name="PlayerHealthBar" parent="MarginContainer/VBodyContainer/SlotsBodyContainer/PanelContainer/GridStack" unique_id=1508007854 instance=ExtResource("5_84m6g")]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 0
+
+[node name="GridFrame" type="MarginContainer" parent="MarginContainer/VBodyContainer/SlotsBodyContainer/PanelContainer/GridStack" unique_id=658891028]
+editor_description = "Zero-margin host so PaylineOverlay can be added over ReelColumns
+without a VBox laying it out as another row. A MarginContainer fits every child
+to the same rect, so the overlay covers exactly the grid."
+unique_name_in_owner = true
+layout_mode = 2
+
+[node name="ReelColumns" type="HBoxContainer" parent="MarginContainer/VBodyContainer/SlotsBodyContainer/PanelContainer/GridStack/GridFrame" unique_id=658891026]
 unique_name_in_owner = true
 layout_mode = 2
 theme_override_constants/separation = 12
 alignment = 1
 
-[node name="ReelColumn" parent="MarginContainer/VBodyContainer/SlotsBodyContainer/PanelContainer/ReelColumns" unique_id=1425705465 instance_placeholder="res://slot_machine/reel_column.tscn"]
+[node name="ReelColumn" parent="MarginContainer/VBodyContainer/SlotsBodyContainer/PanelContainer/GridStack/GridFrame/ReelColumns" unique_id=1425705465 instance_placeholder="res://slot_machine/reel_column.tscn"]
 unique_name_in_owner = true
 layout_mode = 2
 
@@ -134,12 +154,6 @@ editor_description = "Container for info such as:
 - Buffs / Debuffs"
 layout_mode = 2
 alignment = 2
-
-[node name="PlayerHealthBar" parent="MarginContainer/VBodyContainer/FooterContainer" unique_id=1508007854 instance=ExtResource("5_84m6g")]
-unique_name_in_owner = true
-layout_mode = 2
-size_flags_horizontal = 3
-size_flags_vertical = 4
 
 [node name="Spacer" type="Control" parent="MarginContainer/VBodyContainer/FooterContainer" unique_id=1793981044]
 layout_mode = 2

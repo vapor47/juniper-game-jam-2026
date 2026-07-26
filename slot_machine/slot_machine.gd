@@ -17,12 +17,14 @@ func _ready() -> void:
 		reel_columns.append(placeholder_col.create_instance())
 
 	# Sits above the columns so it can draw a path across all of them. Added
-	# after ReelColumns so it renders on top; PanelContainer fits both to the
-	# same rect, so overlay-local coordinates line up with the grid.
+	# after ReelColumns so it renders on top; GridFrame is a MarginContainer,
+	# which fits both to the same rect, so the overlay covers exactly the grid.
+	# Named explicitly rather than walked up to from ReelColumns — the health
+	# bar now shares this stack, and get_parent() would silently pick up
+	# whatever container it landed in next.
 	payline_overlay = PaylineOverlay.new()
 	payline_overlay.columns = reel_columns
-	var grid_panel: Control = (%ReelColumns as Control).get_parent()
-	grid_panel.add_child(payline_overlay)
+	(%GridFrame as Control).add_child(payline_overlay)
 
 	health_bar.setup(Global.player)
 

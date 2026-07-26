@@ -13,11 +13,11 @@ const BASE_MAX_TOKENS = 10
 ## toward a second/third line is a real multi-turn decision rather than
 ## something the opening hand already affords.
 const BASE_STARTING_TOKENS = 3
-## Roughly one shop item, so the first visit is a single real choice rather
-## than a supply run. Everything after it is earned: a combat reward covers
-## about one item per fight, and strip slots spent on economy symbols roughly
-## double that at the cost of a weaker board now.
-const BASE_GOLD = 150
+## About two shop items, so the first visit is a real choice without being a
+## supply run. Everything after it is earned: a combat reward covers roughly
+## one item per fight, and strip slots spent on economy symbols roughly double
+## that at the cost of a weaker board now.
+const BASE_GOLD = 300
 
 
 # Tokens
