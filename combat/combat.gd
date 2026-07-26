@@ -402,6 +402,7 @@ func _end_combat(result: CombatResult) -> void:
 	Global.player.broadcast("on_combat_ended", [result, context])
 
 	if result == CombatResult.VICTORY:
+		RunManager.award_combat_reward()
 		_show_post_combat()
 	else:
 		add_child(DEATH_SCREEN_SCENE.instantiate())

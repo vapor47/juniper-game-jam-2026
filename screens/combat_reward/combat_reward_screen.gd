@@ -10,9 +10,23 @@ const NUM_REWARDS := 3
 
 
 func _ready() -> void:
+	_show_payout()
 	var pool := PaylineCatalog.acquirable(Global.player.owned_paylines)
 	pool.shuffle()
 	_init_rewards(pool.slice(0, NUM_REWARDS))
+
+
+## The win's gold, stated as a figure and nothing else. It has already been
+## banked by the time this screen opens; this is where the player sees it.
+func _show_payout() -> void:
+	var vbox: VBoxContainer = $VBoxContainer
+	var label := Label.new()
+	label.text = "+%dg" % RunManager.last_combat_reward
+	label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	label.add_theme_font_size_override("font_size", 32)
+	label.add_theme_color_override("font_color", Color(0.95, 0.82, 0.35))
+	vbox.add_child(label)
+	vbox.move_child(label, 1)
 
 
 func _init_rewards(paylines: Array[Payline]) -> void:

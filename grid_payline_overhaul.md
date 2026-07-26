@@ -344,6 +344,31 @@ income also gates respins.
 escalation curve reads cheap to a 3-line player. Acceptable (it's the reward for buying in);
 if it needs a lever, scale respin cost by lines purchased rather than raising the base.
 
+### Gold
+
+Two sources, deliberately: a flat payout for winning, and whatever the strip pays out.
+
+**As implemented:** the player starts with **150g** and each win pays **100 ± 25**. Shop prices
+sit at 50 (drink) / 100 (souvenir, stat upgrade) / 120 (remove) / 40–300 (stops), so a win is
+about one item and the opening balance is a single real choice. It started at 1000g for testing,
+which is ten purchases — the first shop wasn't a decision, it was a supply run.
+
+**The band is house variance, not a performance grade.** Scaling the payout by how fast the fight
+ended would tax defensive play, and block is already deliberately scarce against demand (§3). It
+should not be charged for twice.
+
+**Economy stops are the second income, and the interesting one.** A stop spent on Coin, Chip or
+Penny is a stop not spent on damage — a weaker board now for more buying power later. At a real
+commitment (3 copies, 3 lines, an ~8-turn fight) Coin and Chip each return roughly 90g per fight
+and Penny roughly 36g, so committing to gold about doubles income. The first copy is nearly
+worthless and the third carries it, which is the increasing-return curve §6 prices for.
+
+**Do not reprice the shop down to symbol-payout scale.** It looks like it would make the gold
+symbols feel weightier, but discounts are percentage-based and integer-rounded: Frequent Flyer is
+10% and Loyalty Card stacks 15%, so at single-digit prices they round to zero and become inert
+content. The price ladder also needs the resolution to say that Light Atk is cheap and Wild is a
+commitment. The two scales are already consistent — payouts were sized against these prices.
+
 ---
 
 ## 6. Shop Verbs
