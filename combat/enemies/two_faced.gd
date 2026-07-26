@@ -1,39 +1,36 @@
 extends EnemyData
 class_name TwoFacedData
+## Alternates between charging and swinging. Each charge doubles the pending
+## hit, so letting it build compounds fast.
+##
+## The coin is flipped when the intent is *chosen*, not when it resolves, so
+## the result is telegraphed before the player commits (§10). An unseen coin
+## makes blocking a blind guess, and the satisfice decision needs a known
+## number to aim at.
 
-#const INTENTS = [
-	#{ "type": attack, "value": curr_attack_val},
-	#{ "type": }
-#]
-enum CoinTossResult { HEADS, TAILS }
-const BASE_ATTACK_VAL: int = 4
+const BASE_ATTACK_VAL: int = 8
+## Charges compound, so without a ceiling a long streak becomes an unavoidable
+## one-shot. Capped where three lines of block can still meaningfully bite.
+const MAX_ATTACK_VAL: int = 32
+
 var curr_attack_val: int = BASE_ATTACK_VAL
+
 
 func _init() -> void:
 	display_name = "Two Faced"
-	max_health = 200
+	max_health = 150
 	health = max_health
-	_choose_intent()
-	
+
+
 func _choose_intent() -> void:
-	"""
-	50/50 chance to attack, or charge attack
-	"""
-	
-	intent = { "type": "toss a coin" }
-	
-
-func _execute_intent() -> void:
-	var result: CoinTossResult = CoinTossResult.values().pick_random()
-	if result == CoinTossResult.HEADS:
-		curr_attack_val *= 2
-		print_debug("Flipped Heads: Attack charged")
-		
-		custom_intent_str = "Flipped Heads: Attack charged (" + str(curr_attack_val) +")"
-	else:
-		print_debug("Flipped Tails: Attacking for " + str(curr_attack_val))
-		custom_intent_str = "Flipped Tails: Attacked for " + str(curr_attack_val)
-
-		Global.player.take_damage(curr_attack_val)
+	# A swing spends the charge; the next cycle starts over.
+	if intent.get("type") == "attack":
 		curr_attack_val = BASE_ATTACK_VAL
-		
+
+	if randi() % 2 == 0:
+		curr_attack_val = mini(curr_attack_val * 2, MAX_ATTACK_VAL)
+		intent = { "type": "charge", "value": curr_attack_val }
+		custom_intent_str = "Heads — charging (%d)" % curr_attack_val
+	else:
+		intent = { "type": "attack", "value": curr_attack_val }
+		custom_intent_str = "Tails — attacking for %d" % curr_attack_val

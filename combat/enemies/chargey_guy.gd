@@ -22,12 +22,3 @@ func _choose_intent() -> void:
 		custom_intent_str = "Charging... (%d %s)" % [turns_until_attack, "turn" if turns_until_attack == 1 else "turns"]
 		intent = { "type": "charge", "value": turns_until_attack }
 		turns_until_attack -= 1
-
-
-func _execute_intent() -> void:
-	match intent.get("type"):
-		"attack":
-			Global.player.take_damage(intent.value)
-			turns_until_attack = 2  # reset
-		"charge":
-			pass  # does nothing, just telegraphing

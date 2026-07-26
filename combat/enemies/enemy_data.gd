@@ -22,15 +22,9 @@ func _choose_intent() -> void:
 	intent = { "type": "attack", "value": 10 }
 	#_display_intent()
 
-func _execute_intent() -> void:
-	match intent.get("type"):
-		"attack":
-			if not Global.player:
-				push_error("player is null")
-			Global.player.take_damage(intent.get("value"))
-		"block":
-			block += intent.get("value")
-
+## The single path combat resolves enemies through. A non-"attack" intent
+## yields no actions, which is how charge/wind-up turns telegraph without
+## dealing damage.
 func get_actions() -> Array[Action]:
 	if intent.get("type") == "attack":
 		return [Action.new(Action.Type.ATTACK, intent.get("value"), "Attacked player for %d damage!" % intent.get("value"))]
