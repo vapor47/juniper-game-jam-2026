@@ -51,6 +51,9 @@ class LineResult extends RefCounted:
 	var heal: int = 0
 	var gold: int = 0
 	var tokens: int = 0
+	## Set when the line came up all Wilds. Combat uses it to mark the moment;
+	## nothing announces it beforehand.
+	var wild_jackpot: bool = false
 	## Payouts that don't map to a single typed run — a Lucky Seven line pays
 	## tokens *and* gold off one run.
 	var extra: Array[Action] = []
@@ -104,6 +107,11 @@ static func score_line(stops: Array[Stop], ctx: ResolutionContext = null) -> Lin
 		values.append(v)
 
 	var result := LineResult.new()
+
+	if _is_all_wild(stops):
+		_award_wild_jackpot(result)
+		return result
+
 	for span: Array in _runs_in(stops):
 		var symbol: Symbol = span[0]
 		var from: int = span[1]
@@ -182,6 +190,32 @@ static func _runs_in(stops: Array[Stop]) -> Array:
 		# symbols is reconsidered for the run on its right.
 		i = probe
 	return runs
+
+
+static func _is_all_wild(stops: Array[Stop]) -> bool:
+	if stops.is_empty():
+		return false
+	for stop: Stop in stops:
+		if not stop.symbol.is_wild:
+			return false
+	return true
+
+
+## See SymbolTable.WILD_JACKPOT — an all-wild line would otherwise score
+## nothing, since a Wild has no identity to adopt.
+static func _award_wild_jackpot(result: LineResult) -> void:
+	var j: Dictionary = SymbolTable.WILD_JACKPOT
+	result.wild_jackpot = true
+	result.attack = j["attack"]
+	result.block = j["block"]
+	result.heal = j["heal"]
+	result.gold = j["gold"]
+	result.tokens = j["tokens"]
+	for pair in [[Action.Type.ATTACK, j["attack"]], [Action.Type.DEFEND, j["block"]],
+			[Action.Type.HEAL, j["heal"]], [Action.Type.GOLD, j["gold"]],
+			[Action.Type.TOKEN, j["tokens"]]]:
+		if pair[1] > 0:
+			result.extra.append(Action.new(pair[0], pair[1], ""))
 
 
 ## Pays straight from the symbol's table, clamped to its longest listed run.

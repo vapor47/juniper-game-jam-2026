@@ -56,6 +56,24 @@ static var LUCKY_SEVEN := _jackpot()
 const CHIP_GOLD_PER_COPY := 5
 const PENNY_GOLD_PER_COPY := 1
 
+## A full line of Wilds pays out everything at once.
+##
+## DELIBERATELY UNDOCUMENTED IN GAME. Nothing in the shop blurb, the cell
+## tooltip or the payline readout hints that this exists — it is meant to be
+## stumbled into, not read about. Don't "helpfully" surface it later.
+##
+## Wilds have no identity of their own, so ordinarily an all-wild line scores
+## nothing; this turns the one hand that should feel best into the one that
+## paid least. At five Wilds on a 20-stop strip it lands about once in a
+## thousand spins per line, so it is sized to be run-defining when it does.
+const WILD_JACKPOT := {
+	"attack": 250,
+	"block": 100,
+	"heal": 50,
+	"gold": 500,
+	"tokens": 10,
+}
+
 
 ## run length -> [tokens, gold]
 static func _jackpot() -> Symbol:

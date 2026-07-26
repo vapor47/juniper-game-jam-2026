@@ -293,6 +293,11 @@ func _on_lock_in_pressed() -> void:
 	res_context.actions = actions
 	Global.player.broadcast("on_resolution", [res_context])
 
+	# Nothing anywhere warns this exists; landing it is the entire reveal.
+	if PaylineEvaluator.take_wild_jackpot_flag():
+		spawn_popup("JACKPOT")
+		await get_tree().create_timer(1.0).timeout
+
 	# Board payouts that land once per turn (§ Chip), before the line resolves.
 	var board_gold := BoardEffects.apply(slot_machine.reel_columns, Symbol.Trigger.ON_LOCK)
 	if board_gold > 0:

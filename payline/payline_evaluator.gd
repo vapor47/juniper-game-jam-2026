@@ -29,8 +29,21 @@ static func resolve(lines: Array[Payline], columns: Array[ReelColumn],
 		var stops := stops_for(line, columns)
 		var result := PaylineScorer.score_line(stops, ctx)
 		PaylineScorer.apply_side_effects(result, stops, ctx)
+		if result.wild_jackpot:
+			_hit_wild_jackpot = true
 		actions.append_array(result.to_actions())
 	return actions
+
+
+## Set by the last resolve() when a line came up all Wilds, so combat can mark
+## the moment. Read once and cleared.
+static var _hit_wild_jackpot: bool = false
+
+
+static func take_wild_jackpot_flag() -> bool:
+	var hit := _hit_wild_jackpot
+	_hit_wild_jackpot = false
+	return hit
 
 
 static func total_block(lines: Array[Payline], columns: Array[ReelColumn]) -> int:
