@@ -23,7 +23,9 @@ func on_acquired(player: PlayerData) -> void:
 	"""
 	var roll := randf_range(0.0, 100.0)
 	if player.drunkenness > 0.0 and roll <= player.drunkenness:
-		player.apply_debuff(DebuffPool.get_random_debuff())
+		var debuff := DebuffPool.get_random_debuff(player)
+		if debuff != null:
+			player.apply_debuff(debuff)
 	
 	player.drunkenness += alcohol_content
 
