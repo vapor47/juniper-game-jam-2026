@@ -47,19 +47,27 @@ static func acquirable(owned: Array[Payline]) -> Array[Payline]:
 	return all().filter(func(p: Payline) -> bool: return p not in owned)
 
 
-## Listing order for the selection panel: highest line on the board first, so
-## the three straights read top / center / bottom the way they sit on the grid.
-## Inventory order stays acquisition order — this is presentation only.
+## Listing order for the selection panel:
+##   1. the three starting straights, top / center / bottom as they sit on the
+##      grid — fixed anchors that never move,
+##   2. everything acquired since, in the order it was acquired.
+##
+## Acquired lines append below rather than sorting in among the straights.
+## Slotting a new pattern between familiar rows shifts them and costs the
+## player their place in a list they had already learned. Nothing ever moves
+## this way: a new line only ever appears at the bottom.
+##
+## Inventory order is untouched — this is presentation only.
 static func sorted_for_display(lines: Array[Payline]) -> Array[Payline]:
-	var catalog := all()
-	var out := lines.duplicate()
-	out.sort_custom(func(a: Payline, b: Payline) -> bool:
-		var height_a := _height_key(a)
-		var height_b := _height_key(b)
-		if not is_equal_approx(height_a, height_b):
-			return height_a < height_b
-		return catalog.find(a) < catalog.find(b))
-	return out
+	var anchors := starting_paylines()
+
+	var straights := lines.filter(func(p: Payline) -> bool: return p in anchors)
+	straights.sort_custom(func(a: Payline, b: Payline) -> bool:
+		return _height_key(a) < _height_key(b))
+
+	var acquired := lines.filter(func(p: Payline) -> bool: return p not in anchors)
+
+	return straights + acquired
 
 
 ## Mean row of the pattern. Row.TOP is 0 and Row.BOTTOM is 2, so a smaller
