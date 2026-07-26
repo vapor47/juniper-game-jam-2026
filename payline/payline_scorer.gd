@@ -115,7 +115,7 @@ static func score_line(stops: Array[Stop], ctx: ResolutionContext = null) -> Lin
 				_award_jackpot(result, symbol, run_len, from)
 			continue
 
-		if symbol.type == Action.Type.NONE or run_len < symbol.min_run and run_len < 2:
+		if symbol.type == Action.Type.NONE:
 			continue
 
 		# A wild pays as whatever it stands in for, so its own (zero) value is

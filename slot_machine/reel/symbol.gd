@@ -27,9 +27,10 @@ var combos: bool = true
 
 var trigger: Trigger = Trigger.NONE
 
-## Run length this symbol needs before it pays at all. Two for everything
-## normal; Lucky Seven wants three, like a slot line.
-var min_run: int = 2
+## Run length this symbol needs before it pays anything. One for everything
+## normal — a lone stop still pays its value; the run bonus is a separate
+## threshold at two. Only jackpot symbols raise this (Lucky Seven wants three).
+var min_run: int = 1
 
 ## run length -> [tokens, gold]. When set, the symbol pays straight from this
 ## table instead of the value/bonus formula, and pays nothing below min_run.
