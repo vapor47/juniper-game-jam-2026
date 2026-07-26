@@ -78,6 +78,7 @@ text = "Back to Main Menu"
 
 [node name="GodMenu" type="PanelContainer" parent="CenterContainer" unique_id=752852077]
 unique_name_in_owner = true
+visible = false
 layout_mode = 2
 theme_override_styles/panel = SubResource("StyleBoxFlat_bsh87")
 script = ExtResource("2_mu52f")
