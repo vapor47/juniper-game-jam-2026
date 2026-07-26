@@ -14,6 +14,16 @@ class_name SymbolCell
 const VALUE_FONT_SIZE := 44
 const TAG_FONT_SIZE := 15
 
+## How far the weakest tier lifts off its base colour, and how far the
+## strongest sinks below it. A wide span is the whole point — adjacent tiers
+## have to be told apart at a glance, not on inspection.
+const TIER_LIFT := 0.34
+const TIER_SINK := 0.50
+## Values bunch at the bottom (2, 4, 6 against a ceiling of 10), so a linear
+## map put Light and Med a quarter of the range apart and they read as the
+## same colour. This spreads the low end out.
+const TIER_CURVE := 0.55
+
 var stop: Stop:
 	set(new_stop):
 		stop = new_stop
@@ -103,9 +113,12 @@ func _color_for(symbol: Symbol) -> Color:
 			elif symbol == SymbolTable.CHIP:
 				base = Color(0.34, 0.3, 0.14)
 
-	# 2 is the floor, 10 the ceiling across the table. Lift the low tiers rather
-	# than crushing the high ones, so the darkest cell is still legible.
-	if symbol.value > 0:
-		var tier := clampf((float(symbol.value) - 2.0) / 8.0, 0.0, 1.0)
-		base = base.lightened((1.0 - tier) * 0.35)
-	return base
+	if symbol.value <= 0:
+		return base
+
+	var tier := pow(clampf((float(symbol.value) - 1.0) / 9.0, 0.0, 1.0), TIER_CURVE)
+	# The weak end is also washed out, so tier reads as saturation as well as
+	# brightness — two cues instead of one.
+	var weak := base.lightened(TIER_LIFT).lerp(Color(0.58, 0.58, 0.58), 0.28)
+	var strong := base.darkened(TIER_SINK)
+	return weak.lerp(strong, tier)
