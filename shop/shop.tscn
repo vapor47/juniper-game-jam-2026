@@ -47,38 +47,42 @@ horizontal_alignment = 1
 layout_mode = 2
 size_flags_vertical = 3
 
-[node name="MachineModificationsContainer" type="HBoxContainer" parent="MarginContainer/VBoxContainer/ShopContents" unique_id=819597984]
+[node name="MachineModificationsContainer" type="VBoxContainer" parent="MarginContainer/VBoxContainer/ShopContents" unique_id=819597984]
 layout_mode = 2
 size_flags_vertical = 3
+theme_override_constants/separation = 16
 
-[node name="ReelsContainer" type="HBoxContainer" parent="MarginContainer/VBoxContainer/ShopContents/MachineModificationsContainer" unique_id=323650037]
+[node name="TopRow" type="HBoxContainer" parent="MarginContainer/VBoxContainer/ShopContents/MachineModificationsContainer" unique_id=1350528776]
 layout_mode = 2
-size_flags_horizontal = 3
+size_flags_vertical = 3
+theme_override_constants/separation = 32
 alignment = 1
 
-[node name="SouvenirsContainer" type="HBoxContainer" parent="MarginContainer/VBoxContainer/ShopContents/MachineModificationsContainer" unique_id=123195714]
-unique_name_in_owner = true
-layout_mode = 2
-size_flags_horizontal = 3
-
-[node name="ReelModificationsContainer" type="HBoxContainer" parent="MarginContainer/VBoxContainer/ShopContents/MachineModificationsContainer" unique_id=1350528776]
-layout_mode = 2
-size_flags_horizontal = 3
-alignment = 1
-
-[node name="StopsContainer" type="HBoxContainer" parent="MarginContainer/VBoxContainer/ShopContents/MachineModificationsContainer/ReelModificationsContainer" unique_id=294764069]
+[node name="StopsContainer" type="HBoxContainer" parent="MarginContainer/VBoxContainer/ShopContents/MachineModificationsContainer/TopRow" unique_id=294764069]
 unique_name_in_owner = true
 layout_mode = 2
 size_flags_horizontal = 3
 alignment = 1
 
-[node name="ModifiersContainer" type="HBoxContainer" parent="MarginContainer/VBoxContainer/ShopContents/MachineModificationsContainer/ReelModificationsContainer" unique_id=1467011792]
+[node name="SouvenirsContainer" type="HBoxContainer" parent="MarginContainer/VBoxContainer/ShopContents/MachineModificationsContainer/TopRow" unique_id=123195714]
 unique_name_in_owner = true
 layout_mode = 2
 size_flags_horizontal = 3
 alignment = 1
 
-[node name="RemoveStopContainer" type="BoxContainer" parent="MarginContainer/VBoxContainer/ShopContents/MachineModificationsContainer/ReelModificationsContainer" unique_id=1178141984]
+[node name="BottomRow" type="HBoxContainer" parent="MarginContainer/VBoxContainer/ShopContents/MachineModificationsContainer" unique_id=323650037]
+layout_mode = 2
+size_flags_vertical = 3
+theme_override_constants/separation = 32
+alignment = 1
+
+[node name="ModifiersContainer" type="HBoxContainer" parent="MarginContainer/VBoxContainer/ShopContents/MachineModificationsContainer/BottomRow" unique_id=1467011792]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_horizontal = 3
+alignment = 1
+
+[node name="RemoveStopContainer" type="BoxContainer" parent="MarginContainer/VBoxContainer/ShopContents/MachineModificationsContainer/BottomRow" unique_id=1178141984]
 unique_name_in_owner = true
 layout_mode = 2
 size_flags_horizontal = 3
