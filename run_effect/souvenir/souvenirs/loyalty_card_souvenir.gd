@@ -1,4 +1,3 @@
-# frequent_flyer_souvenir.gd
 extends Souvenir
 class_name LoyaltyCardSouvenir
 
@@ -9,8 +8,16 @@ func _init() -> void:
 	description = "Every bar visit, receive a stacking %d%% discount on drinks for each drink purchased" % roundi(DISCOUNT_INCREMENT * 100)
 	rarity = Souvenir.Rarity.UNCOMMON
 
-func modify_shop_price(price: int, _item: ShopItemData) -> int:
-	return roundi(price * (1.0 - DISCOUNT_INCREMENT))
+## Drinks only, and it stacks with each one already bought this visit — which
+## is what the description has always promised. The stacking used to live in
+## Shop.display_price as a hardcode; routing it through the hook keeps the
+## behaviour and lets other souvenirs discount too.
+func modify_shop_price(price: int, item: ShopItemData) -> int:
+	if not item is DrinkShopItemData:
+		return price
+	var bought := Global.player.drinks_bought_this_visit if Global.player else 0
+	var discount := clampf(DISCOUNT_INCREMENT * bought, 0.0, 1.0)
+	return roundi(price * (1.0 - discount))
 
 
 """

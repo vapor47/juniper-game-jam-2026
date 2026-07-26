@@ -11,7 +11,7 @@ func _init() -> void:
 	alcohol_content = 20.0
 
 func on_resolution(ctx: ResolutionContext) -> void:
-	var player := ctx.turn.combat.player
+	var player := ctx.player
 	for action in ctx.actions:
 		print_debug(action.type)
 		if action.type == Action.Type.ATTACK:

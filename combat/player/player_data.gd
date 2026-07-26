@@ -49,12 +49,22 @@ var owned_paylines: Array[Payline] = []
 const BASE_MAX_LINES_PER_TURN: int = 3
 var max_lines_per_turn: int = BASE_MAX_LINES_PER_TURN
 
+## Reset by the shop on entry. Loyalty Card's discount stacks off this, and
+## the hook has no shop reference to read it from.
+var drinks_bought_this_visit: int = 0
+
 var drunkenness: float = 0.0:
 	set(value):
 		drunkenness = clampf(value, 0.0, 100.0)
 
+## Concatenating the three typed arrays yields an untyped Array, which can't be
+## returned as Array[RunEffect] — build the typed array explicitly.
 func get_active_effects() -> Array[RunEffect]:
-	return owned_souvenirs + active_drinks + active_debuffs
+	var out: Array[RunEffect] = []
+	out.append_array(owned_souvenirs)
+	out.append_array(active_drinks)
+	out.append_array(active_debuffs)
+	return out
 
 func get_num_drinks_consumed() -> int:
 	return active_drinks.size() + expired_drinks.size()

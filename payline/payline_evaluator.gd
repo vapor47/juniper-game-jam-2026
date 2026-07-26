@@ -13,16 +13,23 @@ static func stops_for(payline: Payline, columns: Array[ReelColumn]) -> Array[Sto
 	return stops
 
 
-static func score_for(payline: Payline, columns: Array[ReelColumn]) -> PaylineScorer.LineResult:
-	return PaylineScorer.score_line(stops_for(payline, columns))
+static func score_for(payline: Payline, columns: Array[ReelColumn],
+		ctx: ResolutionContext = null) -> PaylineScorer.LineResult:
+	return PaylineScorer.score_line(stops_for(payline, columns), ctx)
 
 
 ## Combined actions across every purchased line, line by line in purchase
 ## order (each line's runs stay in left-to-right board order within it).
-static func combined_actions(lines: Array[Payline], columns: Array[ReelColumn]) -> Array[Action]:
+## Resolution path: scores every purchased line with the real context and
+## fires each line's side effects. Previews must never call this.
+static func resolve(lines: Array[Payline], columns: Array[ReelColumn],
+		ctx: ResolutionContext) -> Array[Action]:
 	var actions: Array[Action] = []
 	for line: Payline in lines:
-		actions.append_array(score_for(line, columns).to_actions())
+		var stops := stops_for(line, columns)
+		var result := PaylineScorer.score_line(stops, ctx)
+		PaylineScorer.apply_side_effects(result, stops, ctx)
+		actions.append_array(result.to_actions())
 	return actions
 
 

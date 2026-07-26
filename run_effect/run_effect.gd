@@ -10,7 +10,7 @@ static var rarity: Rarity = Rarity.COMMON
 var icon: Texture2D
 
 @warning_ignore_start("unused_parameter")
-# -- resolution hooks (called by SymbolResolver, mirrors StopModifier) --
+# -- resolution hooks (called by PaylineScorer, mirrors StopModifier) --
 func modify_stop_value(v: int, ctx: ResolutionContext, stop: Stop) -> int: return v
 func modify_result_total(total: int, type: Action.Type, ctx: ResolutionContext) -> int: return total
 func combo_count_bonus() -> int: return 0
@@ -22,7 +22,7 @@ func on_removed(player: PlayerData) -> void: pass
 func on_combat_started(ctx: CombatContext) -> void: pass
 func on_player_turn_started(ctx: CombatContext) -> void: pass
 func on_resolution(ctx: ResolutionContext) -> void: pass
-func on_turn_ended(ctx: ResolutionContext) -> void: pass
+func on_turn_ended(ctx: CombatContext) -> void: pass
 func on_combo_landed(symbol: Symbol, ctx: ResolutionContext) -> void: pass
 func on_combat_ended(result, ctx: CombatContext) -> void: pass
 

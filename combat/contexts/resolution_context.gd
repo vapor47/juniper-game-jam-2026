@@ -26,6 +26,18 @@ var selected_count: int = 0
 var combo_symbols: Array[Symbol] = []   # symbols that comboed this resolution
 
 
+## A throwaway context for hover previews. Modifier hooks need one to read
+## from, but a preview has no turn behind it — so this carries just enough for
+## them to answer, and nothing that would let a preview change game state.
+static func preview(p_stops: Array[Stop] = []) -> ResolutionContext:
+	var ctx := ResolutionContext.new()
+	ctx.player = Global.player
+	ctx.selected_stops = p_stops
+	ctx.selected_count = p_stops.size()
+	ctx.is_initial_spin = false
+	return ctx
+
+
 static func build(p_player: PlayerData, p_enemies: Array[EnemyData],
 		p_is_initial_spin: bool, p_selected_stops: Array[Stop], turn_context) -> ResolutionContext:
 	var ctx := ResolutionContext.new()

@@ -18,9 +18,8 @@ const UPGRADE_POOL: Array[ShopItemData] = [
 	preload("res://shop/item/upgrades/increase_token_regen.tres"),
 ]
 
-var drinks_bought_this_visit: int = 0
-
 func _ready() -> void:
+	Global.player.drinks_bought_this_visit = 0
 	_populate_shop()
 	%GoldLabel.text = "Gold: %d" % Global.player.gold
 	Global.player.gold_updated.connect(
@@ -84,8 +83,7 @@ func _commit_purchase(item: ShopItemData) -> void:
 	# though that arguably belongs in the removal item/flow itself
 
 	if item is DrinkShopItemData:
-		drinks_bought_this_visit += 1
-		# update ui price
+		Global.player.drinks_bought_this_visit += 1
 
 func _cancel_purchase(_item: ShopItemData) -> void:
 	pass
@@ -93,11 +91,14 @@ func _cancel_purchase(_item: ShopItemData) -> void:
 func _mark_sold(item: ShopItemData) -> void:
 	item.purchased = true
 
+## Runs the price through every owned effect's modify_shop_price hook, so any
+## souvenir can discount. Loyalty Card used to be hardcoded here, which left
+## Frequent Flyer — whose only effect is that hook — doing nothing at all.
 func display_price(item: ShopItemData) -> int:
-	if not Global.player.owns_souvenir(LoyaltyCardSouvenir):
-		return item.price
-	var discount := clampf(LoyaltyCardSouvenir.DISCOUNT_INCREMENT * drinks_bought_this_visit, 0.0, 1.0)
-	return roundi(item.price * (1.0 - discount))
+	var price := item.price
+	for effect: RunEffect in Global.player.get_active_effects():
+		price = effect.modify_shop_price(price, item)
+	return maxi(0, price)
 
 
 # ---------- MACHINE MODIFICATIONS ---------- #

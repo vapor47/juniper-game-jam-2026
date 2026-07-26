@@ -108,8 +108,11 @@ func _begin_combat() -> void:
 func _begin_player_turn() -> void:
 	context.turn_number += 1
 	turn_context = TurnContext.new(context)
-	# Block expires between turns; excess is wasted (§10).
-	Global.player.reset_block()
+	# Block expires between turns; excess is wasted (§10). There is no previous
+	# turn to expire on turn 1, so combat-start grants (Rabbit's Foot) survive
+	# into it instead of being wiped the instant they land.
+	if context.turn_number > 1:
+		Global.player.reset_block()
 	Global.player.regen_tokens()
 	has_spun_this_turn = false
 	respins_this_turn = 0
@@ -259,18 +262,21 @@ func _on_lock_in_pressed() -> void:
 	_set_controls_enabled(false)
 	slot_machine.show_selected_paylines(selected_lines)
 
-	# Every purchased line scores independently and they sum — a cell sitting on
-	# two lines pays into both (double-dip, §4). One Action per matched run,
-	# left to right within each line, so _perform_actions animates them one at
-	# a time in board order.
-	var actions := PaylineEvaluator.combined_actions(selected_lines, slot_machine.reel_columns)
-
 	var stops: Array[Stop] = []
 	for line: Payline in selected_lines:
 		stops.append_array(PaylineEvaluator.stops_for(line, slot_machine.reel_columns))
 
 	var res_context := ResolutionContext.build(
 			Global.player, enemies, respins_this_turn == 0, stops, turn_context)
+
+	# Every purchased line scores independently and they sum — a cell sitting on
+	# two lines pays into both (double-dip, §4). One Action per matched run,
+	# left to right within each line, so _perform_actions animates them one at
+	# a time in board order. This is the only path that fires combo payoffs and
+	# modifier side effects; hover previews score without them.
+	var actions := PaylineEvaluator.resolve(
+			selected_lines, slot_machine.reel_columns, res_context)
+
 	res_context.actions = actions
 	Global.player.broadcast("on_resolution", [res_context])
 

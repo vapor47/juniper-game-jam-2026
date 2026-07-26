@@ -1,10 +1,14 @@
 extends Souvenir
-class_name CardCounterSouvenir
+class_name TipJarSouvenir
+
+const GOLD_PER_COMBO := 2
 
 func _init() -> void:
-	display_name = "Card Counter"
-	description = "Combos count as +1 symbol"
-	rarity = Souvenir.Rarity.RARE
+	display_name = "Tip Jar"
+	description = "+%dg whenever you land a combo" % GOLD_PER_COMBO
+	rarity = Souvenir.Rarity.UNCOMMON
 
-func combo_count_bonus() -> int:
-	return 1
+## ctx.player rather than ctx.turn.combat.player — the context always carries
+## the player directly, and the longer chain is null outside a live turn.
+func on_combo_landed(_symbol: Symbol, ctx: ResolutionContext) -> void:
+	ctx.player.gold += GOLD_PER_COMBO

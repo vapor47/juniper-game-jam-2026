@@ -6,5 +6,5 @@ func on_acquired(player: PlayerData) -> void:
 	player.heal(10)
 
 func _init() -> void:
-	display_name = "HealthSouvenir"
+	display_name = "Lucky Charm"
 	description = "Increases max health by 10"
