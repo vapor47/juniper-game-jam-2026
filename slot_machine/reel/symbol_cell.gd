@@ -39,6 +39,7 @@ func _ready() -> void:
 
 	_value = _make_label(VALUE_FONT_SIZE)
 	_tag = _make_label(TAG_FONT_SIZE)
+	_tag.clip_text = true
 	vbox.add_child(_value)
 	vbox.add_child(_tag)
 
@@ -59,7 +60,7 @@ func _refresh() -> void:
 		return
 	var symbol := stop.symbol
 	_value.text = _headline(symbol)
-	_tag.text = _tag_for(symbol)
+	_tag.text = symbol.symbol_name
 	_bg.color = _color_for(symbol)
 
 
@@ -77,28 +78,9 @@ func _headline(symbol: Symbol) -> String:
 	return str(symbol.value)
 
 
-func _tag_for(symbol: Symbol) -> String:
-	if symbol.is_wild:
-		return "WILD"
-	if not symbol.payout.is_empty():
-		return "LUCKY"
-	match symbol.type:
-		Action.Type.ATTACK:
-			return "ATK"
-		Action.Type.DEFEND:
-			return "BLK"
-		Action.Type.HEAL:
-			return "HEAL"
-		Action.Type.GOLD:
-			return "GOLD"
-		Action.Type.TOKEN:
-			return "TOKEN"
-		_:
-			return "CHIP" if symbol == SymbolTable.CHIP else ""
-
-
-## Hue carries the type, brightness carries the tier — so a Heavy reads as
-## stronger than a Light before you've read either number.
+## Hue carries the type, weight carries the tier — the higher the value the
+## darker and denser the cell, so a Mega reads as heavier than a Light before
+## you've read either number.
 func _color_for(symbol: Symbol) -> Color:
 	if symbol.is_wild:
 		return Color(0.42, 0.2, 0.5)
@@ -121,8 +103,9 @@ func _color_for(symbol: Symbol) -> Color:
 			elif symbol == SymbolTable.CHIP:
 				base = Color(0.34, 0.3, 0.14)
 
-	# 2 is the floor, 10 the ceiling across the table; lighten across that span.
+	# 2 is the floor, 10 the ceiling across the table. Lift the low tiers rather
+	# than crushing the high ones, so the darkest cell is still legible.
 	if symbol.value > 0:
 		var tier := clampf((float(symbol.value) - 2.0) / 8.0, 0.0, 1.0)
-		base = base.lightened(tier * 0.35)
+		base = base.lightened((1.0 - tier) * 0.35)
 	return base
