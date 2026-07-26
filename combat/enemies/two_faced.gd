@@ -1,17 +1,21 @@
 extends EnemyData
 class_name TwoFacedData
-## Alternates between charging and swinging. Each charge doubles the pending
-## hit, so letting it build compounds fast.
+## Doubles down. On heads it cuts itself to double the pending hit; on tails it
+## swings for whatever it has built up.
 ##
-## The coin is flipped when the intent is *chosen*, not when it resolves, so
-## the result is telegraphed before the player commits (§10). An unseen coin
-## makes blocking a blind guess, and the satisfice decision needs a known
-## number to aim at.
+## The self-harm is what makes the fight a decision rather than a wait: the
+## threat visibly costs it health, so racing it down and letting it bleed are
+## both live plays. Blocking still aims at a known number — the coin is flipped
+## when the intent is chosen, not when it resolves, so everything is telegraphed
+## before the player commits (§10).
 
 const BASE_ATTACK_VAL: int = 8
 ## Charges compound, so without a ceiling a long streak becomes an unavoidable
-## one-shot. Capped where three lines of block can still meaningfully bite.
+## one-shot. Capped where a couple of lines of block can still bite.
 const MAX_ATTACK_VAL: int = 32
+## What a charge costs it. A round number so the HP drop is easy to read at a
+## glance while the fight is moving.
+const SELF_DAMAGE: int = 10
 
 var curr_attack_val: int = BASE_ATTACK_VAL
 
@@ -29,8 +33,9 @@ func _choose_intent() -> void:
 
 	if randi() % 2 == 0:
 		curr_attack_val = mini(curr_attack_val * 2, MAX_ATTACK_VAL)
+		var bled := take_true_damage(SELF_DAMAGE)
 		intent = { "type": "charge", "value": curr_attack_val }
-		custom_intent_str = "Heads — charging (%d)" % curr_attack_val
+		custom_intent_str = "Heads — bleeds %d, charging (%d)" % [bled, curr_attack_val]
 	else:
 		intent = { "type": "attack", "value": curr_attack_val }
 		custom_intent_str = "Tails — attacking for %d" % curr_attack_val

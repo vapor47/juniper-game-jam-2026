@@ -36,6 +36,22 @@ func take_damage(amount: int) -> int:
 		died.emit(self)
 	return actual
 
+## Damage that ignores block — self-inflicted harm and anything else that
+## shouldn't be soaked. Shares take_damage's death latch so `died` still fires
+## exactly once whichever route kills.
+func take_true_damage(amount: int) -> int:
+	if is_dead:
+		return 0
+
+	var actual: int = mini(amount, health)
+	health = max(0, health - actual)
+
+	if health <= 0:
+		is_dead = true
+		died.emit(self)
+	return actual
+
+
 func add_block(amount: int) -> int:
 	block += amount
 	return amount

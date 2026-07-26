@@ -123,6 +123,11 @@ func _begin_player_turn() -> void:
 	player_turn_started.emit()
 	Global.player.broadcast("on_player_turn_started", [context])
 
+	# Choosing an intent can end the fight — Two Faced bleeds itself to charge
+	# and may die doing it. Don't open a turn against a corpse.
+	if _combat_over:
+		return
+
 	# The turn opens with a free automatic spin. Everything stays locked (and
 	# reads as locked) until it lands — there's no board to judge until then.
 	_set_controls_enabled(false)
