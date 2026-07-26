@@ -13,6 +13,9 @@ const STRIP_EDITOR_SCENE = preload("res://shop/strip_editor.tscn")
 
 const SHOP_ITEM_SCENE = preload("res://shop/item/shop_item.tscn")
 
+## Every card on the shelf, so a purchase can reprice the rest of them.
+var _items: Array[ShopItem] = []
+
 const UPGRADE_POOL: Array[ShopItemData] = [
 	preload("res://shop/item/upgrades/increase_line_cap.tres"),
 	preload("res://shop/item/upgrades/increase_token_cap.tres"),
@@ -31,6 +34,8 @@ func _ready() -> void:
 func _populate_shop() -> void:
 	_populate_machine_modifications()
 	_populate_misc_upgrades()
+	# Souvenirs owned from earlier visits already discount this one.
+	_refresh_prices()
 
 
 func _populate_container(container: BoxContainer, items: Array[ShopItemData]) -> void:
@@ -44,6 +49,7 @@ func _populate_container(container: BoxContainer, items: Array[ShopItemData]) ->
 		# follows the cursor and appears without a delay.
 		item.tooltip_text = ""
 		HoverLabel.attach_to(item, item_data.description)
+		_items.append(item)
 
 func _on_item_purchased(item: ShopItemData) -> void:
 	if not Global.player.can_afford(item):
@@ -80,13 +86,22 @@ func _open_strip_editor(item: ShopItemData) -> void:
 
 func _commit_purchase(item: ShopItemData) -> void:
 	Global.player.gold -= display_price(item)
-	_mark_sold(item)              # remove from stock / gray out the card
-	#_refresh_shop_ui()            # gold display, affordability graying on remaining items
-	# run-scoped bookkeeping where relevant, e.g. removal count increments,
-	# though that arguably belongs in the removal item/flow itself
+	_mark_sold(item)
 
 	if item is DrinkShopItemData:
 		Global.player.drinks_bought_this_visit += 1
+
+	# A purchase can change what everything else costs — Frequent Flyer
+	# discounts the whole shelf the moment it's bought, and each drink bought
+	# deepens Loyalty Card's discount on the rest. Reprice every card.
+	_refresh_prices()
+
+
+## Repoints every card at its current price. Cheap enough to just do wholesale.
+func _refresh_prices() -> void:
+	for item: ShopItem in _items:
+		if is_instance_valid(item):
+			item.refresh(display_price(item.item_data))
 
 func _cancel_purchase(_item: ShopItemData) -> void:
 	pass
@@ -164,15 +179,22 @@ func _populate_stat_upgrades() -> void:
 	var upgrades_for_sale := _get_upgrades_for_sale()
 	_populate_container(stat_upgrades_container, upgrades_for_sale)
 
+## UPGRADE_POOL holds preloaded .tres, so every visit would otherwise hand out
+## the same resource instance — one purchase would mark it sold for the rest of
+## the run. Each offer is a duplicate.
 func _get_upgrades_for_sale(num_upgrades: int = 2) -> Array[ShopItemData]:
-	var upgrades: Array[ShopItemData] = []
-	# TODO: prevent picking irrelevant / non-applicable upgrades
+	var picked: Array[ShopItemData] = []
 	var wanted := mini(_stock_for(&"upgrades", num_upgrades), UPGRADE_POOL.size())
-	for i in wanted:
+	while picked.size() < wanted:
 		var upgrade: ShopItemData = UPGRADE_POOL.pick_random()
-		while upgrade in upgrades:
-			upgrade = UPGRADE_POOL.pick_random()
-		upgrades.append(upgrade)
+		if upgrade not in picked:
+			picked.append(upgrade)
+
+	var upgrades: Array[ShopItemData] = []
+	for u: ShopItemData in picked:
+		var fresh: ShopItemData = u.duplicate()
+		fresh.purchased = false
+		upgrades.append(fresh)
 	return upgrades
 
 func _populate_souvenirs() -> void:
