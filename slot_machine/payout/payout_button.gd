@@ -3,6 +3,11 @@ class_name PayoutButton
 ## Hover target for the paytable. The panel stays up while the cursor is on
 ## either the button or the panel itself, so the table can be read and
 ## scrolled without it closing underneath the pointer.
+##
+## Pressing the button locks it open, so the table can be left up while
+## holding columns and reading the board — the case where it's most useful is
+## exactly the one where the cursor has to be somewhere else. The button is a
+## toggle, so its pressed state is what says the table is pinned.
 
 const GAP := 6.0
 const MARGIN := 8.0
@@ -37,10 +42,16 @@ func _ready() -> void:
 	mouse_exited.connect(func() -> void: button_hovered = false)
 	legend_panel.mouse_entered.connect(func() -> void: panel_hovered = true)
 	legend_panel.mouse_exited.connect(func() -> void: panel_hovered = false)
+	toggled.connect(func(_on: bool) -> void: _update_visibility())
+
+
+## Pinned by the toggle, or held open by the cursor resting on either half.
+func locked() -> bool:
+	return button_pressed
 
 
 func _update_visibility() -> void:
-	if button_hovered or panel_hovered:
+	if locked() or button_hovered or panel_hovered:
 		legend_panel.build_legend()
 		legend_panel.show()
 		_reposition()
