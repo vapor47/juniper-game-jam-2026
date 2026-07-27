@@ -8,10 +8,15 @@ extends CanvasLayer
 
 const NUM_REWARDS := 3
 
+## Everything the screen draws, so peeking can hide the lot in one go while
+## leaving the button that brings it back.
+var _panels: Array[CanvasItem] = []
+var _peek_button: Button
+
 
 func _ready() -> void:
 	_show_payout()
-	_show_owned()
+	_build_peek_button()
 	var pool := PaylineCatalog.acquirable(Global.player.owned_paylines)
 	pool.shuffle()
 	_init_rewards(pool.slice(0, NUM_REWARDS))
@@ -30,41 +35,37 @@ func _show_payout() -> void:
 	vbox.move_child(label, 1)
 
 
-## The lines already owned, drawn small under the offers. The choice is only
-## meaningful against what's already held — the shared-cell colouring on each
-## offer says *how much* overlap there is, but not with what. Without this the
-## player is asked to judge overlap against a set they can't see.
-func _show_owned() -> void:
-	var owned := Global.player.owned_paylines
-	if owned.is_empty():
-		return
+## Peeking at the machine behind the screen, rather than restating the payline
+## inventory here. The board is still on screen and already draws every owned
+## line in its panel — a second, smaller copy of that on top of it was the same
+## information twice, in a worse rendering.
+##
+## Combat disabled its controls when it ended, so the machine underneath is
+## read-only; peeking cannot touch it.
+func _build_peek_button() -> void:
+	_panels = [$ColorRect, $VBoxContainer]
 
-	var vbox: VBoxContainer = $VBoxContainer
-	var row := HBoxContainer.new()
-	row.alignment = BoxContainer.ALIGNMENT_CENTER
-	row.add_theme_constant_override("separation", 18)
+	_peek_button = Button.new()
+	_peek_button.text = "VIEW MACHINE"
+	_peek_button.toggle_mode = true
+	_peek_button.focus_mode = Control.FOCUS_NONE
+	_peek_button.set_anchors_and_offsets_preset(Control.PRESET_TOP_RIGHT,
+		Control.PRESET_MODE_MINSIZE, 24)
+	_peek_button.toggled.connect(_on_peek_toggled)
+	add_child(_peek_button)
 
-	for payline: Payline in owned:
-		var cell := VBoxContainer.new()
-		cell.add_theme_constant_override("separation", 2)
 
-		var glyph := PaylineGlyph.new()
-		glyph.payline = payline
-		glyph.custom_minimum_size = Vector2(54, 48)
-		glyph.size_flags_horizontal = Control.SIZE_SHRINK_CENTER
-		cell.add_child(glyph)
+func _on_peek_toggled(peeking: bool) -> void:
+	for panel: CanvasItem in _panels:
+		panel.visible = not peeking
+	_peek_button.text = "BACK" if peeking else "VIEW MACHINE"
 
-		var name_label := Label.new()
-		name_label.text = payline.display_name
-		name_label.add_theme_font_size_override("font_size", 11)
-		name_label.add_theme_color_override("font_color", Color(0.68, 0.68, 0.72))
-		name_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
-		cell.add_child(name_label)
 
-		row.add_child(cell)
-
-	vbox.add_child(row)
-	vbox.move_child(row, vbox.get_child_count() - 2)  # above Continue
+func _unhandled_input(event: InputEvent) -> void:
+	if _peek_button != null and _peek_button.button_pressed \
+			and event.is_action_pressed("ui_cancel"):
+		_peek_button.button_pressed = false
+		get_viewport().set_input_as_handled()
 
 
 func _init_rewards(paylines: Array[Payline]) -> void:
