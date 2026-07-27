@@ -32,19 +32,16 @@ const SWING_GUARD_MAX: int = 12
 const GUARD_MIN: int = 16
 const GUARD_MAX: int = 26
 
+## Just the one. Live Wire is the curse that actually changes how the fight is
+## played — it taxes every spin, so it argues with respinning, with holding, and
+## with how long you are willing to fish for a board. A grab-bag of different
+## curses read as noise by comparison; one curse getting genuinely dangerous is
+## a clock the player can feel building.
 const CURSES: Array = [
 	preload("res://run_effect/debuff/debuffs/live_wire_debuff.gd"),
-	preload("res://run_effect/debuff/debuffs/marked_card_debuff.gd"),
-	preload("res://run_effect/debuff/debuffs/cold_deck_debuff.gd"),
-	preload("res://run_effect/debuff/debuffs/reel_jam_debuff.gd"),
 ]
 
 enum Phase { SWING, GUARD, COOL }
-
-## How often the cool beat deepens an existing curse rather than adding a new
-## kind. Weighted toward deepening: three different curses is confusing, one
-## curse getting genuinely dangerous is a clock.
-const ESCALATE_CHANCE := 0.65
 
 var phase: Phase = Phase.SWING
 
@@ -88,28 +85,44 @@ func get_actions() -> Array[Action]:
 ## versus more frequent ones, which are different problems. Only when nothing
 ## is escalatable does it reach for a fresh debuff.
 func _apply_curse() -> void:
-	var curses: Array[CurseSymbolDebuff] = []
-	for d: Debuff in Global.player.active_debuffs:
-		if d is CurseSymbolDebuff and (d as CurseSymbolDebuff).can_deepen():
-			curses.append(d)
-
-	if not curses.is_empty() and randf() < ESCALATE_CHANCE:
-		var curse: CurseSymbolDebuff = curses.pick_random()
-		# Only an axis this curse supports. Reel Jam has no level, so rolling
-		# one for it would silently waste a cool beat.
-		var upgrade := curse.can_upgrade()
-		if upgrade and curse.can_add_copy():
+	# Deepen what is already on the reel before reaching for anything new. A
+	# second debuff object for a curse the player already carries would leave
+	# two of them fighting over one level, and curse_level() only ever reads the
+	# first — so the extra copies would quietly deal the wrong damage.
+	var existing := _deepenable_curse()
+	if existing != null:
+		var upgrade := existing.can_upgrade()
+		if upgrade and existing.can_add_copy():
 			upgrade = randf() < 0.5
 		if upgrade:
-			curse.upgrade()
+			existing.upgrade()
 		else:
-			curse.add_copy()
-		Toast.show_debuff(curse.display_name, curse.description, "", "")
+			existing.add_copy()
+		Toast.show_debuff(existing.display_name, existing.description, "", "")
 		return
 
 	var debuff := _roll_curse()
 	if debuff != null:
 		Global.player.apply_debuff(debuff)
+
+
+## A curse the player already has that can still get worse.
+func _deepenable_curse() -> CurseSymbolDebuff:
+	var candidates: Array[CurseSymbolDebuff] = []
+	for d: Debuff in Global.player.active_debuffs:
+		if d is CurseSymbolDebuff and (d as CurseSymbolDebuff).can_deepen():
+			candidates.append(d)
+	if candidates.is_empty():
+		return null
+	return candidates.pick_random()
+
+
+## Never a curse the player is already carrying — that is what deepening is for.
+func _already_has(script: GDScript) -> bool:
+	for d: Debuff in Global.player.active_debuffs:
+		if d.get_script() == script:
+			return true
+	return false
 
 
 ## Its own short list, not the global pool. The Cooler's fantasy is corrupting
@@ -118,7 +131,9 @@ func _apply_curse() -> void:
 ## to do with this boss and only bites players who happened to buy an upgrade.
 func _roll_curse() -> Debuff:
 	var candidates: Array[Debuff] = []
-	for script in CURSES:
+	for script: GDScript in CURSES:
+		if _already_has(script):
+			continue
 		var debuff: Debuff = script.new()
 		if debuff.can_apply(Global.player):
 			candidates.append(debuff)
