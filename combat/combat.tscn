@@ -2,7 +2,6 @@
 
 [ext_resource type="Script" uid="uid://dyujxghix1bv2" path="res://combat/combat.gd" id="1_l68es"]
 [ext_resource type="PackedScene" uid="uid://d1dpv1ojvxj4o" path="res://slot_machine/slot_machine.tscn" id="2_p5meg"]
-[ext_resource type="PackedScene" path="res://hud/run_hud.tscn" id="9_hud"]
 
 [node name="CombatRoot" type="Control" unique_id=1709051279]
 layout_mode = 3
@@ -35,5 +34,3 @@ unique_name_in_owner = true
 layout_mode = 2
 size_flags_horizontal = 4
 size_flags_vertical = 10
-
-[node name="RunHUD" parent="." instance=ExtResource("9_hud")]

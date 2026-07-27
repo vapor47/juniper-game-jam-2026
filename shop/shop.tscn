@@ -38,11 +38,6 @@ theme_override_font_sizes/font_size = 48
 text = "THE GIFT SHOP"
 horizontal_alignment = 1
 
-[node name="GoldLabel" type="Label" parent="MarginContainer/VBoxContainer/VBoxContainer" unique_id=1043542615]
-unique_name_in_owner = true
-layout_mode = 2
-horizontal_alignment = 1
-
 [node name="ShopContents" type="VBoxContainer" parent="MarginContainer/VBoxContainer" unique_id=1162039531]
 layout_mode = 2
 size_flags_vertical = 3

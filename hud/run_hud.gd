@@ -10,6 +10,10 @@ class_name RunHUD
 ##
 ## Names only, descriptions on hover (§0). A chip states what it is; what it
 ## does is one hover away, the same contract the shop already uses.
+##
+## Autoloaded as `HUD` (not `RunHUD` — an autoload may not share a class_name)
+## so it survives the combat/shop scene swap instead of being rebuilt each
+## time. It shows only during a run: the menus and end screens hide it.
 
 const CHIP_FONT_SIZE := 13
 const GOLD_COLOR := Color(0.95, 0.82, 0.35)
@@ -20,19 +24,46 @@ const DEBUFF_COLOR := Color(0.9, 0.5, 0.45)
 var _gold_label: Label
 var _effects_row: HBoxContainer
 var _strip_view: StripView
+## Whoever gold_updated is currently wired to, so a rebind can unwire it.
+var _bound_player: PlayerData
 
 
 func _ready() -> void:
 	layer = 5
 	_build()
-	_refresh_gold(Global.player.gold if Global.player else 0)
-	if Global.player:
-		Global.player.gold_updated.connect(_refresh_gold)
 	# Effects change on purchase, on expiry and when a debuff lands, none of
 	# which share a single signal — rebuild on the one that covers acquisition
 	# and poll the rest at turn boundaries.
 	EventBus.run_effect_added.connect(func(_e: RunEffect) -> void: _refresh_effects())
-	_refresh_effects()
+	hide()
+
+
+## Shown for combat and the shop, hidden for menus and end screens.
+func show_for_run() -> void:
+	_bind_player()
+	refresh()
+	show()
+
+
+func hide_for_menu() -> void:
+	hide()
+
+
+## RunManager.reset_run_state() builds a *new* PlayerData, so a connection made
+## once at startup would keep reporting the dead run's gold. The old connection
+## has to be dropped explicitly: PlayerData is refcounted and the finished run's
+## context still holds a reference, so the stale object outlives the reset and
+## would keep overwriting the label from a run that no longer exists.
+func _bind_player() -> void:
+	if Global.player == _bound_player:
+		return
+	if _bound_player != null and _bound_player.gold_updated.is_connected(_refresh_gold):
+		_bound_player.gold_updated.disconnect(_refresh_gold)
+	_bound_player = Global.player
+	if _bound_player == null:
+		return
+	_bound_player.gold_updated.connect(_refresh_gold)
+	_refresh_gold(_bound_player.gold)
 
 
 func _build() -> void:
@@ -148,4 +179,8 @@ func _toggle_pause() -> void:
 ## Drinks expire and debuffs land without a shared signal, so the turn boundary
 ## is the cheap place to catch up.
 func refresh() -> void:
+	if Global.player:
+		_refresh_gold(Global.player.gold)
 	_refresh_effects()
+	if _strip_view != null and _strip_view.visible:
+		_strip_view.refresh()

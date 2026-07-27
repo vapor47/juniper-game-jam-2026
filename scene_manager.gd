@@ -31,14 +31,17 @@ func go_to_combat(enemies: Array[EnemyData]) -> void:
 	get_tree().current_scene.queue_free()
 	get_tree().current_scene = combat
 	_curr_combat = combat
+	HUD.show_for_run()
 
 func go_to_shop() -> void:
 	var shop_scene := SHOP_SCENE.instantiate()
 	get_tree().root.add_child(shop_scene)
 	get_tree().current_scene.queue_free()
 	get_tree().current_scene = shop_scene
+	HUD.show_for_run()
 
 func go_to_win_screen() -> void:
+	HUD.hide_for_menu()
 	add_child(VICTORY_SCREEN_SCENE.instantiate())
 	
 func go_to_main_screen() -> void:
@@ -46,6 +49,7 @@ func go_to_main_screen() -> void:
 	get_tree().root.add_child(main_menu)
 	get_tree().current_scene.queue_free()
 	get_tree().current_scene = main_menu
+	HUD.hide_for_menu()
 	
 
 func in_combat() -> bool:

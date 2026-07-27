@@ -14,7 +14,6 @@ enum CombatResult { LOSS, VICTORY }
 var enemies: Array[EnemyData]
 const ENEMY_SCENE = preload("res://combat/enemies/enemy.tscn")
 
-@onready var hud: RunHUD = $RunHUD
 @onready var slot_machine: SlotMachine = %SlotMachine
 
 var context: CombatContext
@@ -117,8 +116,7 @@ func _begin_player_turn() -> void:
 	turn_context = TurnContext.new(context)
 	# Drinks expire and debuffs land without a shared signal, so the turn
 	# boundary is where the HUD catches up on what is actually in effect.
-	if is_instance_valid(hud):
-		hud.refresh()
+	HUD.refresh()
 	# Block expires between turns; excess is wasted (§10). There is no previous
 	# turn to expire on turn 1, so combat-start grants (Rabbit's Foot) survive
 	# into it instead of being wiped the instant they land.

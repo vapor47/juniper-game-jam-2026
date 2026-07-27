@@ -8,7 +8,7 @@ const BASE_TOKEN_REGEN_PER_TURN = 1
 ## actually bank: a 3rd line costs 4 on top of the 2nd's 2, so a cap of 3
 ## would make it unreachable and the line cap dead content. Line pricing
 ## against real income is an explicit playtest question (§12).
-const BASE_MAX_TOKENS = 10
+const BASE_MAX_TOKENS = 100
 ## What each combat opens with — deliberately well under the cap, so banking
 ## toward a second/third line is a real multi-turn decision rather than
 ## something the opening hand already affords.

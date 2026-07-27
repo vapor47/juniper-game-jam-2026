@@ -25,11 +25,6 @@ const UPGRADE_POOL: Array[ShopItemData] = [
 func _ready() -> void:
 	Global.player.drinks_bought_this_visit = 0
 	_populate_shop()
-	%GoldLabel.text = "Gold: %d" % Global.player.gold
-	Global.player.gold_updated.connect(
-		func(g: int) -> void:
-			%GoldLabel.text = "Gold: %d" % g
-	)
 
 func _populate_shop() -> void:
 	_populate_machine_modifications()
