@@ -48,7 +48,7 @@ var phase: Phase = Phase.SWING
 
 func _init() -> void:
 	display_name = "The Cooler"
-	max_health = 220
+	max_health = 300
 	health = max_health
 
 
