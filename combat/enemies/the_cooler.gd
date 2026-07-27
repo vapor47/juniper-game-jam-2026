@@ -26,8 +26,11 @@ const HIT_MAX: int = 16
 ## Raised alongside the swing, so even its attacking turn is partly defensive.
 const SWING_GUARD_MIN: int = 6
 const SWING_GUARD_MAX: int = 12
-const GUARD_MIN: int = 20
-const GUARD_MAX: int = 30
+## Lowered from 20-30: with block correctly holding, a guard at the top of that
+## range zeroed a whole turn for anyone under ~30 damage, which reads as a dead
+## turn rather than a redirected one.
+const GUARD_MIN: int = 16
+const GUARD_MAX: int = 26
 
 const CURSES: Array = [
 	preload("res://run_effect/debuff/debuffs/live_wire_debuff.gd"),
