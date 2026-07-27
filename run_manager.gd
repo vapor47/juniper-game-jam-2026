@@ -4,8 +4,8 @@ var encounter_queue: Array[Array] = [
 	[DestituteGamblerData],
 	[ChargeyGuyData],
 	[TwoFacedData],
-	[PitBossData],
 	[TheCoolerData],
+	[PitBossData],
 ]
 
 ## Payout for winning a fight. Sized at about one shop item (a souvenir or a
