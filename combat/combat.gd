@@ -40,6 +40,10 @@ const LINE_COSTS: Array[int] = [0, 3, 6]
 var selected_lines: Array[Payline] = []
 var _tokens_spent_on_lines: int = 0
 
+## What was played last turn, for Cold Deck to lock out. Cleared at combat start
+## so the first turn of a fight is never restricted.
+var lines_played_last_turn: Array[Payline] = []
+
 ## True while the reels are moving or the turn is resolving. Tracked explicitly
 ## rather than inferred from button states: "every control is disabled" is also
 ## true when the player has simply run out of tokens, which would wrongly lock
@@ -127,6 +131,7 @@ func _begin_player_turn() -> void:
 	respins_this_turn = 0
 	selected_lines.clear()
 	_tokens_spent_on_lines = 0
+	slot_machine.payline_panel.locked_lines = _locked_lines()
 	_busy = false
 
 	for col: ReelColumn in slot_machine.reel_columns:
@@ -159,9 +164,11 @@ func _spin_all() -> void:
 
 	# Symbols that pay just for showing up (§ Penny). Every spin, including
 	# respins — the escalating respin cost is what keeps it from being farmed.
-	var trickle := BoardEffects.apply(slot_machine.reel_columns, Symbol.Trigger.ON_SPIN)
-	if trickle > 0:
-		spawn_popup("+%dg from the board" % trickle)
+	var board := BoardEffects.apply(slot_machine.reel_columns, Symbol.Trigger.ON_SPIN)
+	if board.gold > 0:
+		spawn_popup("+%dg from the board" % board.gold)
+	if board.damage > 0:
+		spawn_popup("-%d HP from the board" % board.damage)
 
 	_busy = false
 	_set_controls_enabled(true)
@@ -318,9 +325,14 @@ func _on_lock_in_pressed() -> void:
 		await get_tree().create_timer(1.0).timeout
 
 	# Board payouts that land once per turn (§ Chip), before the line resolves.
-	var board_gold := BoardEffects.apply(slot_machine.reel_columns, Symbol.Trigger.ON_LOCK)
-	if board_gold > 0:
-		spawn_popup("+%dg from the board" % board_gold)
+	var board := BoardEffects.apply(slot_machine.reel_columns, Symbol.Trigger.ON_LOCK)
+	if board.gold > 0:
+		spawn_popup("+%dg from the board" % board.gold)
+	# Applied before the actions are performed, not after: a penalty that landed
+	# afterwards would be damage already dealt.
+	if board.attack_penalty > 0:
+		_drain_attack(actions, board.attack_penalty)
+		spawn_popup("-%d attack from the board" % board.attack_penalty)
 
 	await _perform_actions(actions, Global.player, enemies[0])
 
@@ -379,11 +391,45 @@ func _perform_actions(actions: Array[Action], source: CombatantData = Global.pla
 		await get_tree().create_timer(1.3).timeout
 
 
+## Takes a flat penalty off this turn's attack, spending it across the attack
+## actions in order. Never below zero on any one action, and any remainder past
+## the last attack is simply lost — the board cannot heal the enemy.
+func _drain_attack(actions: Array[Action], penalty: int) -> void:
+	var left := penalty
+	for action: Action in actions:
+		if left <= 0:
+			return
+		if action.type != Action.Type.ATTACK:
+			continue
+		var taken := mini(action.value, left)
+		action.value -= taken
+		left -= taken
+
+
 func _display_action(action: Action) -> void:
 	spawn_popup(action.display_string)
 
 
+## Lines Cold Deck is holding shut this turn. Never every line the player owns:
+## a debuff that leaves no legal move is a softlock, not a difficulty spike.
+func _locked_lines() -> Array[Payline]:
+	var has_cold_deck := false
+	for d: Debuff in Global.player.active_debuffs:
+		if d is ColdDeckDebuff:
+			has_cold_deck = true
+	if not has_cold_deck or lines_played_last_turn.is_empty():
+		return []
+	var locked: Array[Payline] = []
+	for line: Payline in lines_played_last_turn:
+		if line in Global.player.owned_paylines:
+			locked.append(line)
+	if locked.size() >= Global.player.owned_paylines.size():
+		locked.remove_at(locked.size() - 1)
+	return locked
+
+
 func _end_player_turn() -> void:
+	lines_played_last_turn = selected_lines.duplicate()
 	Global.player.broadcast("on_turn_ended", [context])
 
 	await get_tree().create_timer(2).timeout
@@ -394,6 +440,11 @@ func _end_player_turn() -> void:
 
 func _start_enemy_turn() -> void:
 	enemy_turn_started.emit()
+	# A guard raised last turn has done its job by now: it stood through the
+	# player's turn, which is the only turn it could have mattered for.
+	for enemy in enemies:
+		if is_instance_valid(enemy):
+			enemy.reset_block()
 	for enemy in enemies:
 		if _combat_over:
 			return

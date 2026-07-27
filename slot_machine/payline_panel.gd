@@ -19,6 +19,12 @@ const ROW_BG_SELECTED := Color(1, 0.85, 0.3, 0.16)
 @onready var _readout: PaylineSummaryPanel = %PaylineSummary
 
 var _rows: Array[Control] = []
+
+## Lines held shut this turn by a debuff. They still show — the player needs to
+## see what was taken away — but cannot be picked.
+## Set before the panel is refreshed; refresh() takes its own arguments, so this
+## is plain state rather than a self-refreshing property.
+var locked_lines: Array[Payline] = []
 var _list: VBoxContainer
 
 # Last state handed to refresh(), kept so hovering can re-derive the preview
@@ -80,7 +86,9 @@ func set_interactive(value: bool) -> void:
 		_hovered = null
 	modulate = Color(1, 1, 1, 1.0 if value else 0.4)
 	for row in _rows:
-		(row as Button).disabled = not value
+		# A locked row stays locked: re-enabling the panel must not hand back a
+		# line a debuff took away.
+		(row as Button).disabled = not value or row.get_meta("locked", false)
 	_update_summary()
 
 
@@ -114,8 +122,13 @@ func _build_row(payline: Payline, selected: Array[Payline]) -> Control:
 	button.focus_mode = Control.FOCUS_NONE
 	button.alignment = HORIZONTAL_ALIGNMENT_LEFT
 	button.custom_minimum_size.y = 30
+	var locked := payline in locked_lines
 	button.text = payline.display_name
-	button.disabled = not _interactive
+	button.disabled = not _interactive or locked
+	button.set_meta("locked", locked)
+	if locked:
+		# Shown, not hidden: the player has to see what was taken from them.
+		button.modulate = Color(1, 1, 1, 0.45)
 
 	if payline in selected:
 		var box := StyleBoxFlat.new()
@@ -125,7 +138,7 @@ func _build_row(payline: Payline, selected: Array[Payline]) -> Control:
 	_list.add_child(button)
 
 	button.pressed.connect(func() -> void:
-		if _interactive:
+		if _interactive and not locked:
 			line_clicked.emit(payline))
 	button.mouse_entered.connect(func() -> void:
 		if not _interactive:

@@ -13,8 +13,8 @@ class_name PitBossData
 ## which the single-line model used elsewhere in this file's history accounts
 ## for.
 
-const BASE_DAMAGE: int = 15
-const ESCALATION: int = 5
+const BASE_DAMAGE: int = 10
+const ESCALATION: int = 4
 
 var swings_taken: int = 0
 

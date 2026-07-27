@@ -27,7 +27,7 @@ static var HEAL := _make("Heal", Action.Type.HEAL, 4, Symbol.Rarity.UNCOMMON)
 ## Still the thing you first learn to remove; it becomes a resource only next to
 ## something that pays for junk. Its own tier, so keeping it off the shelf costs
 ## the good symbols nothing.
-static var BLANK := _make("Blank", Action.Type.NONE, 0, Symbol.Rarity.JUNK)
+static var BLANK := _junk("Blank")
 
 # -------------------------------------------------------------- shop only
 
@@ -49,6 +49,21 @@ static var TOKEN := _no_combo("Token", Action.Type.TOKEN, 1, Symbol.Rarity.RARE)
 
 ## Dead on a payline, pays only for being on the board. You want it visible and
 ## off your lines, which is the whole point of it.
+## Curses. Injected onto the strip by debuffs, never sold. Both are junk, so a
+## Recycler build gets a little back from being cursed.
+##
+## Live Wire fires every spin, including the free opening one — it is a flat
+## tax first and a respin deterrent second.
+static var LIVE_WIRE := _curse("Live Wire", Symbol.Trigger.ON_SPIN)
+## Marked Card sits there looking harmless until you commit the board.
+static var MARKED_CARD := _curse("Marked Card", Symbol.Trigger.ON_LOCK)
+
+## Damage per Live Wire showing, per spin.
+const LIVE_WIRE_DAMAGE := 1
+## Attack lost per Marked Card showing, at lock-in.
+const MARKED_CARD_ATTACK_PENALTY := 3
+
+
 ## Pays for the junk on the board. Two symbols that are worthless alone and
 ## worth something together — and both cost strip space, which is the price.
 static var RECYCLER := _board("Recycler", Action.Type.NONE, 0, Symbol.Rarity.UNCOMMON,
@@ -61,11 +76,11 @@ static var CHIP := _board("Chip", Action.Type.NONE, 0, Symbol.Rarity.COMMON, Sym
 ## Wild can stand in for one of the three.
 static var LUCKY_SEVEN := _jackpot()
 
-## Gold per Recycler per blank. Multiplying both counts is the point: the pair
-## scales quadratically, which is what makes committing strip space to two dead
-## symbols worth doing. Adding blanks dilutes everything else on the strip, so
-## the build pays for itself.
-const RECYCLER_GOLD_PER_BLANK := 2
+## Gold per Recycler per junk symbol. Multiplying both counts is the point: the
+## pair scales quadratically, which is what makes committing strip space to two
+## dead symbols worth doing. Junk dilutes everything else on the strip, so the
+## build pays for itself — and curses count, so being cursed pays a little.
+const RECYCLER_GOLD_PER_JUNK := 2
 const CHIP_GOLD_PER_COPY := 5
 const PENNY_GOLD_PER_COPY := 1
 
@@ -118,6 +133,12 @@ static func _jackpot() -> Symbol:
 	return s
 
 
+static func _junk(n: String) -> Symbol:
+	var s := _make(n, Action.Type.NONE, 0, Symbol.Rarity.JUNK)
+	s.is_junk = true
+	return s
+
+
 static func _make(n: String, t: Action.Type, v: int, r: Symbol.Rarity,
 		icon: Texture2D = null) -> Symbol:
 	var s := Symbol.new(n, t, v, icon)
@@ -142,6 +163,13 @@ static func _board(n: String, t: Action.Type, v: int, r: Symbol.Rarity,
 		trigger: Symbol.Trigger) -> Symbol:
 	var s := _make(n, t, v, r)
 	s.trigger = trigger
+	return s
+
+
+static func _curse(n: String, trigger: Symbol.Trigger) -> Symbol:
+	var s := _board(n, Action.Type.NONE, 0, Symbol.Rarity.JUNK, trigger)
+	s.is_curse = true
+	s.is_junk = true
 	return s
 
 

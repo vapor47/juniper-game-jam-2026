@@ -81,6 +81,8 @@ func _refresh() -> void:
 static func headline(symbol: Symbol) -> String:
 	if symbol.is_wild:
 		return "W"
+	if symbol.is_curse:
+		return "!"
 	if not symbol.payout.is_empty():
 		return "7"
 	if symbol == SymbolTable.CHIP:
@@ -97,6 +99,9 @@ static func headline(symbol: Symbol) -> String:
 static func color_for(symbol: Symbol) -> Color:
 	if symbol.is_wild:
 		return Color(0.42, 0.2, 0.5)
+
+	if symbol.is_curse:
+		return Color(0.34, 0.10, 0.12)
 
 	var base := Color(0.15, 0.15, 0.15)
 	match symbol.type:

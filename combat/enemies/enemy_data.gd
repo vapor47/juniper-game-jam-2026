@@ -26,6 +26,9 @@ func _choose_intent() -> void:
 ## yields no actions, which is how charge/wind-up turns telegraph without
 ## dealing damage.
 func get_actions() -> Array[Action]:
+	if intent.get("type") == "block":
+		return [Action.new(Action.Type.DEFEND, intent.get("value", 0),
+			"%s guards for %d" % [display_name, intent.get("value", 0)])]
 	if intent.get("type") == "attack":
 		return [Action.new(Action.Type.ATTACK, intent.get("value"), "Attacked player for %d damage!" % intent.get("value"))]
 	return []

@@ -10,15 +10,15 @@ class_name LuckyBreakModifier
 ## Luck does), and the paytable does not render them, so there is nothing to
 ## lie about.
 
-const PER_BLANK := 2
+const PER_JUNK := 2
 
 func _init() -> void:
 	display_name = "Lucky Break"
-	description = "+%d for each blank on the board" % PER_BLANK
+	description = "+%d for each junk symbol on the board" % PER_JUNK
 
-## Blank has no value of its own, so it can never carry this.
+## Junk has no value of its own, so it can never carry this.
 func can_apply(stop: Stop) -> bool:
-	return stop.symbol != SymbolTable.BLANK and stop.symbol.value > 0
+	return not stop.symbol.is_junk and stop.symbol.value > 0
 
 func modify_stop_value(base_value: int, ctx: ResolutionContext, _stop: Stop) -> int:
-	return base_value + PER_BLANK * ctx.blank_count()
+	return base_value + PER_JUNK * ctx.junk_count()

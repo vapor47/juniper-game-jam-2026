@@ -63,14 +63,11 @@ static func build(p_player: PlayerData, p_enemies: Array[EnemyData],
 	ctx.selected_count = p_selected_stops.size()
 	return ctx
 
-## How many cells on the board are Blank. The junk-synergy effects all key off
-## this, so it lives here rather than being recounted by each of them.
-func blank_count() -> int:
-	var n := 0
-	for symbol: Symbol in board_symbols:
-		if symbol == SymbolTable.BLANK:
-			n += 1
-	return n
+## How many cells on the board are junk — Blank and every curse. The
+## junk-synergy effects all key off this, so it lives here rather than being
+## recounted by each of them.
+func junk_count() -> int:
+	return BoardEffects.count_junk(board_symbols)
 
 
 func is_stop_in_combo(stop: Stop) -> bool:

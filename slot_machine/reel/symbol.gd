@@ -30,6 +30,15 @@ var combos: bool = true
 
 var trigger: Trigger = Trigger.NONE
 
+## Dead weight on a line, and food for the effects that pay for dead weight.
+## Blank and the curses share this: a cursed reel is worth something to a junk
+## build, which is a small consolation rather than a defused debuff.
+var is_junk: bool = false
+
+## Injected by a debuff rather than bought. Never offered in the shop, and the
+## strip editor's remove service is the counterplay.
+var is_curse: bool = false
+
 ## Run length this symbol needs before it pays anything. One for everything
 ## normal — a lone stop still pays its value; the run bonus is a separate
 ## threshold at two. Only jackpot symbols raise this (Lucky Seven wants three).

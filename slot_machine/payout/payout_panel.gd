@@ -33,6 +33,7 @@ const HEADER_COLOR := Color(0.62, 0.62, 0.66)
 const VALUE_COLOR := Color(0.92, 0.92, 0.92)
 const DEAD_COLOR := Color(0.42, 0.42, 0.45)
 const GOLD_COLOR := Color(0.95, 0.82, 0.35)
+const CURSE_COLOR := Color(0.92, 0.45, 0.42)
 
 @onready var payout_container: MarginContainer = $PayoutContainer
 
@@ -195,16 +196,21 @@ func _board_table(symbols: Array[Symbol]) -> GridContainer:
 	grid.add_theme_constant_override("v_separation", 4)
 	for symbol: Symbol in symbols:
 		grid.add_child(_swatch(symbol))
-		grid.add_child(_cell(_board_text(symbol), GOLD_COLOR, HORIZONTAL_ALIGNMENT_LEFT))
+		var tint := CURSE_COLOR if symbol.is_curse else GOLD_COLOR
+		grid.add_child(_cell(_board_text(symbol), tint, HORIZONTAL_ALIGNMENT_LEFT))
 	return grid
 
 
-## What a board symbol pays, stated per copy. Recycler is the exception: it
-## pays off a second count, so saying "per copy" would be wrong.
+## What a board symbol does, stated per copy. Recycler and the curses each pay
+## off something other than their own count, so "per copy" would be wrong.
 func _board_text(symbol: Symbol) -> String:
 	var when := "on lock" if symbol.trigger == Symbol.Trigger.ON_LOCK else "each spin"
 	if symbol == SymbolTable.RECYCLER:
-		return "%dg per blank, %s" % [SymbolTable.RECYCLER_GOLD_PER_BLANK, when]
+		return "%dg per junk symbol, %s" % [SymbolTable.RECYCLER_GOLD_PER_JUNK, when]
+	if symbol == SymbolTable.LIVE_WIRE:
+		return "%d damage per copy, %s" % [SymbolTable.LIVE_WIRE_DAMAGE, when]
+	if symbol == SymbolTable.MARKED_CARD:
+		return "-%d attack per copy, %s" % [SymbolTable.MARKED_CARD_ATTACK_PENALTY, when]
 	var per := SymbolTable.CHIP_GOLD_PER_COPY if symbol == SymbolTable.CHIP \
 		else SymbolTable.PENNY_GOLD_PER_COPY
 	return "%dg per copy, %s" % [per, when]
