@@ -13,6 +13,9 @@ const NUM_REWARDS := 3
 var _panels: Array[CanvasItem] = []
 var _peek_button: Button
 
+## Gap between the Continue button and the peek button.
+const PEEK_GAP := 16.0
+
 
 func _ready() -> void:
 	_show_payout()
@@ -43,16 +46,34 @@ func _show_payout() -> void:
 ## Combat disabled its controls when it ended, so the machine underneath is
 ## read-only; peeking cannot touch it.
 func _build_peek_button() -> void:
+	# Only the shade and the offers hide. The button is a separate child so it
+	# keeps its place while peeking instead of vanishing with what it toggles.
 	_panels = [$ColorRect, $VBoxContainer]
 
 	_peek_button = Button.new()
 	_peek_button.text = "VIEW MACHINE"
 	_peek_button.toggle_mode = true
 	_peek_button.focus_mode = Control.FOCUS_NONE
-	_peek_button.set_anchors_and_offsets_preset(Control.PRESET_TOP_RIGHT,
-		Control.PRESET_MODE_MINSIZE, 24)
 	_peek_button.toggled.connect(_on_peek_toggled)
 	add_child(_peek_button)
+
+	# Positioned off the Continue button's real rect rather than laid out beside
+	# it. The reward panel is a full-rect centred VBox, so its height is the
+	# whole screen — a spacer sized from it put the button off the bottom edge.
+	get_viewport().size_changed.connect(_place_peek)
+	_peek_button.resized.connect(_place_peek)
+	_place_peek.call_deferred()
+
+
+## Centred horizontally, a fixed gap under Continue.
+func _place_peek() -> void:
+	if not is_instance_valid(_peek_button):
+		return
+	var cont: Control = $VBoxContainer/ContinueButton
+	var screen := get_viewport().get_visible_rect().size
+	_peek_button.global_position = Vector2(
+		(screen.x - _peek_button.size.x) * 0.5,
+		cont.global_position.y + cont.size.y + PEEK_GAP)
 
 
 func _on_peek_toggled(peeking: bool) -> void:
