@@ -74,8 +74,14 @@ class LineResult extends RefCounted:
 ## What a run of `count` identical symbols pays at base value, bonus included.
 ## Used by the combo legend, which quotes the unmodified figure — the single
 ## source of truth for the formula so the two can't drift apart.
+## What a clean run of `count` pays, with no modifiers or run effects in play.
+## Must honour `combos` the same way score_line does: flat-only symbols (Token)
+## pay face value however many land, so a run of three Tokens is 3, not the
+## bonus curve's 5. The paytable reads this, and a table that disagrees with
+## the machine is worse than no table.
 static func run_value(symbol: Symbol, count: int) -> int:
-	return _payout(symbol.value * count, count)
+	var flat := symbol.value * count
+	return flat if not symbol.combos else _payout(flat, count)
 
 
 ## flat total for the run, and the count the bonus curve is driven by.

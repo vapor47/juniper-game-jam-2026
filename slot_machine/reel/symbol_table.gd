@@ -90,8 +90,10 @@ const WILD_JACKPOT := {
 ## priced against a much looser figure that belonged to a different, discarded
 ## design where sevens counted across the whole grid.
 ##
-## Token grants above the player's cap are simply lost, so the weight sits in
-## gold past the first tier.
+## The gold weighting past the first tier dates from a token cap of 10, where
+## grants above it were simply lost. The cap is now 100, so the token half of
+## these tiers is worth far more than it was when they were set — left alone
+## deliberately rather than retuned in passing.
 static func _jackpot() -> Symbol:
 	var s := _make("Lucky Seven", Action.Type.NONE, 0, Symbol.Rarity.UNCOMMON)
 	s.min_run = 3

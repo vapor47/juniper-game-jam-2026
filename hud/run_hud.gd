@@ -141,6 +141,18 @@ func _build_strip_overlay() -> void:
 	center.add_child(_strip_view)
 
 
+## Esc closes the strip before anything else gets to see it. PauseMenu also
+## listens for ui_cancel, and as the earlier autoload it would otherwise open
+## the pause menu on top of an open strip. Autoload order puts HUD last, so it
+## receives unhandled input first — this only has to consume the event.
+func _unhandled_input(event: InputEvent) -> void:
+	if _strip_overlay == null or not _strip_overlay.visible:
+		return
+	if event.is_action_pressed("ui_cancel"):
+		_strip_toggle.button_pressed = false
+		get_viewport().set_input_as_handled()
+
+
 ## Rebuilt on open rather than kept live: the strip only changes in the shop,
 ## so a fight never invalidates it, and rebuilding on show costs nothing.
 func _on_strip_toggled(pressed: bool) -> void:
