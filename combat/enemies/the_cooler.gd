@@ -23,6 +23,12 @@ const BIG_MIN: int = 15
 const BIG_MAX: int = 20
 const GUARD: int = 20
 
+const CURSES: Array = [
+	preload("res://run_effect/debuff/debuffs/live_wire_debuff.gd"),
+	preload("res://run_effect/debuff/debuffs/marked_card_debuff.gd"),
+	preload("res://run_effect/debuff/debuffs/cold_deck_debuff.gd"),
+]
+
 enum Phase { SMALL, BIG, COOL }
 
 ## How often the cool beat deepens an existing curse rather than adding a new
@@ -42,16 +48,11 @@ func _init() -> void:
 func _choose_intent() -> void:
 	match phase:
 		Phase.SMALL:
-			var small := randi_range(SMALL_MIN, SMALL_MAX)
-			intent = { "type": "attack", "value": small }
-			custom_intent_str = "Testing the deck — %d" % small
+			intent = { "type": "attack", "value": randi_range(SMALL_MIN, SMALL_MAX) }
 		Phase.BIG:
-			var big := randi_range(BIG_MIN, BIG_MAX)
-			intent = { "type": "attack", "value": big }
-			custom_intent_str = "Calling it in — %d" % big
+			intent = { "type": "attack", "value": randi_range(BIG_MIN, BIG_MAX) }
 		Phase.COOL:
 			intent = { "type": "block", "value": GUARD }
-			custom_intent_str = "Cooling the machine — %d block" % GUARD
 
 	phase = ((phase + 1) % 3) as Phase
 
@@ -89,6 +90,21 @@ func _apply_curse() -> void:
 				"\"Another one finds its way in.\"")
 		return
 
-	var debuff := DebuffPool.get_random_debuff(Global.player)
+	var debuff := _roll_curse()
 	if debuff != null:
 		Global.player.apply_debuff(debuff)
+
+
+## Its own short list, not the global pool. The Cooler's fantasy is corrupting
+## the machine, so it deals in the curses that do that — pulling from every
+## debuff in the game handed out things like a line-cap cut, which has nothing
+## to do with this boss and only bites players who happened to buy an upgrade.
+func _roll_curse() -> Debuff:
+	var candidates: Array[Debuff] = []
+	for script in CURSES:
+		var debuff: Debuff = script.new()
+		if debuff.can_apply(Global.player):
+			candidates.append(debuff)
+	if candidates.is_empty():
+		return null
+	return candidates.pick_random()

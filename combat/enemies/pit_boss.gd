@@ -29,4 +29,3 @@ func _choose_intent() -> void:
 	var damage := BASE_DAMAGE + ESCALATION * swings_taken
 	swings_taken += 1
 	intent = { "type": "attack", "value": damage }
-	custom_intent_str = "The house always wins — %d" % damage
