@@ -14,7 +14,10 @@ var health: int = max_health:
 		health = new_val
 		EventBus.curr_health_updated.emit(self, new_val)
 		
-var block: int = 0
+var block: int = 0:
+	set(new_val):
+		block = new_val
+		EventBus.block_updated.emit(self, new_val)
 
 ## Latches on the killing blow so `died` fires exactly once. Without it every
 ## later hit re-emits it, since `health <= 0` stays true.

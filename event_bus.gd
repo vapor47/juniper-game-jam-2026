@@ -12,5 +12,6 @@ signal run_effect_added(r: RunEffect)
 
 signal curr_health_updated(who: CombatantData, new_val: int)
 signal max_health_updated(who: CombatantData, new_val: int)
+signal block_updated(who: CombatantData, new_val: int)
 
 signal post_combat_completed()
