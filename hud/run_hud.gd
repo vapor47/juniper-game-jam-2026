@@ -19,6 +19,7 @@ const DEBUFF_COLOR := Color(0.9, 0.5, 0.45)
 
 var _gold_label: Label
 var _effects_row: HBoxContainer
+var _strip_view: StripView
 
 
 func _ready() -> void:
@@ -59,11 +60,39 @@ func _build() -> void:
 	_effects_row.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 	top.add_child(_effects_row)
 
+	# A toggle rather than hover: the strip is something you study against the
+	# board, so it has to stay up while the cursor is somewhere else. Same
+	# reason the paytable stopped being a hover popup.
+	var strip_toggle := Button.new()
+	strip_toggle.text = "STRIP"
+	strip_toggle.toggle_mode = true
+	strip_toggle.focus_mode = Control.FOCUS_NONE
+	strip_toggle.toggled.connect(_on_strip_toggled)
+	top.add_child(strip_toggle)
+
 	var settings := Button.new()
 	settings.text = "MENU"
 	settings.focus_mode = Control.FOCUS_NONE
 	settings.pressed.connect(_toggle_pause)
 	top.add_child(settings)
+
+	var strip_holder := CenterContainer.new()
+	strip_holder.set_anchors_and_offsets_preset(Control.PRESET_BOTTOM_WIDE)
+	strip_holder.grow_vertical = Control.GROW_DIRECTION_BEGIN
+	strip_holder.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	add_child(strip_holder)
+
+	_strip_view = StripView.new()
+	_strip_view.hide()
+	strip_holder.add_child(_strip_view)
+
+
+## Rebuilt on open rather than kept live: the strip only changes in the shop,
+## so a fight never invalidates it, and rebuilding on show costs nothing.
+func _on_strip_toggled(pressed: bool) -> void:
+	if pressed:
+		_strip_view.refresh()
+	_strip_view.visible = pressed
 
 
 func _refresh_gold(amount: int) -> void:

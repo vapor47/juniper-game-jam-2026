@@ -123,7 +123,7 @@ func _build_stop(index: int) -> Control:
 	button.text = "%d\n%s%s" % [index + 1, stop.symbol.symbol_name, marks]
 
 	var box := StyleBoxFlat.new()
-	box.bg_color = _color_for(stop.symbol)
+	box.bg_color = SymbolCell.color_for(stop.symbol)
 	if not stop.modifiers.is_empty():
 		box.set_border_width_all(2)
 		box.border_color = Color(1, 0.85, 0.3, 0.9)
@@ -152,22 +152,6 @@ func _build_stop(index: int) -> Control:
 			button.tooltip_text = "" if can_remove else "Strip is already at its minimum length"
 			button.pressed.connect(func() -> void: _commit_remove(index))
 	return button
-
-
-func _color_for(s: Symbol) -> Color:
-	match s.type:
-		Action.Type.ATTACK:
-			return Color(0.45, 0.16, 0.14)
-		Action.Type.DEFEND:
-			return Color(0.14, 0.26, 0.44)
-		Action.Type.HEAL:
-			return Color(0.16, 0.38, 0.2)
-		Action.Type.GOLD:
-			return Color(0.46, 0.38, 0.1)
-		Action.Type.TOKEN:
-			return Color(0.36, 0.24, 0.44)
-		_:
-			return Color(0.13, 0.13, 0.13)
 
 
 # ------------------------------------------------------------------- commits
