@@ -32,13 +32,14 @@ const SWING_GUARD_MAX: int = 12
 const GUARD_MIN: int = 16
 const GUARD_MAX: int = 26
 
-## Just the one. Live Wire is the curse that actually changes how the fight is
-## played — it taxes every spin, so it argues with respinning, with holding, and
-## with how long you are willing to fish for a board. A grab-bag of different
-## curses read as noise by comparison; one curse getting genuinely dangerous is
-## a clock the player can feel building.
+## Two, and both attack the spin. Live Wire taxes every spin, so it argues with
+## respinning and with how long you are willing to fish for a board; Reel Jam
+## takes the columns away, so it argues with what you can fix. A grab-bag of
+## unrelated curses would read as noise — these two point at the same decision
+## from opposite sides, and both get worse as the fight runs.
 const CURSES: Array = [
 	preload("res://run_effect/debuff/debuffs/live_wire_debuff.gd"),
+	preload("res://run_effect/debuff/debuffs/reel_jam_debuff.gd"),
 ]
 
 enum Phase { SWING, GUARD, COOL }
@@ -84,11 +85,24 @@ func get_actions() -> Array[Action]:
 ## curse already on the reel either gains a level or gains a copy — harder hits
 ## versus more frequent ones, which are different problems. Only when nothing
 ## is escalatable does it reach for a fresh debuff.
+## How often a cool beat introduces a curse the player has not seen yet, when
+## there is one left to introduce. Not zero: Live Wire deepens forever, so a
+## rule that always preferred deepening would mean Reel Jam never appeared at
+## all whenever Live Wire happened to land first.
+const NEW_CURSE_CHANCE := 0.4
+
+
 func _apply_curse() -> void:
-	# Deepen what is already on the reel before reaching for anything new. A
-	# second debuff object for a curse the player already carries would leave
-	# two of them fighting over one level, and curse_level() only ever reads the
-	# first — so the extra copies would quietly deal the wrong damage.
+	if randf() < NEW_CURSE_CHANCE:
+		var fresh := _roll_curse()
+		if fresh != null:
+			Global.player.apply_debuff(fresh)
+			return
+
+	# Otherwise deepen what is already on the reel. A second debuff object for a
+	# curse the player already carries would leave two of them fighting over one
+	# level, and curse_level() only ever reads the first — so the extra copies
+	# would quietly deal the wrong damage.
 	var existing := _deepenable_curse()
 	if existing != null:
 		var upgrade := existing.can_upgrade()

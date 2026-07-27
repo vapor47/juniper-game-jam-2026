@@ -7,6 +7,7 @@ const ALL: Array = [
 	preload("res://run_effect/debuff/debuffs/live_wire_debuff.gd"),
 	preload("res://run_effect/debuff/debuffs/marked_card_debuff.gd"),
 	preload("res://run_effect/debuff/debuffs/cold_deck_debuff.gd"),
+	preload("res://run_effect/debuff/debuffs/reel_jam_debuff.gd"),
 ]
 
 
