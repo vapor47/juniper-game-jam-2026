@@ -1,7 +1,10 @@
 extends RefCounted
 class_name Symbol
 
-enum Rarity { COMMON, UNCOMMON, RARE }
+## JUNK is last so the existing ordinals are untouched. It exists so a symbol
+## that is worthless on its own can be rolled without competing for a slot in
+## the tier the good symbols come from.
+enum Rarity { COMMON, UNCOMMON, RARE, JUNK }
 
 ## When a symbol's on-appearance effect fires, if it has one.
 ##   NONE     — no board effect
