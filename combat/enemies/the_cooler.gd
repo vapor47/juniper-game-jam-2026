@@ -8,18 +8,26 @@ class_name TheCoolerData
 ## up on its own turn and stands through the player's next one, so the turn
 ## after being cursed is also the turn your attacks land in a wall.
 ##
-## Unlike the Pit Boss it does not escalate its numbers. Its clock is the strip:
-## every third turn adds a curse that lasts the rest of the fight, so by the
-## late game the player's own reel is working against them. That is a different
-## fight from a damage race, which is the reason to have both.
+## Its clock is mostly the strip: every third turn adds a curse that lasts the
+## rest of the fight, so by the late game the player's own reel is working
+## against them. That is a different fight from the Pit Boss damage race, which
+## is the reason to have both — so the numeric escalation is deliberately mild,
+## +2 per full cycle, just enough that a purely defensive player cannot sit
+## there forever while the curses do all the work.
+##
+## The guard does not escalate. It is not where the pressure comes from, and a
+## growing wall would eventually make the cool beat unanswerable.
 
 const SMALL_HIT: int = 8
 const BIG_HIT: int = 18
 const GUARD: int = 20
+## Added to both hits after each completed cycle.
+const ESCALATION: int = 2
 
 enum Phase { SMALL, BIG, COOL }
 
 var phase: Phase = Phase.SMALL
+var cycles_completed: int = 0
 
 
 func _init() -> void:
@@ -29,17 +37,23 @@ func _init() -> void:
 
 
 func _choose_intent() -> void:
+	var step := ESCALATION * cycles_completed
 	match phase:
 		Phase.SMALL:
-			intent = { "type": "attack", "value": SMALL_HIT }
-			custom_intent_str = "Testing the deck — %d" % SMALL_HIT
+			var small := SMALL_HIT + step
+			intent = { "type": "attack", "value": small }
+			custom_intent_str = "Testing the deck — %d" % small
 		Phase.BIG:
-			intent = { "type": "attack", "value": BIG_HIT }
-			custom_intent_str = "Calling it in — %d" % BIG_HIT
+			var big := BIG_HIT + step
+			intent = { "type": "attack", "value": big }
+			custom_intent_str = "Calling it in — %d" % big
 		Phase.COOL:
 			intent = { "type": "block", "value": GUARD }
 			custom_intent_str = "Cooling the machine — %d block" % GUARD
+
 	phase = ((phase + 1) % 3) as Phase
+	if phase == Phase.SMALL:
+		cycles_completed += 1
 
 
 ## The cool beat guards *and* curses. Both land on its own turn: the guard then
