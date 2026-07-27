@@ -67,7 +67,7 @@ static var REEL_JAM := _curse("Reel Jam", Symbol.Trigger.ON_SPIN)
 
 ## Both scale with the curse's level, which The Cooler raises as the fight runs.
 ## Damage per Live Wire showing, per spin, per level.
-const LIVE_WIRE_DAMAGE_PER_LEVEL := 1
+const LIVE_WIRE_DAMAGE_PER_LEVEL := 2
 ## Damage per Marked Card sitting on a line you played, per level.
 const MARKED_CARD_DAMAGE_PER_LEVEL := 3
 
