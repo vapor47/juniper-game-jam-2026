@@ -213,6 +213,8 @@ func _board_text(symbol: Symbol) -> String:
 	var when := "on lock" if symbol.trigger == Symbol.Trigger.ON_LOCK else "each spin"
 	if symbol == SymbolTable.RECYCLER:
 		return "%dg per junk symbol, %s" % [SymbolTable.RECYCLER_GOLD_PER_JUNK, when]
+	if symbol == SymbolTable.REEL_JAM:
+		return "freezes its column, %s" % when
 	if symbol == SymbolTable.LIVE_WIRE:
 		var per := SymbolTable.LIVE_WIRE_DAMAGE_PER_LEVEL \
 			* maxi(1, Global.player.curse_level(SymbolTable.LIVE_WIRE))

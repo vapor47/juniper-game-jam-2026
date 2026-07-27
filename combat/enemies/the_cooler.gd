@@ -27,6 +27,7 @@ const CURSES: Array = [
 	preload("res://run_effect/debuff/debuffs/live_wire_debuff.gd"),
 	preload("res://run_effect/debuff/debuffs/marked_card_debuff.gd"),
 	preload("res://run_effect/debuff/debuffs/cold_deck_debuff.gd"),
+	preload("res://run_effect/debuff/debuffs/reel_jam_debuff.gd"),
 ]
 
 enum Phase { SMALL, BIG, COOL }
@@ -75,7 +76,7 @@ func get_actions() -> Array[Action]:
 func _apply_curse() -> void:
 	var curses: Array[CurseSymbolDebuff] = []
 	for d: Debuff in Global.player.active_debuffs:
-		if d is CurseSymbolDebuff:
+		if d is CurseSymbolDebuff and (d as CurseSymbolDebuff).can_deepen():
 			curses.append(d)
 
 	if not curses.is_empty() and randf() < ESCALATE_CHANCE:

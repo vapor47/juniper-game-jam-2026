@@ -60,6 +60,11 @@ static var LIVE_WIRE := _curse("Live Wire", Symbol.Trigger.ON_SPIN)
 ## decision, so the best line of the turn can be the one carrying a price.
 static var MARKED_CARD := _curse("Marked Card", Symbol.Trigger.NONE)
 
+## Freezes whatever column it lands in. Fires on spin because that is when the
+## column locks up — it pays nothing, so BoardEffects ignores it and combat
+## reads the board for it directly.
+static var REEL_JAM := _curse("Reel Jam", Symbol.Trigger.ON_SPIN)
+
 ## Both scale with the curse's level, which The Cooler raises as the fight runs.
 ## Damage per Live Wire showing, per spin, per level.
 const LIVE_WIRE_DAMAGE_PER_LEVEL := 1

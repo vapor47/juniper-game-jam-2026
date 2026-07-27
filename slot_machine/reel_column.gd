@@ -137,6 +137,18 @@ func _refresh_hold_treatment() -> void:
 
 
 ## No-ops when held — held columns simply never get spin_to called (§5).
+## Frozen by a Reel Jam showing in this column. Distinct from `held`, which is
+## the player's own choice — a jam has to survive the player clicking at it, and
+## has to clear on its own next spin.
+var jammed: bool = false:
+	set(value):
+		jammed = value
+		if jammed:
+			held = true
+		if hold_button != null:
+			hold_button.disabled = hold_button.disabled or jammed
+
+
 func spin(target_stop: int) -> void:
 	if held:
 		return

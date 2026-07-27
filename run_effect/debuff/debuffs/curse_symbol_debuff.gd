@@ -38,6 +38,12 @@ func add_copy() -> void:
 	refresh_text()
 
 
+## Whether The Cooler may deepen this curse. Some effects are strong enough at
+## one copy that scaling them produces dead boards rather than harder ones.
+func can_deepen() -> bool:
+	return true
+
+
 func upgrade() -> void:
 	level += 1
 	refresh_text()

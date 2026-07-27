@@ -135,6 +135,7 @@ func _begin_player_turn() -> void:
 	_busy = false
 
 	for col: ReelColumn in slot_machine.reel_columns:
+		col.jammed = false
 		col.held = false
 
 	player_turn_started.emit()
@@ -170,9 +171,34 @@ func _spin_all() -> void:
 	if board.damage > 0:
 		spawn_popup("-%d HP from the board" % board.damage)
 
+	_apply_reel_jams()
+
 	_busy = false
 	_set_controls_enabled(true)
 	_refresh_paylines()
+
+
+## Freezes every column showing a Reel Jam, and clears the rest — a jam lasts
+## exactly until the next spin, so a column that shook one off is free again.
+##
+## Never all five. At one Jam stop that state is a 1-in-21,000 fluke, but a
+## board where every column is frozen makes the respin button cost tokens to do
+## nothing, and "rare" is not "acceptable" for a dead end.
+func _apply_reel_jams() -> void:
+	var jammed: Array[ReelColumn] = []
+	for col: ReelColumn in slot_machine.reel_columns:
+		col.jammed = false
+		var has_jam := false
+		for stop: Stop in col.reel.visible_stops():
+			if stop != null and stop.symbol == SymbolTable.REEL_JAM:
+				has_jam = true
+		if has_jam:
+			jammed.append(col)
+
+	if jammed.size() >= slot_machine.reel_columns.size():
+		jammed.pop_back()
+	for col: ReelColumn in jammed:
+		col.jammed = true
 
 
 func _set_controls_enabled(enabled: bool) -> void:
@@ -181,7 +207,7 @@ func _set_controls_enabled(enabled: bool) -> void:
 	# since selection is post-spin by design (§4).
 	var live := enabled and has_spun_this_turn
 	for col: ReelColumn in slot_machine.reel_columns:
-		col.hold_button.disabled = not live
+		col.hold_button.disabled = not live or col.jammed
 	slot_machine.lock_in_button.disabled = not live or selected_lines.is_empty()
 	slot_machine.lever.disabled = not live or Global.player.tokens < _next_spin_cost()
 	slot_machine.lever.text = "RESPIN (%d)" % _next_spin_cost()
