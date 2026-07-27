@@ -12,8 +12,9 @@ func _init() -> void:
 
 func on_resolution(ctx: ResolutionContext) -> void:
 	var player := ctx.player
+	# Every attack action, not just the first. Each scoring run is now its own
+	# Action (§4), so breaking after one multiplied a single run while the
+	# description promises total attack damage.
 	for action in ctx.actions:
-		print_debug(action.type)
 		if action.type == Action.Type.ATTACK:
-			action.value = ceil(action.value * (1.0 + (player.drunkenness / 100.0)))
-			break
+			action.value = ceili(action.value * (1.0 + (player.drunkenness / 100.0)))

@@ -45,6 +45,26 @@ exactly this: the block-vs-intent delta and marginal preview (§9), the pattern-
 description (§4), and the reel editor's coverage and dilution analysis (§6). Each is documented
 where it was cut. **Assume a readout you are about to add is one of these.**
 
+**Check every new symbol, modifier, souvenir and drink against the others.** The hook surface
+has grown orthogonal properties, and nothing about a symbol's flags tells you which hooks reach
+it. Before adding any of the four, walk this table:
+
+| Symbol property | What silently changes |
+|---|---|
+| `combos = false` | Skips the run-bonus curve **only**. `modify_stop_value` still applies, so every value effect is a multiplier on it. |
+| `payout` non-empty | Scored from its own table; `values[]` is never read, so *no* value modifier reaches it. |
+| `is_wild` | Contributes the adopted symbol's **base** value, not the modified one. |
+| `type == NONE` | Skipped by the run loop entirely, and by `_apply_result_totals`. |
+| `type` GOLD or TOKEN | `_apply_result_totals` matches only ATTACK/DEFEND/HEAL, so `modify_result_total` never fires. |
+| `trigger != NONE` | Pays off the board via BoardEffects, not off a line at all. |
+
+And for a new effect, ask which of those properties neuter it or amplify it. A modifier whose
+hook cannot reach a stop must say so in `can_apply` — otherwise it is a purchase that costs gold
+and does nothing, with no feedback. Adjacency means **along the payline**, not along the strip;
+strip adjacency is a static property the player can engineer once and stop thinking about.
+
+Each row above is a bug that shipped, found by audit rather than by play.
+
 **Build in one pass, following the §13 phase order.** The phases are internal ordering to reach a
 playable loop early; they do not gate on approval. Build straight through Phases 1–4.
 

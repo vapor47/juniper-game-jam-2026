@@ -22,6 +22,11 @@ var actions: Array[Action]
 var selected_stops: Array[Stop] = []
 var selected_count: int = 0
 
+## The line currently being scored, in column order. Set by PaylineScorer at
+## the top of score_line, because one context is shared across every line of a
+## resolution and "adjacent" has to mean adjacent *on this line*.
+var line_stops: Array[Stop] = []
+
 ## combo info, populated mid-resolution so HOOK B/D can read it
 var combo_symbols: Array[Symbol] = []   # symbols that comboed this resolution
 
@@ -53,11 +58,20 @@ func is_stop_in_combo(stop: Stop) -> bool:
 	return stop.symbol in combo_symbols
 
 
-func get_adjacent_stops(stop: Stop) -> Array[Stop]:
-	var i := Global.strip.find(stop)
-	if i == -1 or Global.strip.size() < 2:
-		return []
+## Neighbours of `stop` along the line being scored — the cells either side of
+## it on the payline path, not on the strip. A payline is a path, not a loop,
+## so the ends have one neighbour each.
+##
+## The same Stop can occupy more than one column, since all five columns are
+## windows into one shared strip, so every occurrence contributes its own
+## neighbours.
+func get_line_neighbors(stop: Stop) -> Array[Stop]:
 	var out: Array[Stop] = []
-	out.append(Global.strip[wrapi(i - 1, 0, Global.strip.size())])
-	out.append(Global.strip[wrapi(i + 1, 0, Global.strip.size())])
+	for i in line_stops.size():
+		if line_stops[i] != stop:
+			continue
+		if i > 0:
+			out.append(line_stops[i - 1])
+		if i + 1 < line_stops.size():
+			out.append(line_stops[i + 1])
 	return out

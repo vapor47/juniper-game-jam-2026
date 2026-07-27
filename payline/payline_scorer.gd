@@ -100,6 +100,9 @@ static func _active_effects() -> Array[RunEffect]:
 
 static func score_line(stops: Array[Stop], ctx: ResolutionContext = null) -> LineResult:
 	var context := ctx if ctx != null else ResolutionContext.preview(stops)
+	# Before any hook runs: adjacency hooks ask the context which cells sit
+	# beside them, and one context is reused across every line of a resolution.
+	context.line_stops = stops
 	var effects := _active_effects()
 
 	# Per-stop value first: stop modifiers, then run-wide effects (§ HOOK A).
