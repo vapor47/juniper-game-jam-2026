@@ -181,10 +181,25 @@ func _set_controls_enabled(enabled: bool) -> void:
 	slot_machine.payline_panel.set_interactive(live)
 
 
-## The opening spin is free and automatic, so the lever is always a respin:
-## the nth respin of a turn costs n (§5).
+## Cost of the nth respin in a turn. The opening spin is free and automatic, so
+## the lever is always a respin.
+##
+## Superlinear past the third. A flat +1 per respin let a hoarder convert banked
+## tokens into six looks in one turn, which is searching for a board rather than
+## gambling on one (§5). The first three are unchanged, because those are the
+## only ones a player without Token stops ever reaches: baseline income is one
+## token a turn, so this ladder is build-facing content and steepening its early
+## rungs would only tax the build that pays for it.
+const RESPIN_COSTS: Array[int] = [1, 2, 3, 5, 8]
+## Each respin past the table costs this much more than the last.
+const RESPIN_COST_STEP: int = 3
+
+
 func _next_spin_cost() -> int:
-	return respins_this_turn + 1
+	if respins_this_turn < RESPIN_COSTS.size():
+		return RESPIN_COSTS[respins_this_turn]
+	var beyond := respins_this_turn - RESPIN_COSTS.size() + 1
+	return RESPIN_COSTS[-1] + RESPIN_COST_STEP * beyond
 
 
 ## ---------------- Line selection (post-spin, perfect information) ---------------- ##

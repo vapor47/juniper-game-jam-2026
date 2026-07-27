@@ -364,6 +364,21 @@ income also gates respins.
 escalation curve reads cheap to a 3-line player. Acceptable (it's the reward for buying in);
 if it needs a lever, scale respin cost by lines purchased rather than raising the base.
 
+### Respin pricing
+
+**As implemented:** the nth respin of a turn costs **1, 2, 3, 5, 8**, then +3 for each one past
+that. The opening spin is free and automatic, so the lever is always a respin.
+
+Superlinear past the third, and only past the third. A flat +1 per respin let a player banking
+tokens buy six looks in one turn, which is searching for a board rather than gambling on one.
+The first three rungs are deliberately unchanged because they are the only ones most players
+reach: measured token income is **1.0/turn** with no Token stops, against **12.2/turn** with
+three gilded ones. This ladder is build-facing content, so steepening its early rungs would tax
+the build that pays for it while changing nothing for anyone else.
+
+Note that no cost curve fixes a 12x income swing. If respins ever need a harder brake, that
+ratio is the thing to attack, not the price.
+
 ### Gold
 
 Two sources, deliberately: a flat payout for winning, and whatever the strip pays out.
