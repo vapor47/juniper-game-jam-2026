@@ -328,12 +328,6 @@ func _on_lock_in_pressed() -> void:
 	var board := BoardEffects.apply(slot_machine.reel_columns, Symbol.Trigger.ON_LOCK)
 	if board.gold > 0:
 		spawn_popup("+%dg from the board" % board.gold)
-	# Applied before the actions are performed, not after: a penalty that landed
-	# afterwards would be damage already dealt.
-	if board.attack_penalty > 0:
-		_drain_attack(actions, board.attack_penalty)
-		spawn_popup("-%d attack from the board" % board.attack_penalty)
-
 	await _perform_actions(actions, Global.player, enemies[0])
 
 	var encore: TheEncoreDrink = null
@@ -389,21 +383,6 @@ func _perform_actions(actions: Array[Action], source: CombatantData = Global.pla
 
 		_display_action(action)
 		await get_tree().create_timer(1.3).timeout
-
-
-## Takes a flat penalty off this turn's attack, spending it across the attack
-## actions in order. Never below zero on any one action, and any remainder past
-## the last attack is simply lost — the board cannot heal the enemy.
-func _drain_attack(actions: Array[Action], penalty: int) -> void:
-	var left := penalty
-	for action: Action in actions:
-		if left <= 0:
-			return
-		if action.type != Action.Type.ATTACK:
-			continue
-		var taken := mini(action.value, left)
-		action.value -= taken
-		left -= taken
 
 
 func _display_action(action: Action) -> void:

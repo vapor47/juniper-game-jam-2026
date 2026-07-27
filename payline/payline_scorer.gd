@@ -51,6 +51,10 @@ class LineResult extends RefCounted:
 	var heal: int = 0
 	var gold: int = 0
 	var tokens: int = 0
+	## Damage the player takes for having played this line — a Marked Card
+	## sitting on it. Reported by scoring so the hover preview can show the
+	## price *before* committing, but only dealt at lock-in.
+	var self_damage: int = 0
 	## Set when the line came up all Wilds. Combat uses it to mark the moment;
 	## nothing announces it beforehand.
 	var wild_jackpot: bool = false
@@ -120,6 +124,17 @@ static func score_line(stops: Array[Stop], ctx: ResolutionContext = null) -> Lin
 	if _is_all_wild(stops):
 		_award_wild_jackpot(result)
 		return result
+
+	# Curses that charge for the line rather than the board. Counted per cell,
+	# so two on one line cost twice, and a cell shared by two played lines
+	# charges into both — the same double-dip that makes shared cells pay twice
+	# (§4) cuts both ways.
+	var marked_level := context.player.curse_level(SymbolTable.MARKED_CARD) \
+		if context.player != null else 0
+	if marked_level > 0:
+		for stop: Stop in stops:
+			if stop.symbol == SymbolTable.MARKED_CARD:
+				result.self_damage += SymbolTable.MARKED_CARD_DAMAGE_PER_LEVEL * marked_level
 
 	for span: Array in _runs_in(stops):
 		var symbol: Symbol = span[0]
@@ -285,6 +300,10 @@ static func _apply_result_totals(result: LineResult, stops: Array[Stop],
 ## modifiers act on having been played (§ HOOK D).
 static func apply_side_effects(result: LineResult, stops: Array[Stop],
 		ctx: ResolutionContext) -> void:
+	# Dealt here rather than in score_line: the panel re-scores every line on
+	# every hover, so charging at score time would bleed the player for reading.
+	if result.self_damage > 0 and ctx.player != null:
+		ctx.player.take_true_damage(result.self_damage)
 	for run: Run in result.matched_runs():
 		Global.player.broadcast("on_combo_landed", [run.symbol, ctx])
 	for stop: Stop in stops:

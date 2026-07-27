@@ -3,16 +3,19 @@ class_name CurseSymbolDebuff
 ## Base for debuffs that jam a symbol onto the player's reel.
 ##
 ## The strip is shared by reference with every column, so inserting is enough
-## for all five to see it. Removal has to find the exact Stop that was added
-## rather than the first matching symbol — the player may have been cursed more
-## than once, and removing someone else's copy would leave this one stranded.
+## for all five to see it. Removal finds the exact Stops this debuff added
+## rather than the first matching symbol — the same curse can be applied twice,
+## and removing someone else's copy would strand this one on the reel forever.
 ##
-## Inserted at a random position because order is a design layer (§6): dropping
-## every curse at the end would make them predictably adjacent, and adjacency
-## decides what can share a column.
+## Two independent ways to get worse, and The Cooler picks between them: `level`
+## makes each copy hit harder, extra copies make it hit more often. They feel
+## different — one raises the cost of a bad board, the other raises how often
+## you get one.
 
 var symbol: Symbol
-var _stop: Stop
+var level: int = 1
+
+var _stops: Array[Stop] = []
 
 
 func _init(p_symbol: Symbol) -> void:
@@ -22,15 +25,40 @@ func _init(p_symbol: Symbol) -> void:
 
 
 func on_acquired(_player: PlayerData) -> void:
-	_stop = Stop.new(symbol)
-	var at := randi() % maxi(1, Global.strip.size() + 1)
-	Global.strip.insert(at, _stop)
+	add_copy()
+
+
+## One more of this symbol on the reel, at a random position: order is a design
+## layer (§6), and dropping every curse at the end would make them predictably
+## adjacent when adjacency is what decides who can share a column.
+func add_copy() -> void:
+	var stop := Stop.new(symbol)
+	_stops.append(stop)
+	Global.strip.insert(randi() % maxi(1, Global.strip.size() + 1), stop)
+	refresh_text()
+
+
+func upgrade() -> void:
+	level += 1
+	refresh_text()
+
+
+func copies() -> int:
+	return _stops.size()
+
+
+func refresh_text() -> void:
+	description = describe()
+
+
+## Overridden per curse.
+func describe() -> String:
+	return "%d on your reel, level %d" % [copies(), level]
 
 
 func on_removed(_player: PlayerData) -> void:
-	if _stop == null:
-		return
-	var i := Global.strip.find(_stop)
-	if i != -1:
-		Global.strip.remove_at(i)
-	_stop = null
+	for stop: Stop in _stops:
+		var i := Global.strip.find(stop)
+		if i != -1:
+			Global.strip.remove_at(i)
+	_stops.clear()

@@ -55,13 +55,16 @@ static var TOKEN := _no_combo("Token", Action.Type.TOKEN, 1, Symbol.Rarity.RARE)
 ## Live Wire fires every spin, including the free opening one — it is a flat
 ## tax first and a respin deterrent second.
 static var LIVE_WIRE := _curse("Live Wire", Symbol.Trigger.ON_SPIN)
-## Marked Card sits there looking harmless until you commit the board.
-static var MARKED_CARD := _curse("Marked Card", Symbol.Trigger.ON_LOCK)
+## Marked Card has no board trigger at all: it costs only when it sits on a line
+## you actually play. That is the whole point of it — the cost lands on the
+## decision, so the best line of the turn can be the one carrying a price.
+static var MARKED_CARD := _curse("Marked Card", Symbol.Trigger.NONE)
 
-## Damage per Live Wire showing, per spin.
-const LIVE_WIRE_DAMAGE := 1
-## Attack lost per Marked Card showing, at lock-in.
-const MARKED_CARD_ATTACK_PENALTY := 3
+## Both scale with the curse's level, which The Cooler raises as the fight runs.
+## Damage per Live Wire showing, per spin, per level.
+const LIVE_WIRE_DAMAGE_PER_LEVEL := 1
+## Damage per Marked Card sitting on a line you played, per level.
+const MARKED_CARD_DAMAGE_PER_LEVEL := 3
 
 
 ## Pays for the junk on the board. Two symbols that are worthless alone and

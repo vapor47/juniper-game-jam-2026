@@ -3,5 +3,11 @@ class_name MarkedCardDebuff
 
 func _init() -> void:
 	super(SymbolTable.MARKED_CARD)
-	description = "A Marked Card joins your reel — -%d attack per copy on lock in" \
-		% SymbolTable.MARKED_CARD_ATTACK_PENALTY
+	refresh_text()
+
+func damage_per_copy() -> int:
+	return SymbolTable.MARKED_CARD_DAMAGE_PER_LEVEL * level
+
+func describe() -> String:
+	return "%d damage per copy on a line you play (%d on your reel)" \
+		% [damage_per_copy(), copies()]

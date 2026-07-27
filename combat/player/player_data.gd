@@ -133,6 +133,17 @@ func _sweep_expired_drinks() -> void:
 			still_active.append(d)
 	active_drinks = still_active
 
+## What level a curse is running at, or 0 if the player is not carrying it.
+## The level lives on the debuff rather than the symbol, because Symbols are
+## shared singletons — writing a level onto one would change it for every other
+## reader of the table.
+func curse_level(symbol: Symbol) -> int:
+	for d: Debuff in active_debuffs:
+		if d is CurseSymbolDebuff and (d as CurseSymbolDebuff).symbol == symbol:
+			return (d as CurseSymbolDebuff).level
+	return 0
+
+
 func apply_debuff(debuff: Debuff) -> void:
 	print_debug("Debuff Applied! (%s)" % debuff.display_name)
 	Toast.show_debuff(debuff.display_name, debuff.description, "", "\"That one felt a little strong...\"")

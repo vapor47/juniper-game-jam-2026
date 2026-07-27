@@ -3,5 +3,11 @@ class_name LiveWireDebuff
 
 func _init() -> void:
 	super(SymbolTable.LIVE_WIRE)
-	description = "A Live Wire joins your reel — %d damage per copy, every spin" \
-		% SymbolTable.LIVE_WIRE_DAMAGE
+	refresh_text()
+
+func damage_per_copy() -> int:
+	return SymbolTable.LIVE_WIRE_DAMAGE_PER_LEVEL * level
+
+func describe() -> String:
+	return "%d damage per copy showing, every spin (%d on your reel)" \
+		% [damage_per_copy(), copies()]

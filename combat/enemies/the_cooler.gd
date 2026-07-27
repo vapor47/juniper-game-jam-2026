@@ -18,13 +18,20 @@ class_name TheCoolerData
 ## The guard does not escalate. It is not where the pressure comes from, and a
 ## growing wall would eventually make the cool beat unanswerable.
 
-const SMALL_HIT: int = 8
-const BIG_HIT: int = 18
+const SMALL_MIN: int = 5
+const SMALL_MAX: int = 10
+const BIG_MIN: int = 15
+const BIG_MAX: int = 20
 const GUARD: int = 20
 ## Added to both hits after each completed cycle.
 const ESCALATION: int = 2
 
 enum Phase { SMALL, BIG, COOL }
+
+## How often the cool beat deepens an existing curse rather than adding a new
+## kind. Weighted toward deepening: three different curses is confusing, one
+## curse getting genuinely dangerous is a clock.
+const ESCALATE_CHANCE := 0.65
 
 var phase: Phase = Phase.SMALL
 var cycles_completed: int = 0
@@ -40,11 +47,11 @@ func _choose_intent() -> void:
 	var step := ESCALATION * cycles_completed
 	match phase:
 		Phase.SMALL:
-			var small := SMALL_HIT + step
+			var small := randi_range(SMALL_MIN, SMALL_MAX) + step
 			intent = { "type": "attack", "value": small }
 			custom_intent_str = "Testing the deck — %d" % small
 		Phase.BIG:
-			var big := BIG_HIT + step
+			var big := randi_range(BIG_MIN, BIG_MAX) + step
 			intent = { "type": "attack", "value": big }
 			custom_intent_str = "Calling it in — %d" % big
 		Phase.COOL:
@@ -67,7 +74,28 @@ func get_actions() -> Array[Action]:
 		"The Cooler guards for %d" % intent.get("value"))]
 
 
+## The cool beat always makes things worse, but not always in the same way. A
+## curse already on the reel either gains a level or gains a copy — harder hits
+## versus more frequent ones, which are different problems. Only when nothing
+## is escalatable does it reach for a fresh debuff.
 func _apply_curse() -> void:
+	var curses: Array[CurseSymbolDebuff] = []
+	for d: Debuff in Global.player.active_debuffs:
+		if d is CurseSymbolDebuff:
+			curses.append(d)
+
+	if not curses.is_empty() and randf() < ESCALATE_CHANCE:
+		var curse: CurseSymbolDebuff = curses.pick_random()
+		if randf() < 0.5:
+			curse.upgrade()
+			Toast.show_debuff(curse.display_name, curse.description, "",
+				"\"It bites harder now.\"")
+		else:
+			curse.add_copy()
+			Toast.show_debuff(curse.display_name, curse.description, "",
+				"\"Another one finds its way in.\"")
+		return
+
 	var debuff := DebuffPool.get_random_debuff(Global.player)
 	if debuff != null:
 		Global.player.apply_debuff(debuff)

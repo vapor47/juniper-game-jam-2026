@@ -94,7 +94,7 @@ func build_legend() -> void:
 		if symbol.trigger != Symbol.Trigger.NONE:
 			board_symbols.append(symbol)
 		elif symbol.type != Action.Type.NONE or symbol.is_wild \
-				or not symbol.payout.is_empty():
+				or symbol.is_curse or not symbol.payout.is_empty():
 			line_symbols.append(symbol)
 
 	var root := VBoxContainer.new()
@@ -163,6 +163,12 @@ func _run_table(symbols: Array[Symbol]) -> GridContainer:
 ## own — it takes the value of whatever it lands beside — so its row says that
 ## rather than inventing numbers for it.
 func _payout_cell(symbol: Symbol, n: int) -> Control:
+	# A line curse charges per cell, so n of them on one line costs n times.
+	if symbol == SymbolTable.MARKED_CARD:
+		var per := SymbolTable.MARKED_CARD_DAMAGE_PER_LEVEL \
+			* maxi(1, Global.player.curse_level(SymbolTable.MARKED_CARD))
+		return _cell("-%d" % (per * n), CURSE_COLOR, HORIZONTAL_ALIGNMENT_CENTER)
+
 	if symbol.is_wild:
 		return _cell("=" if n == MIN_RUN_COLUMN else "", DEAD_COLOR,
 			HORIZONTAL_ALIGNMENT_CENTER)
@@ -208,9 +214,9 @@ func _board_text(symbol: Symbol) -> String:
 	if symbol == SymbolTable.RECYCLER:
 		return "%dg per junk symbol, %s" % [SymbolTable.RECYCLER_GOLD_PER_JUNK, when]
 	if symbol == SymbolTable.LIVE_WIRE:
-		return "%d damage per copy, %s" % [SymbolTable.LIVE_WIRE_DAMAGE, when]
-	if symbol == SymbolTable.MARKED_CARD:
-		return "-%d attack per copy, %s" % [SymbolTable.MARKED_CARD_ATTACK_PENALTY, when]
+		var per := SymbolTable.LIVE_WIRE_DAMAGE_PER_LEVEL \
+			* maxi(1, Global.player.curse_level(SymbolTable.LIVE_WIRE))
+		return "%d damage per copy, %s" % [per, when]
 	var per := SymbolTable.CHIP_GOLD_PER_COPY if symbol == SymbolTable.CHIP \
 		else SymbolTable.PENNY_GOLD_PER_COPY
 	return "%dg per copy, %s" % [per, when]

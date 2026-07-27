@@ -39,21 +39,19 @@ static func count_junk(symbols: Array[Symbol]) -> int:
 	return n
 
 
-## What a board paid, beyond gold. Curses cost damage and output, so a single
-## int is no longer enough to report a trigger's outcome.
+## What a board paid, beyond gold. Live Wire costs health, so a single int is no
+## longer enough to report a trigger's outcome.
 class Result extends RefCounted:
 	var gold: int = 0
 	var damage: int = 0
-	var attack_penalty: int = 0
 
 	func is_empty() -> bool:
-		return gold == 0 and damage == 0 and attack_penalty == 0
+		return gold == 0 and damage == 0
 
 
-## Applies everything that pays for merely being on the board. Grants gold and
-## deals curse damage immediately; the attack penalty is returned for the
-## caller to take off this turn's actions, since it has to land before they are
-## performed rather than after.
+## Applies everything that pays for merely being on the board. Marked Card is
+## deliberately absent: it charges for the line it sits on, not for showing up,
+## so PaylineScorer owns it.
 static func apply(columns: Array[ReelColumn], trigger: Symbol.Trigger) -> Result:
 	var result := Result.new()
 	if Global.player == null:
@@ -65,8 +63,10 @@ static func apply(columns: Array[ReelColumn], trigger: Symbol.Trigger) -> Result
 	if trigger == Symbol.Trigger.ON_SPIN:
 		result.gold += _count(symbols, SymbolTable.PENNY) * SymbolTable.PENNY_GOLD_PER_COPY
 		# Every spin, the free opening one included: a flat tax first, a respin
-		# deterrent second.
-		result.damage += _count(symbols, SymbolTable.LIVE_WIRE) * SymbolTable.LIVE_WIRE_DAMAGE
+		# deterrent second. Scales with the curse's level.
+		result.damage += _count(symbols, SymbolTable.LIVE_WIRE) \
+			* SymbolTable.LIVE_WIRE_DAMAGE_PER_LEVEL \
+			* Global.player.curse_level(SymbolTable.LIVE_WIRE)
 	elif trigger == Symbol.Trigger.ON_LOCK:
 		result.gold += _count(symbols, SymbolTable.CHIP) * SymbolTable.CHIP_GOLD_PER_COPY
 		# Every Recycler pays for every junk symbol, so the pair scales on both
@@ -74,8 +74,6 @@ static func apply(columns: Array[ReelColumn], trigger: Symbol.Trigger) -> Result
 		# that respinning at it would farm freely.
 		result.gold += _count(symbols, SymbolTable.RECYCLER) * junk \
 			* SymbolTable.RECYCLER_GOLD_PER_JUNK
-		result.attack_penalty += _count(symbols, SymbolTable.MARKED_CARD) \
-			* SymbolTable.MARKED_CARD_ATTACK_PENALTY
 
 	if result.gold > 0:
 		Global.player.gold += result.gold
