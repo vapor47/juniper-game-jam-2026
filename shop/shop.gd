@@ -6,6 +6,7 @@ class_name Shop
 @onready var stops_container := %StopsContainer
 @onready var modifiers_container := %ModifiersContainer
 @onready var remove_stop_container := %RemoveStopContainer
+@onready var blank_container := %BlankContainer
 @onready var souvenirs_container := %SouvenirsContainer
 @onready var drinks_container := %DrinksContainer
 
@@ -134,6 +135,7 @@ func _populate_machine_modifications() -> void:
 	_populate_stops()
 	_populate_modifiers()
 	_populate_remove_stop()
+	_populate_blank()
 
 
 func _populate_modifiers() -> void:
@@ -167,6 +169,13 @@ func _get_stops_for_sale(num_stops: int = 6) -> Array[ShopItemData]:
 			func(sym: Symbol) -> int: return sym.rarity):
 		items.append(StopShopItemData.create(symbol))
 	return items
+
+
+## Always on the shelf, like the remove service and for the same reason: these
+## are the two junk verbs, and a build that wants several blanks cannot depend
+## on a rolled offer surfacing them.
+func _populate_blank() -> void:
+	_populate_container(blank_container, [StopShopItemData.create(SymbolTable.BLANK)])
 
 
 func _populate_remove_stop() -> void:

@@ -24,10 +24,10 @@ static var MED_BLK := _make("Med Blk", Action.Type.DEFEND, 4, Symbol.Rarity.COMM
 static var HEAVY_BLK := _make("Heavy Blk", Action.Type.DEFEND, 8, Symbol.Rarity.UNCOMMON,
 		preload("res://assets/icons/defend/heavy_defend_icon.svg"))
 static var HEAL := _make("Heal", Action.Type.HEAL, 4, Symbol.Rarity.UNCOMMON)
-## RARE only to keep it off the shelf, not because it is powerful. It is cheap
-## and useless on its own; it earns its slot only next to something that pays
-## for junk.
-static var BLANK := _make("Blank", Action.Type.NONE, 0, Symbol.Rarity.RARE)
+## Sold from a fixed slot rather than rolled, so its rarity never comes up.
+## Still the thing you first learn to remove; it becomes a resource only next
+## to something that pays for junk.
+static var BLANK := _make("Blank", Action.Type.NONE, 0, Symbol.Rarity.COMMON)
 
 # -------------------------------------------------------------- shop only
 
@@ -161,16 +161,17 @@ static func price_of(symbol: Symbol) -> int:
 	return PRICES.get(symbol, 60)
 
 
-## Everything the shop can sell. Blank is in here now, cheap but RARE: it is
-## still the thing you learn to remove, and only becomes a resource once you own
-## something that pays for junk. Rare so a useless symbol does not crowd the
-## shelf — note this does dilute the rare tier the good symbols draw from.
+## The weighted stop pool. Blank is deliberately absent: it is sold from its own
+## fixed slot instead (§6), so it neither eats one of the rolled offers nor
+## dilutes the rare tier the good symbols draw from. Being always available is
+## also what makes a junk build possible — wanting five blanks is not a plan if
+## they surface one visit in eight.
 static func purchasable() -> Array[Symbol]:
 	return [
 		LIGHT_ATK, MED_ATK, HEAVY_ATK, MEGA_ATK,
 		LIGHT_BLK, MED_BLK, HEAVY_BLK, HEAL,
 		MEGA_BLK, WILD, COIN, PENNY, TOKEN, CHIP, LUCKY_SEVEN,
-		RECYCLER, BLANK,
+		RECYCLER,
 	]
 
 
