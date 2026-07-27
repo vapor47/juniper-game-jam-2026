@@ -29,6 +29,7 @@ const TALLY_FONT_SIZE := 20
 
 var _row: HBoxContainer
 var _tally: GridContainer
+var _scroll: ScrollContainer
 
 
 func _ready() -> void:
@@ -38,6 +39,7 @@ func _ready() -> void:
 	add_child(margin)
 
 	var scroll := ScrollContainer.new()
+	_scroll = scroll
 	scroll.custom_minimum_size = VIEW_SIZE
 	scroll.horizontal_scroll_mode = ScrollContainer.SCROLL_MODE_AUTO
 	scroll.vertical_scroll_mode = ScrollContainer.SCROLL_MODE_DISABLED
@@ -99,6 +101,15 @@ func _refresh_tally() -> void:
 		label.add_theme_font_size_override("font_size", TALLY_FONT_SIZE)
 		label.add_theme_color_override("font_color", SymbolCell.color_for(symbol).lightened(0.55))
 		_tally.add_child(label)
+
+
+## Middle of the strip row, in this panel's local space. The tally hangs below
+## it, so centring the whole panel would push the strip above the screen's
+## middle — the strip is the thing being looked at, so it is what gets centred.
+func strip_centre_y() -> float:
+	if _scroll == null:
+		return size.y * 0.5
+	return _scroll.global_position.y + _scroll.size.y * 0.5 - global_position.y
 
 
 ## Same colour and headline the board and the paytable use, so a tile here is

@@ -132,13 +132,13 @@ func _build_strip_overlay() -> void:
 			_strip_toggle.button_pressed = false)
 	_strip_overlay.add_child(shade)
 
-	var center := CenterContainer.new()
-	center.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
-	center.mouse_filter = Control.MOUSE_FILTER_IGNORE
-	_strip_overlay.add_child(center)
-
+	# Placed by hand rather than dropped in a CenterContainer: the panel also
+	# carries the tally, so centring the panel would sit the strip above the
+	# middle of the screen. See _place_preview.
 	_strip_view = ReelPreview.new()
-	center.add_child(_strip_view)
+	_strip_overlay.add_child(_strip_view)
+	_strip_view.resized.connect(_place_preview)
+	get_viewport().size_changed.connect(_place_preview)
 
 
 ## Esc closes the strip before anything else gets to see it. PauseMenu also
@@ -159,6 +159,19 @@ func _on_strip_toggled(pressed: bool) -> void:
 	if pressed:
 		_strip_view.refresh()
 	_strip_overlay.visible = pressed
+	if pressed:
+		_place_preview.call_deferred()
+
+
+## Horizontally centred, and vertically centred on the *strip row* rather than
+## on the panel — the tally below it would otherwise push the strip high.
+func _place_preview() -> void:
+	if not is_instance_valid(_strip_view) or not _strip_overlay.visible:
+		return
+	var screen := get_viewport().get_visible_rect().size
+	_strip_view.global_position = Vector2(
+		(screen.x - _strip_view.size.x) * 0.5,
+		screen.y * 0.5 - _strip_view.strip_centre_y())
 
 
 func _refresh_gold(amount: int) -> void:
