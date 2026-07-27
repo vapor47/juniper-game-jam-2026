@@ -1,4 +1,7 @@
 extends ShopItemData
+## "Stop" is the position on the reel and "Symbol" is what is printed there — a
+## real distinction in the code and noise to a player, who sees one thing. All
+## player-facing strings say symbol; the classes keep the precise names.
 class_name RemoveStopShopItemData
 ## Removal is the strongest verb and stays a separate service — it isn't
 ## buying a symbol (§6). It concentrates the distribution *and* shortens the
@@ -14,8 +17,8 @@ func requires_flow() -> bool:
 
 static func create() -> RemoveStopShopItemData:
 	var item := RemoveStopShopItemData.new()
-	item.display_name = "Remove a Stop"
+	item.display_name = "Remove a Symbol"
 	item.resource_name = item.display_name
 	item.price = BASE_REMOVE_PRICE
-	item.description = "Permanently removes one stop from the reel"
+	item.description = "Permanently removes one symbol from the reel"
 	return item

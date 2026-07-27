@@ -18,14 +18,14 @@ class_name ReelPreview
 ## says nothing about its next one — a marker would duplicate what the three
 ## visible symbols already show.
 
-const STOP_SIZE := Vector2(64, 64)
-const VIEW_SIZE := Vector2(980, 108)
+const STOP_SIZE := Vector2(96, 96)
+const VIEW_SIZE := Vector2(1470, 162)
 const MOD_BORDER := Color(1, 0.85, 0.3, 0.9)
 ## The stop after the last one is the first one. Repeating it, dimmed, states
 ## the strip is circular without a sentence saying so.
 const WRAP_ALPHA := 0.35
 const TALLY_COLUMNS := 4
-const TALLY_FONT_SIZE := 13
+const TALLY_FONT_SIZE := 20
 
 var _row: HBoxContainer
 var _tally: GridContainer
@@ -43,7 +43,7 @@ func _ready() -> void:
 	scroll.vertical_scroll_mode = ScrollContainer.SCROLL_MODE_DISABLED
 
 	_row = HBoxContainer.new()
-	_row.add_theme_constant_override("separation", 4)
+	_row.add_theme_constant_override("separation", 6)
 	scroll.add_child(_row)
 
 	var column := VBoxContainer.new()
@@ -56,6 +56,7 @@ func _ready() -> void:
 	# genuinely hard to count off a 20-tile row.
 	_tally = GridContainer.new()
 	_tally.columns = TALLY_COLUMNS
+	_tally.size_flags_horizontal = Control.SIZE_SHRINK_CENTER
 	_tally.add_theme_constant_override("h_separation", 22)
 	_tally.add_theme_constant_override("v_separation", 2)
 	column.add_child(_tally)
@@ -123,9 +124,9 @@ func _tile(stop: Stop, number: int, alpha: float = 1.0) -> Control:
 	vbox.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	panel.add_child(vbox)
 
-	vbox.add_child(_label(str(number), 10, Color(1, 1, 1, 0.45 * alpha)))
-	vbox.add_child(_label(SymbolCell.headline(stop.symbol), 20, Color(1, 1, 1, alpha)))
-	vbox.add_child(_label(stop.symbol.symbol_name, 9, Color(1, 1, 1, 0.8 * alpha)))
+	vbox.add_child(_label(str(number), 15, Color(1, 1, 1, 0.45 * alpha)))
+	vbox.add_child(_label(SymbolCell.headline(stop.symbol), 30, Color(1, 1, 1, alpha)))
+	vbox.add_child(_label(stop.symbol.symbol_name, 14, Color(1, 1, 1, 0.8 * alpha)))
 
 	var notes: Array[String] = []
 	for m: StopModifier in stop.modifiers:

@@ -19,7 +19,7 @@ static func create(p_symbol: Symbol) -> StopShopItemData:
 	item.resource_name = item.display_name
 	item.price = SymbolTable.price_of(p_symbol)
 	item.icon = p_symbol.icon
-	item.description = "Adds a %s stop (%s)" % [p_symbol.symbol_name, _blurb(p_symbol)]
+	item.description = "Adds a %s symbol (%s)" % [p_symbol.symbol_name, _blurb(p_symbol)]
 	return item
 
 

@@ -71,7 +71,7 @@ func _build_ui() -> void:
 		Mode.MODIFY:
 			_title.text = "Attach %s" % modifier.display_name
 		_:
-			_title.text = "Remove a stop"
+			_title.text = "Remove a symbol"
 	vbox.add_child(_title)
 
 	var scroll := ScrollContainer.new()
@@ -144,7 +144,7 @@ func _build_stop(index: int) -> Control:
 			var allowed := modifier.can_apply(stop)
 			button.disabled = not allowed
 			if not allowed:
-				button.tooltip_text = "%s can't go on this stop" % modifier.display_name
+				button.tooltip_text = "%s can't go on this symbol" % modifier.display_name
 			button.pressed.connect(func() -> void: _commit_modifier(index))
 		_:
 			var can_remove := Global.strip.size() > Reel.POOL_SIZE
