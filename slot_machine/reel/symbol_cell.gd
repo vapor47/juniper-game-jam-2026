@@ -101,7 +101,7 @@ static func color_for(symbol: Symbol) -> Color:
 		return Color(0.42, 0.2, 0.5)
 
 	if symbol.is_curse:
-		return Color(0.34, 0.10, 0.12)
+		return Color(0.33, 0.09, 0.45)
 
 	var base := Color(0.15, 0.15, 0.15)
 	match symbol.type:

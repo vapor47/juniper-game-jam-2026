@@ -29,7 +29,9 @@ func take_damage(amount: int) -> int:
 	block = max(0, block - amount)
 	health = max(0, health - actual)
 
-	reset_block()
+	# No reset here. Block is spent by what it absorbs and expires on the turn
+	# boundary (§10) — wiping it after the first hit meant a 30-block guard
+	# stopped one swing of any size and then nothing, however much was left.
 
 	if health <= 0:
 		is_dead = true

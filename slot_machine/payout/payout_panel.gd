@@ -33,7 +33,7 @@ const HEADER_COLOR := Color(0.62, 0.62, 0.66)
 const VALUE_COLOR := Color(0.92, 0.92, 0.92)
 const DEAD_COLOR := Color(0.42, 0.42, 0.45)
 const GOLD_COLOR := Color(0.95, 0.82, 0.35)
-const CURSE_COLOR := Color(0.92, 0.45, 0.42)
+const CURSE_COLOR := Color(0.78, 0.55, 0.96)
 
 @onready var payout_container: MarginContainer = $PayoutContainer
 
