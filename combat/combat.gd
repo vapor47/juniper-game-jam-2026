@@ -298,7 +298,8 @@ func _on_lock_in_pressed() -> void:
 		stops.append_array(PaylineEvaluator.stops_for(line, slot_machine.reel_columns))
 
 	var res_context := ResolutionContext.build(
-			Global.player, enemies, respins_this_turn == 0, stops, turn_context)
+			Global.player, enemies, respins_this_turn == 0, stops, turn_context,
+			BoardEffects.visible_symbols(slot_machine.reel_columns))
 
 	# Every purchased line scores independently and they sum — a cell sitting on
 	# two lines pays into both (double-dip, §4). One Action per matched run,

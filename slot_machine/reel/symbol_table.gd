@@ -24,7 +24,10 @@ static var MED_BLK := _make("Med Blk", Action.Type.DEFEND, 4, Symbol.Rarity.COMM
 static var HEAVY_BLK := _make("Heavy Blk", Action.Type.DEFEND, 8, Symbol.Rarity.UNCOMMON,
 		preload("res://assets/icons/defend/heavy_defend_icon.svg"))
 static var HEAL := _make("Heal", Action.Type.HEAL, 4, Symbol.Rarity.UNCOMMON)
-static var BLANK := _make("Blank", Action.Type.NONE, 0, Symbol.Rarity.COMMON)
+## RARE only to keep it off the shelf, not because it is powerful. It is cheap
+## and useless on its own; it earns its slot only next to something that pays
+## for junk.
+static var BLANK := _make("Blank", Action.Type.NONE, 0, Symbol.Rarity.RARE)
 
 # -------------------------------------------------------------- shop only
 
@@ -46,6 +49,11 @@ static var TOKEN := _no_combo("Token", Action.Type.TOKEN, 1, Symbol.Rarity.RARE)
 
 ## Dead on a payline, pays only for being on the board. You want it visible and
 ## off your lines, which is the whole point of it.
+## Pays for the junk on the board. Two symbols that are worthless alone and
+## worth something together — and both cost strip space, which is the price.
+static var RECYCLER := _board("Recycler", Action.Type.NONE, 0, Symbol.Rarity.UNCOMMON,
+	Symbol.Trigger.ON_LOCK)
+
 static var CHIP := _board("Chip", Action.Type.NONE, 0, Symbol.Rarity.COMMON, Symbol.Trigger.ON_LOCK)
 
 ## Pays only as three or more in a row on a played line, like a slot line.
@@ -53,6 +61,11 @@ static var CHIP := _board("Chip", Action.Type.NONE, 0, Symbol.Rarity.COMMON, Sym
 ## Wild can stand in for one of the three.
 static var LUCKY_SEVEN := _jackpot()
 
+## Gold per Recycler per blank. Multiplying both counts is the point: the pair
+## scales quadratically, which is what makes committing strip space to two dead
+## symbols worth doing. Adding blanks dilutes everything else on the strip, so
+## the build pays for itself.
+const RECYCLER_GOLD_PER_BLANK := 2
 const CHIP_GOLD_PER_COPY := 5
 const PENNY_GOLD_PER_COPY := 1
 
@@ -140,6 +153,7 @@ static var PRICES := {
 	LIGHT_BLK: 45, MED_BLK: 80, HEAVY_BLK: 150, HEAL: 90,
 	MEGA_BLK: 200, WILD: 300, COIN: 120, PENNY: 90,
 	TOKEN: 220, CHIP: 80, LUCKY_SEVEN: 70,
+	RECYCLER: 130, BLANK: 20,
 }
 
 
@@ -147,13 +161,16 @@ static func price_of(symbol: Symbol) -> int:
 	return PRICES.get(symbol, 60)
 
 
-## Everything the shop can sell. Blank is deliberately absent — it exists on
-## the starting strip as a tutorial for the removal verb (§3).
+## Everything the shop can sell. Blank is in here now, cheap but RARE: it is
+## still the thing you learn to remove, and only becomes a resource once you own
+## something that pays for junk. Rare so a useless symbol does not crowd the
+## shelf — note this does dilute the rare tier the good symbols draw from.
 static func purchasable() -> Array[Symbol]:
 	return [
 		LIGHT_ATK, MED_ATK, HEAVY_ATK, MEGA_ATK,
 		LIGHT_BLK, MED_BLK, HEAVY_BLK, HEAL,
 		MEGA_BLK, WILD, COIN, PENNY, TOKEN, CHIP, LUCKY_SEVEN,
+		RECYCLER, BLANK,
 	]
 
 

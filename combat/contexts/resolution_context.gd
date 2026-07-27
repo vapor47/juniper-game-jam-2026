@@ -22,6 +22,11 @@ var actions: Array[Action]
 var selected_stops: Array[Stop] = []
 var selected_count: int = 0
 
+## Every symbol visible across all 15 cells. Effects that read the whole board
+## rather than one line need it, and previews need it too, or a hover would
+## disagree with what locking in actually pays.
+var board_symbols: Array[Symbol] = []
+
 ## The line currently being scored, in column order. Set by PaylineScorer at
 ## the top of score_line, because one context is shared across every line of a
 ## resolution and "adjacent" has to mean adjacent *on this line*.
@@ -34,9 +39,11 @@ var combo_symbols: Array[Symbol] = []   # symbols that comboed this resolution
 ## A throwaway context for hover previews. Modifier hooks need one to read
 ## from, but a preview has no turn behind it — so this carries just enough for
 ## them to answer, and nothing that would let a preview change game state.
-static func preview(p_stops: Array[Stop] = []) -> ResolutionContext:
+static func preview(p_stops: Array[Stop] = [],
+		p_board: Array[Symbol] = []) -> ResolutionContext:
 	var ctx := ResolutionContext.new()
 	ctx.player = Global.player
+	ctx.board_symbols = p_board
 	ctx.selected_stops = p_stops
 	ctx.selected_count = p_stops.size()
 	ctx.is_initial_spin = false
@@ -44,8 +51,10 @@ static func preview(p_stops: Array[Stop] = []) -> ResolutionContext:
 
 
 static func build(p_player: PlayerData, p_enemies: Array[EnemyData],
-		p_is_initial_spin: bool, p_selected_stops: Array[Stop], turn_context) -> ResolutionContext:
+		p_is_initial_spin: bool, p_selected_stops: Array[Stop], turn_context,
+		p_board: Array[Symbol] = []) -> ResolutionContext:
 	var ctx := ResolutionContext.new()
+	ctx.board_symbols = p_board
 	ctx.player = p_player
 	ctx.enemies = p_enemies
 	ctx.is_initial_spin = p_is_initial_spin
@@ -53,6 +62,16 @@ static func build(p_player: PlayerData, p_enemies: Array[EnemyData],
 	ctx.selected_stops = p_selected_stops
 	ctx.selected_count = p_selected_stops.size()
 	return ctx
+
+## How many cells on the board are Blank. The junk-synergy effects all key off
+## this, so it lives here rather than being recounted by each of them.
+func blank_count() -> int:
+	var n := 0
+	for symbol: Symbol in board_symbols:
+		if symbol == SymbolTable.BLANK:
+			n += 1
+	return n
+
 
 func is_stop_in_combo(stop: Stop) -> bool:
 	return stop.symbol in combo_symbols

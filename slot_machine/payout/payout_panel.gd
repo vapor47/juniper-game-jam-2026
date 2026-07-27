@@ -199,12 +199,19 @@ func _board_table(symbols: Array[Symbol]) -> GridContainer:
 	grid.add_theme_constant_override("v_separation", 4)
 	for symbol: Symbol in symbols:
 		grid.add_child(_swatch(symbol))
-		var per := SymbolTable.CHIP_GOLD_PER_COPY if symbol == SymbolTable.CHIP \
-			else SymbolTable.PENNY_GOLD_PER_COPY
-		var when := "on lock" if symbol.trigger == Symbol.Trigger.ON_LOCK else "each spin"
-		grid.add_child(_cell("%dg per copy, %s" % [per, when], GOLD_COLOR,
-			HORIZONTAL_ALIGNMENT_LEFT))
+		grid.add_child(_cell(_board_text(symbol), GOLD_COLOR, HORIZONTAL_ALIGNMENT_LEFT))
 	return grid
+
+
+## What a board symbol pays, stated per copy. Recycler is the exception: it
+## pays off a second count, so saying "per copy" would be wrong.
+func _board_text(symbol: Symbol) -> String:
+	var when := "on lock" if symbol.trigger == Symbol.Trigger.ON_LOCK else "each spin"
+	if symbol == SymbolTable.RECYCLER:
+		return "%dg per blank, %s" % [SymbolTable.RECYCLER_GOLD_PER_BLANK, when]
+	var per := SymbolTable.CHIP_GOLD_PER_COPY if symbol == SymbolTable.CHIP \
+		else SymbolTable.PENNY_GOLD_PER_COPY
+	return "%dg per copy, %s" % [per, when]
 
 
 ## Carries the board's own colour and headline, so a row is recognisably the

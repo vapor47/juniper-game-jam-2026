@@ -13,9 +13,15 @@ static func stops_for(payline: Payline, columns: Array[ReelColumn]) -> Array[Sto
 	return stops
 
 
+## Preview scoring. Builds its own context when none is given, and gives it the
+## board — a hover that ignored board-wide effects would quote a number the
+## lock-in then disagreed with.
 static func score_for(payline: Payline, columns: Array[ReelColumn],
 		ctx: ResolutionContext = null) -> PaylineScorer.LineResult:
-	return PaylineScorer.score_line(stops_for(payline, columns), ctx)
+	var stops := stops_for(payline, columns)
+	var context := ctx if ctx != null else ResolutionContext.preview(
+			stops, BoardEffects.visible_symbols(columns))
+	return PaylineScorer.score_line(stops, context)
 
 
 ## Combined actions across every purchased line, line by line in purchase

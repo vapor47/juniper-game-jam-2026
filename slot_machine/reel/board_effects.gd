@@ -42,6 +42,12 @@ static func apply(columns: Array[ReelColumn], trigger: Symbol.Trigger) -> int:
 		gold += _count(symbols, SymbolTable.PENNY) * SymbolTable.PENNY_GOLD_PER_COPY
 	elif trigger == Symbol.Trigger.ON_LOCK:
 		gold += _count(symbols, SymbolTable.CHIP) * SymbolTable.CHIP_GOLD_PER_COPY
+		# Every Recycler pays for every blank, so the pair scales on both counts
+		# at once. ON_LOCK rather than ON_SPIN: blanks are common enough that
+		# respinning at it would farm freely.
+		gold += _count(symbols, SymbolTable.RECYCLER) \
+			* _count(symbols, SymbolTable.BLANK) \
+			* SymbolTable.RECYCLER_GOLD_PER_BLANK
 
 	if gold > 0:
 		Global.player.gold += gold

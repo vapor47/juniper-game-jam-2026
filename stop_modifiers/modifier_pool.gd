@@ -20,6 +20,8 @@ static var ENTRIES := [
 	  "rarity": StopModifier.Rarity.RARE },
 	{ "make": func() -> StopModifier: return MatchingCufflinksModifier.new(),
 	  "rarity": StopModifier.Rarity.RARE },
+	{ "make": func() -> StopModifier: return LuckyBreakModifier.new(),
+	  "rarity": StopModifier.Rarity.UNCOMMON },
 ]
 
 const RARITY_WEIGHTS := {
