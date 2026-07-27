@@ -237,11 +237,14 @@ func _next_spin_cost() -> int:
 
 ## ---------------- Line selection (post-spin, perfect information) ---------------- ##
 
-## What the Nth simultaneous line costs (§5). Index 0 is the free one.
+## What the Nth simultaneous line costs (§5). Index 0 is normally the free one,
+## which is exactly why a debuff that charges for it lands on every player
+## rather than only on the ones already doing well enough to buy a second.
 func _cost_of_nth_line(n: int) -> int:
-	if n < LINE_COSTS.size():
-		return LINE_COSTS[n]
-	return LINE_COSTS[-1]
+	var cost := LINE_COSTS[n] if n < LINE_COSTS.size() else LINE_COSTS[-1]
+	for effect: RunEffect in Global.player.get_active_effects():
+		cost = effect.modify_line_cost(cost, n)
+	return maxi(0, cost)
 
 
 ## Total tokens required to hold `count` lines at once.

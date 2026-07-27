@@ -2,19 +2,27 @@ extends CurseSymbolDebuff
 class_name ReelJamDebuff
 ## Freezes any column it shows in until the next spin.
 ##
-## Deliberately never scales. One copy already jams at least one column on 54%
-## of spins; at three copies that is 88%, averaging 1.8 of 5 columns frozen,
-## with a total lockout every ~158 spins. Extra copies stop making the fight
-## harder and start making the board inert, so The Cooler is not allowed to
-## deepen this one.
+## Scales by copies only, capped at three. There is nothing for a level to do —
+## a column is frozen or it is not. Measured over 400k spins, one copy jams at
+## least one column on 54% of them (0.71 of 5 on average), three copies on 88%
+## (1.78 of 5). Past three the board stops being a puzzle and starts being
+## inert, and total lockouts get common enough to matter.
+
+const MAX_COPIES := 3
+
 
 func _init() -> void:
 	super(SymbolTable.REEL_JAM)
 	refresh_text()
 
 
-func can_deepen() -> bool:
+## Nothing for a level to raise: a column is frozen or it is not.
+func can_upgrade() -> bool:
 	return false
+
+
+func can_add_copy() -> bool:
+	return copies() < MAX_COPIES
 
 
 func describe() -> String:

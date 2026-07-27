@@ -5,7 +5,7 @@ class_name DecreaseTokenRegenDebuff
 
 const REGEN_DECREMENT: int = 1
 
-## See DecreaseLineCapDebuff — refunding a flat amount after a clamp would pay
+## Refunding a flat amount after a clamp would pay
 ## back more than was taken.
 var _applied: int = 0
 

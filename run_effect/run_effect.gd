@@ -15,6 +15,8 @@ var icon: Texture2D
 @warning_ignore_start("unused_parameter")
 # -- resolution hooks (called by PaylineScorer, mirrors StopModifier) --
 func modify_stop_value(v: int, ctx: ResolutionContext, stop: Stop) -> int: return v
+## Token cost of the index-th line played this turn (0 is the normally free one).
+func modify_line_cost(cost: int, index: int) -> int: return cost
 func modify_result_total(total: int, type: Action.Type, ctx: ResolutionContext) -> int: return total
 func combo_count_bonus() -> int: return 0
 

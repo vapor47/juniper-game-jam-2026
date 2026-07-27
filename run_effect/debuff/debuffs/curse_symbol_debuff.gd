@@ -38,10 +38,19 @@ func add_copy() -> void:
 	refresh_text()
 
 
-## Whether The Cooler may deepen this curse. Some effects are strong enough at
-## one copy that scaling them produces dead boards rather than harder ones.
-func can_deepen() -> bool:
+## The two axes are asked about separately, because a curse can want one and not
+## the other: Reel Jam has no per-level effect at all, and a cap on its copies
+## is what keeps the board from going inert.
+func can_upgrade() -> bool:
 	return true
+
+
+func can_add_copy() -> bool:
+	return true
+
+
+func can_deepen() -> bool:
+	return can_upgrade() or can_add_copy()
 
 
 func upgrade() -> void:
