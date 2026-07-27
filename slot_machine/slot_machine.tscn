@@ -70,20 +70,29 @@ theme_override_constants/separation = 20
 alignment = 1
 
 [node name="LeftFlank" type="VBoxContainer" parent="MarginContainer/VBodyContainer/SlotsBodyContainer" unique_id=1120449313]
-editor_description = "The paytable. Persistent rather than a hover popup: the moment it
-is most useful is while deciding which columns to hold, which is exactly when
-the cursor has to be over the grid."
+editor_description = "Payline selection. Mirrors RightFlank's width so the grid stays
+centred on screen."
 custom_minimum_size = Vector2(360, 0)
 layout_mode = 2
 size_flags_horizontal = 0
 size_flags_vertical = 4
 theme_override_constants/separation = 8
 
-[node name="PayoutPanel" parent="MarginContainer/VBodyContainer/SlotsBodyContainer/LeftFlank" unique_id=1120449315 instance=ExtResource("3_84m6g")]
+[node name="PaylineSummary" type="PanelContainer" parent="MarginContainer/VBodyContainer/SlotsBodyContainer/LeftFlank" unique_id=1120449314]
 unique_name_in_owner = true
+custom_minimum_size = Vector2(360, 116)
 layout_mode = 2
 size_flags_horizontal = 4
 size_flags_vertical = 0
+script = ExtResource("7_paysm")
+
+[node name="PaylinePanel" type="PanelContainer" parent="MarginContainer/VBodyContainer/SlotsBodyContainer/LeftFlank" unique_id=1120449311]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(360, 0)
+layout_mode = 2
+size_flags_horizontal = 4
+size_flags_vertical = 0
+script = ExtResource("6_paylp")
 
 [node name="PanelContainer" type="PanelContainer" parent="MarginContainer/VBodyContainer/SlotsBodyContainer" unique_id=1538499312]
 layout_mode = 2
@@ -121,29 +130,20 @@ unique_name_in_owner = true
 layout_mode = 2
 
 [node name="RightFlank" type="VBoxContainer" parent="MarginContainer/VBodyContainer/SlotsBodyContainer" unique_id=1120449312]
-editor_description = "Payline selection, with the lever under it. Mirrors LeftFlank's
-width so the grid stays centred on screen."
+editor_description = "The paytable, with the lever under it. Persistent rather than a
+hover popup: the moment it is most useful is while deciding which columns to
+hold, which is exactly when the cursor has to be over the grid."
 custom_minimum_size = Vector2(360, 0)
 layout_mode = 2
 size_flags_horizontal = 0
 size_flags_vertical = 4
 theme_override_constants/separation = 8
 
-[node name="PaylineSummary" type="PanelContainer" parent="MarginContainer/VBodyContainer/SlotsBodyContainer/RightFlank" unique_id=1120449314]
+[node name="PayoutPanel" parent="MarginContainer/VBodyContainer/SlotsBodyContainer/RightFlank" unique_id=1120449315 instance=ExtResource("3_84m6g")]
 unique_name_in_owner = true
-custom_minimum_size = Vector2(360, 116)
 layout_mode = 2
 size_flags_horizontal = 4
 size_flags_vertical = 0
-script = ExtResource("7_paysm")
-
-[node name="PaylinePanel" type="PanelContainer" parent="MarginContainer/VBodyContainer/SlotsBodyContainer/RightFlank" unique_id=1120449311]
-unique_name_in_owner = true
-custom_minimum_size = Vector2(360, 0)
-layout_mode = 2
-size_flags_horizontal = 4
-size_flags_vertical = 0
-script = ExtResource("6_paylp")
 
 [node name="LeverBay" type="CenterContainer" parent="MarginContainer/VBodyContainer/SlotsBodyContainer/RightFlank" unique_id=1120449316]
 layout_mode = 2
