@@ -136,7 +136,10 @@ static func score_line(stops: Array[Stop], ctx: ResolutionContext = null) -> Lin
 			continue
 
 		# A wild pays as whatever it stands in for, so its own (zero) value is
-		# replaced by the adopted symbol's.
+		# replaced by the adopted symbol's — its **base** value, deliberately,
+		# not the modified one from values[]. A wild beside a Gilded stop copies
+		# the symbol, not the investment in that particular stop. Decided rather
+		# than inherited; §0's interaction table records it as live behaviour.
 		var flat := 0
 		for j in range(from, from + run_len):
 			flat += values[j] if not stops[j].symbol.is_wild else symbol.value

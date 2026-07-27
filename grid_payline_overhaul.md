@@ -53,7 +53,7 @@ it. Before adding any of the four, walk this table:
 |---|---|
 | `combos = false` | Skips the run-bonus curve **only**. `modify_stop_value` still applies, so every value effect is a multiplier on it. |
 | `payout` non-empty | Scored from its own table; `values[]` is never read, so *no* value modifier reaches it. |
-| `is_wild` | Contributes the adopted symbol's **base** value, not the modified one. |
+| `is_wild` | Contributes the adopted symbol's **base** value, not the modified one — decided, not accidental: a wild copies the symbol, not the investment in one stop. |
 | `type == NONE` | Skipped by the run loop entirely, and by `_apply_result_totals`. |
 | `type` GOLD or TOKEN | `_apply_result_totals` matches only ATTACK/DEFEND/HEAL, so `modify_result_total` never fires. |
 | `trigger != NONE` | Pays off the board via BoardEffects, not off a line at all. |
