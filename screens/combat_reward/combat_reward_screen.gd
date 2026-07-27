@@ -11,6 +11,7 @@ const NUM_REWARDS := 3
 
 func _ready() -> void:
 	_show_payout()
+	_show_owned()
 	var pool := PaylineCatalog.acquirable(Global.player.owned_paylines)
 	pool.shuffle()
 	_init_rewards(pool.slice(0, NUM_REWARDS))
@@ -27,6 +28,43 @@ func _show_payout() -> void:
 	label.add_theme_color_override("font_color", Color(0.95, 0.82, 0.35))
 	vbox.add_child(label)
 	vbox.move_child(label, 1)
+
+
+## The lines already owned, drawn small under the offers. The choice is only
+## meaningful against what's already held — the shared-cell colouring on each
+## offer says *how much* overlap there is, but not with what. Without this the
+## player is asked to judge overlap against a set they can't see.
+func _show_owned() -> void:
+	var owned := Global.player.owned_paylines
+	if owned.is_empty():
+		return
+
+	var vbox: VBoxContainer = $VBoxContainer
+	var row := HBoxContainer.new()
+	row.alignment = BoxContainer.ALIGNMENT_CENTER
+	row.add_theme_constant_override("separation", 18)
+
+	for payline: Payline in owned:
+		var cell := VBoxContainer.new()
+		cell.add_theme_constant_override("separation", 2)
+
+		var glyph := PaylineGlyph.new()
+		glyph.payline = payline
+		glyph.custom_minimum_size = Vector2(54, 48)
+		glyph.size_flags_horizontal = Control.SIZE_SHRINK_CENTER
+		cell.add_child(glyph)
+
+		var name_label := Label.new()
+		name_label.text = payline.display_name
+		name_label.add_theme_font_size_override("font_size", 11)
+		name_label.add_theme_color_override("font_color", Color(0.68, 0.68, 0.72))
+		name_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+		cell.add_child(name_label)
+
+		row.add_child(cell)
+
+	vbox.add_child(row)
+	vbox.move_child(row, vbox.get_child_count() - 2)  # above Continue
 
 
 func _init_rewards(paylines: Array[Payline]) -> void:
