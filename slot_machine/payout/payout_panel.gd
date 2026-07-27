@@ -73,14 +73,10 @@ static func _strip_symbols() -> Array[Symbol]:
 	return _pin_order(seen)
 
 
-## Type, then value. The single ordering used everywhere, so a symbol keeps the
-## same relative place whenever it is present.
+## Type, then value — shared with the reel preview's tally so a symbol keeps the
+## same relative place wherever it is listed.
 static func _pin_order(symbols: Array[Symbol]) -> Array[Symbol]:
-	symbols.sort_custom(func(a: Symbol, b: Symbol) -> bool:
-		if a.type != b.type:
-			return a.type < b.type
-		return a.value < b.value)
-	return symbols
+	return SymbolTable.sort_for_display(symbols)
 
 
 func build_legend() -> void:

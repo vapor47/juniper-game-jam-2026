@@ -157,6 +157,17 @@ static var PRICES := {
 }
 
 
+## The one display order: action type, then value. Used by the paytable and the
+## reel preview's tally, so a symbol keeps the same relative place everywhere it
+## is listed.
+static func sort_for_display(symbols: Array[Symbol]) -> Array[Symbol]:
+	symbols.sort_custom(func(a: Symbol, b: Symbol) -> bool:
+		if a.type != b.type:
+			return a.type < b.type
+		return a.value < b.value)
+	return symbols
+
+
 static func price_of(symbol: Symbol) -> int:
 	return PRICES.get(symbol, 60)
 

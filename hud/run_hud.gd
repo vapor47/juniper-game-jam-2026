@@ -23,7 +23,7 @@ const DEBUFF_COLOR := Color(0.9, 0.5, 0.45)
 
 var _gold_label: Label
 var _effects_row: HBoxContainer
-var _strip_view: StripView
+var _strip_view: ReelPreview
 var _strip_overlay: CanvasLayer
 var _strip_toggle: Button
 ## Whoever gold_updated is currently wired to, so a rebind can unwire it.
@@ -97,7 +97,7 @@ func _build() -> void:
 	# board, so it has to stay up while the cursor is somewhere else. Same
 	# reason the paytable stopped being a hover popup.
 	_strip_toggle = Button.new()
-	_strip_toggle.text = "STRIP"
+	_strip_toggle.text = "REEL PREVIEW"
 	_strip_toggle.toggle_mode = true
 	_strip_toggle.focus_mode = Control.FOCUS_NONE
 	_strip_toggle.toggled.connect(_on_strip_toggled)
@@ -137,7 +137,7 @@ func _build_strip_overlay() -> void:
 	center.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	_strip_overlay.add_child(center)
 
-	_strip_view = StripView.new()
+	_strip_view = ReelPreview.new()
 	center.add_child(_strip_view)
 
 

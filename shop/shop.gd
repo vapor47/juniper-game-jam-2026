@@ -155,7 +155,7 @@ const SYMBOL_RARITY_WEIGHTS := {
 	Symbol.Rarity.COMMON: 0.60,
 	Symbol.Rarity.UNCOMMON: 0.30,
 	Symbol.Rarity.RARE: 0.10,
-	Symbol.Rarity.JUNK: 0.06,
+	Symbol.Rarity.JUNK: 0.04,
 }
 
 

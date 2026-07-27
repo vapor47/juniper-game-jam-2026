@@ -1,6 +1,6 @@
 extends PanelContainer
-class_name StripView
-## Read-only render of the strip, in order.
+class_name ReelPreview
+## Read-only render of the reel: the strip in order, and a tally beneath it.
 ##
 ## §2 justifies the master reel on odds legibility — "one pool is learnable,
 ## five distributions are memorization" — but the pool was only ever visible
@@ -24,8 +24,11 @@ const MOD_BORDER := Color(1, 0.85, 0.3, 0.9)
 ## The stop after the last one is the first one. Repeating it, dimmed, states
 ## the strip is circular without a sentence saying so.
 const WRAP_ALPHA := 0.35
+const TALLY_COLUMNS := 4
+const TALLY_FONT_SIZE := 13
 
 var _row: HBoxContainer
+var _tally: GridContainer
 
 
 func _ready() -> void:
@@ -38,11 +41,24 @@ func _ready() -> void:
 	scroll.custom_minimum_size = VIEW_SIZE
 	scroll.horizontal_scroll_mode = ScrollContainer.SCROLL_MODE_AUTO
 	scroll.vertical_scroll_mode = ScrollContainer.SCROLL_MODE_DISABLED
-	margin.add_child(scroll)
 
 	_row = HBoxContainer.new()
 	_row.add_theme_constant_override("separation", 4)
 	scroll.add_child(_row)
+
+	var column := VBoxContainer.new()
+	column.add_theme_constant_override("separation", 10)
+	margin.add_child(column)
+	column.add_child(scroll)
+
+	# The strip shows order and adjacency; the tally answers "how many of these
+	# do I actually own", which is the other half of reading a reel and is
+	# genuinely hard to count off a 20-tile row.
+	_tally = GridContainer.new()
+	_tally.columns = TALLY_COLUMNS
+	_tally.add_theme_constant_override("h_separation", 22)
+	_tally.add_theme_constant_override("v_separation", 2)
+	column.add_child(_tally)
 
 	refresh()
 
@@ -58,6 +74,30 @@ func refresh() -> void:
 		_row.add_child(_tile(Global.strip[i], i + 1))
 	if not Global.strip.is_empty():
 		_row.add_child(_tile(Global.strip[0], 1, WRAP_ALPHA))
+
+	_refresh_tally()
+
+
+## One entry per distinct symbol on the strip, with how many there are. Counts
+## the strip itself, so the repeated wrap tile is not double-counted.
+func _refresh_tally() -> void:
+	for child in _tally.get_children():
+		_tally.remove_child(child)
+		child.queue_free()
+
+	var counts := {}
+	for stop: Stop in Global.strip:
+		counts[stop.symbol] = counts.get(stop.symbol, 0) + 1
+
+	var symbols: Array[Symbol] = []
+	for symbol: Symbol in counts:
+		symbols.append(symbol)
+	for symbol: Symbol in SymbolTable.sort_for_display(symbols):
+		var label := Label.new()
+		label.text = "%s x%d" % [symbol.symbol_name, counts[symbol]]
+		label.add_theme_font_size_override("font_size", TALLY_FONT_SIZE)
+		label.add_theme_color_override("font_color", SymbolCell.color_for(symbol).lightened(0.55))
+		_tally.add_child(label)
 
 
 ## Same colour and headline the board and the paytable use, so a tile here is
