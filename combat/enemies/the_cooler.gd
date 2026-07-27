@@ -3,12 +3,14 @@ class_name TheCoolerData
 ## A casino "cooler" is the person brought in to break a winning streak. This
 ## one breaks the machine instead.
 ##
-## Three-beat cycle, fixed and never randomised so it can be learned: one swing,
-## a heavy guard, then a lighter guard while it curses the reel. Only a third of
-## its turns deal damage — it wins by outlasting, and by wrecking the machine
-## while it does. Each guard stands through the player's next turn, so two turns
-## in three the player is hitting a wall and is better off spending them on
-## defence, healing, or setting the reel up.
+## Three-beat cycle, fixed and never randomised so it can be learned: a swing
+## that also raises a small guard, a heavy guard, then a bare turn spent cursing
+## the reel. Only a third of its turns deal damage — it wins by outlasting, and
+## by wrecking the machine while it does.
+##
+## A guard raised on its turn stands through the player's next one. Since the
+## cool beat raises none, the turn after being cursed is the player's clear
+## swing: the rhythm alternates rather than being wall after wall.
 ##
 ## Its swings never grow. The entire clock is the strip: every third turn either
 ## adds a curse or deepens one, and they last the fight, so by the late game the
@@ -21,8 +23,11 @@ class_name TheCoolerData
 
 const HIT_MIN: int = 12
 const HIT_MAX: int = 16
-const GUARD_BIG: int = 30
-const GUARD_SMALL: int = 15
+## Raised alongside the swing, so even its attacking turn is partly defensive.
+const SWING_GUARD_MIN: int = 6
+const SWING_GUARD_MAX: int = 12
+const GUARD_MIN: int = 20
+const GUARD_MAX: int = 30
 
 const CURSES: Array = [
 	preload("res://run_effect/debuff/debuffs/live_wire_debuff.gd"),
@@ -50,24 +55,29 @@ func _init() -> void:
 func _choose_intent() -> void:
 	match phase:
 		Phase.SWING:
-			intent = { "type": "attack", "value": randi_range(HIT_MIN, HIT_MAX) }
+			intent = {
+				"type": "attack",
+				"value": randi_range(HIT_MIN, HIT_MAX),
+				"block": randi_range(SWING_GUARD_MIN, SWING_GUARD_MAX),
+			}
 		Phase.GUARD:
-			intent = { "type": "block", "value": GUARD_BIG }
+			intent = { "type": "block", "value": randi_range(GUARD_MIN, GUARD_MAX) }
 		Phase.COOL:
-			intent = { "type": "block", "value": GUARD_SMALL }
+			# No guard on the cool beat: the turn after it is the player's clear
+			# swing, which is what keeps the rhythm from being all wall.
+			intent = { "type": "curse" }
 
 	phase = ((phase + 1) % 3) as Phase
 
 
-## The cool beat guards *and* curses. Both land on its own turn: the guard then
-## stands through the player's next turn, which is the only turn it could
-## matter for.
+## The curse lands on the cool beat and nowhere else. This used to key off the
+## intent being a block, which fired it on both guarding turns — twice a cycle
+## instead of once.
 func get_actions() -> Array[Action]:
-	if intent.get("type") != "block":
-		return super()
-	_apply_curse()
-	return [Action.new(Action.Type.DEFEND, intent.get("value"),
-		"The Cooler guards for %d" % intent.get("value"))]
+	if intent.get("type") == "curse":
+		_apply_curse()
+		return []
+	return super()
 
 
 ## The cool beat always makes things worse, but not always in the same way. A

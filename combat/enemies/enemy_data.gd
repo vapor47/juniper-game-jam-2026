@@ -26,12 +26,19 @@ func _choose_intent() -> void:
 ## yields no actions, which is how charge/wind-up turns telegraph without
 ## dealing damage.
 func get_actions() -> Array[Action]:
-	if intent.get("type") == "block":
-		return [Action.new(Action.Type.DEFEND, intent.get("value", 0),
-			"%s guards for %d" % [display_name, intent.get("value", 0)])]
+	var actions: Array[Action] = []
 	if intent.get("type") == "attack":
-		return [Action.new(Action.Type.ATTACK, intent.get("value"), "Attacked player for %d damage!" % intent.get("value"))]
-	return []
+		actions.append(Action.new(Action.Type.ATTACK, intent.get("value", 0),
+			"Attacked player for %d damage!" % intent.get("value", 0)))
+	elif intent.get("type") == "block":
+		actions.append(Action.new(Action.Type.DEFEND, intent.get("value", 0),
+			"%s guards for %d" % [display_name, intent.get("value", 0)]))
+	# An intent can guard *and* swing; "block" alongside another type is the
+	# guard it raises on the same turn.
+	if intent.get("type") != "block" and int(intent.get("block", 0)) > 0:
+		actions.append(Action.new(Action.Type.DEFEND, int(intent.get("block")),
+			"%s guards for %d" % [display_name, int(intent.get("block"))]))
+	return actions
 	
 ## States the intent plainly. Flavour belongs in art and animation, not in the
 ## one string the player reads to decide the turn — an enemy that says "the
@@ -42,11 +49,16 @@ func get_intent_as_string() -> String:
 	if not intent:
 		return "Waiting"
 	var value: int = intent.get("value", 0)
+	var guard: int = int(intent.get("block", 0))
 	match intent.get("type"):
 		"attack":
+			if guard > 0:
+				return "Attacking for %d damage, gaining %d block" % [value, guard]
 			return "Attacking for %d damage" % value
 		"block":
 			return "Gaining %d block" % value
+		"curse":
+			return "Cursing your reel"
 	if intent.has("value"):
 		return "%s for %d" % [str(intent.get("type")).capitalize(), value]
 	return str(intent.get("type")).capitalize()
