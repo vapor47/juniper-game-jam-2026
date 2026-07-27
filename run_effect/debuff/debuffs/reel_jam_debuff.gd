@@ -26,4 +26,4 @@ func can_add_copy() -> bool:
 
 
 func describe() -> String:
-	return "Columns showing it cannot be respun (%d on your reel)" % copies()
+	return "Columns showing it cannot be respun"

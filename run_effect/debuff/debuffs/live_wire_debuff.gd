@@ -9,5 +9,4 @@ func damage_per_copy() -> int:
 	return SymbolTable.LIVE_WIRE_DAMAGE_PER_LEVEL * level
 
 func describe() -> String:
-	return "%d damage per copy showing, every spin (%d on your reel)" \
-		% [damage_per_copy(), copies()]
+	return "%d damage per copy showing, every spin" % damage_per_copy()

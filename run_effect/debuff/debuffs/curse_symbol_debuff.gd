@@ -66,9 +66,10 @@ func refresh_text() -> void:
 	description = describe()
 
 
-## Overridden per curse.
+## Overridden per curse. States the effect only — how many are on the reel is
+## visible in the Reel Preview, and counting them is the player's job.
 func describe() -> String:
-	return "%d on your reel, level %d" % [copies(), level]
+	return display_name
 
 
 func on_removed(_player: PlayerData) -> void:

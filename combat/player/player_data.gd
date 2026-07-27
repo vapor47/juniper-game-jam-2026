@@ -146,7 +146,9 @@ func curse_level(symbol: Symbol) -> int:
 
 func apply_debuff(debuff: Debuff) -> void:
 	print_debug("Debuff Applied! (%s)" % debuff.display_name)
-	Toast.show_debuff(debuff.display_name, debuff.description, "", "\"That one felt a little strong...\"")
+	# No flavour line: it read as a drunkenness aside, which is wrong for every
+	# other source a debuff can come from.
+	Toast.show_debuff(debuff.display_name, debuff.description, "", "")
 	debuff.on_acquired(self)
 	active_debuffs.append(debuff)
 
