@@ -1,5 +1,7 @@
 extends Node
 
+## The run's fixed order. Existence lives in EnemyCatalog — an enemy can be in
+## the catalog without being in a run, but never the reverse.
 var encounter_queue: Array[Array] = [
 	[DestituteGamblerData],
 	[ChargeyGuyData],

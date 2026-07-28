@@ -50,15 +50,19 @@ func get_intent_as_string() -> String:
 		return "Waiting"
 	var value: int = intent.get("value", 0)
 	var guard: int = int(intent.get("block", 0))
+	# An intent can carry a clause for whatever else the turn does, so enemies
+	# can add to the line without restating how damage and block are phrased.
+	var note: String = str(intent.get("note", ""))
+	var suffix := ", %s" % note if note != "" else ""
 	match intent.get("type"):
 		"attack":
 			if guard > 0:
-				return "Attacking for %d damage, gaining %d block" % [value, guard]
-			return "Attacking for %d damage" % value
+				return "Attacking for %d damage, gaining %d block%s" % [value, guard, suffix]
+			return "Attacking for %d damage%s" % [value, suffix]
 		"block":
-			return "Gaining %d block" % value
+			return "Gaining %d block%s" % [value, suffix]
 		"curse":
-			return "Cursing your reel"
+			return "Cursing your reel%s" % suffix
 	if intent.has("value"):
 		return "%s for %d" % [str(intent.get("type")).capitalize(), value]
 	return str(intent.get("type")).capitalize()

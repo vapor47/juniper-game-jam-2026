@@ -8,20 +8,18 @@ extends PanelContainer
 ## simpler and the behaviour you actually want from a test tool: a clean fight
 ## against the thing you picked.
 
-const ENEMIES: Array = [
-	preload("res://combat/enemies/destitute_gambler.gd"),
-	preload("res://combat/enemies/chargey_guy.gd"),
-	preload("res://combat/enemies/two_faced.gd"),
-	preload("res://combat/enemies/the_cooler.gd"),
-	preload("res://combat/enemies/pit_boss.gd"),
-]
-
 @onready var enemy_option_button: OptionButton = %EnemyOptionButton
 
 
 func _ready() -> void:
-	for i in ENEMIES.size():
-		var enemy_class: GDScript = ENEMIES[i]
+	# EnemyCatalog, not a list of its own: this panel previously kept its own
+	# copy and silently went stale the moment an enemy was added elsewhere.
+	var missing := EnemyCatalog.missing_from_catalog()
+	if not missing.is_empty():
+		push_warning("Enemies in the run queue but not in EnemyCatalog: %s" % str(missing))
+
+	for i in EnemyCatalog.ALL.size():
+		var enemy_class: GDScript = EnemyCatalog.ALL[i]
 		var temp: EnemyData = enemy_class.new()
 		enemy_option_button.add_item("%s (%d HP)" % [temp.display_name, temp.max_health], i)
 		enemy_option_button.set_item_metadata(i, enemy_class)

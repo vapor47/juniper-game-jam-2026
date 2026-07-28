@@ -66,6 +66,15 @@ strip adjacency is a static property the player can engineer once and stop think
 
 Each row above is a bug that shipped, found by audit rather than by play.
 
+**Never keep a second copy of a fact.** Every drift bug in this project has the
+same shape: two lists, two tables or two orderings that must agree, where
+nothing enforces it and nothing fails loudly when they stop. So far that has
+been the shop's private symbol-colour table against the board's, the paytable's
+private sort order against the reel preview's, and the God Menu's enemy list
+against the run queue. When something must be enumerated in more than one
+place, give it one home — `EnemyCatalog.ALL`, `SymbolTable.sort_for_display`,
+`SymbolCell.color_for` — and have every consumer read from it.
+
 **Build in one pass, following the §13 phase order.** The phases are internal ordering to reach a
 playable loop early; they do not gate on approval. Build straight through Phases 1–4.
 
