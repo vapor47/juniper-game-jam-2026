@@ -8,6 +8,7 @@ static var ENTRIES := [
 	{ "souvenir": TipJarSouvenir,        "rarity": Souvenir.Rarity.UNCOMMON },
 	{ "souvenir": FrequentFlyerSouvenir, "rarity": Souvenir.Rarity.UNCOMMON },
 	{ "souvenir": CardCounterSouvenir,   "rarity": Souvenir.Rarity.RARE },
+	{ "souvenir": ShimSouvenir,          "rarity": Souvenir.Rarity.RARE },
 ]
 
 static var RARITY_WEIGHTS := {

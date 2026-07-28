@@ -66,6 +66,12 @@ strip adjacency is a static property the player can engineer once and stop think
 
 Each row above is a bug that shipped, found by audit rather than by play.
 
+**A nudge is a spin.** Anything that changes what is on the board has to run the whole
+post-spin pipeline — ON_SPIN board effects, reel jams, payline rescoring. Live Wire and Penny
+fire on nudges for that reason: a board-manipulation verb that dodged the spin tax would quietly
+weaken the curse written to punish board manipulation. It is not a *respin*, though, so it never
+raises the lever's price.
+
 **Never keep a second copy of a fact.** Every drift bug in this project has the
 same shape: two lists, two tables or two orderings that must agree, where
 nothing enforces it and nothing fails loudly when they stop. So far that has

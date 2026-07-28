@@ -99,6 +99,7 @@ func spawn_popup(text: String) -> void:
 func _ready() -> void:
 	EventBus.lever_pulled.connect(_on_lever_pulled)
 	EventBus.slot_selection_confirmed.connect(_on_lock_in_pressed)
+	slot_machine.nudge_requested.connect(_on_nudge_requested)
 	slot_machine.payline_panel.line_clicked.connect(_on_line_clicked)
 	slot_machine.payline_panel.line_hovered.connect(_on_line_hovered)
 
@@ -203,13 +204,51 @@ func _apply_reel_jams() -> void:
 		col.jammed = true
 
 
+## A nudge is a spin: it changes what is on the board, so everything that keys
+## off a settled board has to run again. That includes Live Wire and Penny —
+## letting a nudge dodge the spin tax would quietly weaken the curse built to
+## punish exactly this kind of board manipulation.
+##
+## It is not a *respin*, though: respins_this_turn is untouched, so nudging
+## never raises the lever's price.
+func _on_nudge_requested(column: ReelColumn, delta: int) -> void:
+	if _busy or _combat_over or not has_spun_this_turn:
+		return
+	if not column.can_nudge():
+		return
+	var shim := Global.player.nudge_source()
+	if shim == null:
+		return
+
+	shim.charges -= 1
+	_busy = true
+	_set_controls_enabled(false)
+
+	await column.nudge(delta)
+
+	var board := BoardEffects.apply(slot_machine.reel_columns, Symbol.Trigger.ON_SPIN)
+	if board.gold > 0:
+		spawn_popup("+%dg from the board" % board.gold)
+	if board.damage > 0:
+		spawn_popup("-%d HP from the board" % board.damage)
+
+	_apply_reel_jams()
+	HUD.refresh()
+
+	_busy = false
+	_set_controls_enabled(true)
+	_refresh_paylines()
+
+
 func _set_controls_enabled(enabled: bool) -> void:
 	# `live` means there's a settled board to act on. Nothing is available
 	# before the opening spin lands — including reading or picking paylines,
 	# since selection is post-spin by design (§4).
 	var live := enabled and has_spun_this_turn
+	var can_nudge := Global.player.nudge_source() != null
 	for col: ReelColumn in slot_machine.reel_columns:
 		col.hold_button.disabled = not live or col.jammed
+		col.set_nudging_available(live and can_nudge)
 	slot_machine.lock_in_button.disabled = not live or selected_lines.is_empty()
 	slot_machine.lever.disabled = not live or Global.player.tokens < _next_spin_cost()
 	slot_machine.lever.text = "RESPIN (%d)" % _next_spin_cost()

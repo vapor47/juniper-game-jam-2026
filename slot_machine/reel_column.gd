@@ -10,6 +10,13 @@ enum CellState { NEUTRAL, DIMMED, ON_LINE, IN_RUN }
 const GLOW_COLOR := Color(1.0, 0.87, 0.25)
 const DIM_COLOR := Color(0, 0, 0, 0.62)
 
+signal nudge_requested(column: ReelColumn, delta: int)
+
+## Symbols move down the screen, which is a *decreasing* scroll_pos — the same
+## direction a spin travels.
+const NUDGE_DOWN := -1
+const NUDGE_UP := 1
+
 @onready var hold_button: Button = %HoldButton
 @onready var scroll_layer: Control = %ScrollLayer
 
@@ -22,6 +29,8 @@ var held: bool = false:
 
 var _cell_overlay: Control
 var _cell_panels: Array[Panel] = []
+var _nudge_up: Button
+var _nudge_down: Button
 
 
 ## This is a plain Control whose children are anchor-positioned, so it does
@@ -48,6 +57,50 @@ func _ready() -> void:
 	_build_cell_overlay()
 
 	hold_button.toggled.connect(func(pressed: bool) -> void: held = pressed)
+	_build_nudge_controls()
+
+
+## Two arrows flanking the column. Hidden entirely unless the player owns a
+## nudge, so a run without one never sees them.
+func _build_nudge_controls() -> void:
+	_nudge_up = _make_nudge_button("▲", NUDGE_UP, Control.PRESET_CENTER_TOP)
+	_nudge_down = _make_nudge_button("▼", NUDGE_DOWN, Control.PRESET_CENTER_BOTTOM)
+	set_nudging_available(false)
+
+
+func _make_nudge_button(glyph: String, delta: int, preset: int) -> Button:
+	var button := Button.new()
+	button.text = glyph
+	button.focus_mode = Control.FOCUS_NONE
+	button.custom_minimum_size = Vector2(34, 22)
+	button.add_theme_font_size_override("font_size", 12)
+	add_child(button)
+	button.set_anchors_and_offsets_preset(preset, Control.PRESET_MODE_MINSIZE, 2)
+	button.pressed.connect(func() -> void: nudge_requested.emit(self, delta))
+	return button
+
+
+func set_nudging_available(available: bool) -> void:
+	if _nudge_up == null:
+		return
+	_nudge_up.visible = available
+	_nudge_down.visible = available
+	var usable := available and can_nudge()
+	_nudge_up.disabled = not usable
+	_nudge_down.disabled = not usable
+
+
+## Jammed columns are out of the player's hands by design, and a held column
+## has to be released first — holding reads as the column being fixed in place,
+## so letting a nudge move it anyway would contradict the verb.
+func can_nudge() -> bool:
+	return not jammed and not held and reel != null and not reel.is_spinning()
+
+
+func nudge(delta: int) -> void:
+	if not can_nudge():
+		return
+	await reel.nudge(delta)
 
 
 ## Three neutral row markers at fixed row positions, matching Reel.SYMBOL_HEIGHT.

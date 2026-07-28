@@ -11,6 +11,10 @@ class_name SlotMachine
 var reel_columns: Array[ReelColumn] = []
 var payline_overlay: PaylineOverlay
 
+## Relayed up from a column so combat can charge for it and run the post-spin
+## pipeline; the machine itself does not know how many nudges are left.
+signal nudge_requested(column: ReelColumn, delta: int)
+
 
 func _ready() -> void:
 	var placeholder_col: InstancePlaceholder = %ReelColumn
@@ -32,6 +36,10 @@ func _ready() -> void:
 	# The paytable reads its rows off the settled board, so it has to know the
 	# columns and be rebuilt whenever they land. It built once already in its
 	# own _ready with no columns set, which falls back to the whole strip.
+	for col: ReelColumn in reel_columns:
+		col.nudge_requested.connect(func(c: ReelColumn, d: int) -> void:
+			nudge_requested.emit(c, d))
+
 	payout_panel.columns = reel_columns
 	payout_panel.build_legend()
 	EventBus.spin_all_completed.connect(_refresh_payouts)

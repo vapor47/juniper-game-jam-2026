@@ -133,6 +133,14 @@ func _sweep_expired_drinks() -> void:
 			still_active.append(d)
 	active_drinks = still_active
 
+## The souvenir holding nudge charges, or null when there are none left.
+func nudge_source() -> ShimSouvenir:
+	for s: Souvenir in owned_souvenirs:
+		if s is ShimSouvenir and (s as ShimSouvenir).charges > 0:
+			return s
+	return null
+
+
 ## What level a curse is running at, or 0 if the player is not carrying it.
 ## The level lives on the debuff rather than the symbol, because Symbols are
 ## shared singletons — writing a level onto one would change it for every other

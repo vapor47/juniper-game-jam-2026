@@ -13,6 +13,9 @@ const SYMBOL_WIDTH: float = 144.0
 const SYMBOL_HEIGHT: float = 144.0
 const EXTRA_LOOPS: int = 3
 const SPIN_DURATION: float = 1.2
+## A nudge is one stop, so it wants a short deliberate move rather than the
+## spin's long settle — it reads as the machine being pushed, not thrown.
+const NUDGE_DURATION: float = 0.22
 const CURVATURE_SPINNING: float = 0.28
 const CURVATURE_RESTING: float = 0.06
 
@@ -89,6 +92,29 @@ func spin_to(target_stop: int) -> void:
 
 	await _spin_tween.finished
 	scroll_pos = float(wrapi(int(target), 0, strip.size()))
+	spin_finished.emit(visible_stops())
+
+
+## Shifts the window exactly one stop. Deterministic where spin_to is not:
+## the whole point is that a player who knows their strip order knows what is
+## about to come into view.
+##
+## Tweens to the raw unwrapped target and normalises afterwards. Tweening
+## straight to a wrapped index would scroll the long way round the strip —
+## 0 to 19 is one stop backwards, but nineteen stops forwards to a tween.
+func nudge(delta: int) -> void:
+	if strip.is_empty():
+		return
+	if _spin_tween != null and _spin_tween.is_valid():
+		_spin_tween.kill()
+
+	var target: float = scroll_pos + float(delta)
+	_spin_tween = create_tween()
+	_spin_tween.tween_property(self, "scroll_pos", target, NUDGE_DURATION) \
+		.set_trans(Tween.TRANS_QUAD).set_ease(Tween.EASE_OUT)
+
+	await _spin_tween.finished
+	scroll_pos = float(wrapi(int(round(target)), 0, strip.size()))
 	spin_finished.emit(visible_stops())
 
 
