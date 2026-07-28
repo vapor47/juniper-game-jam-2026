@@ -82,10 +82,25 @@ class LineResult extends RefCounted:
 ## Must honour `combos` the same way score_line does: flat-only symbols (Token)
 ## pay face value however many land, so a run of three Tokens is 3, not the
 ## bonus curve's 5. The paytable reads this, and a table that disagrees with
-## the machine is worse than no table.
+## the machine is worse than no table — which is also why the rake's cut is
+## applied here rather than only at resolution.
 static func run_value(symbol: Symbol, count: int) -> int:
 	var flat := symbol.value * count
-	return flat if not symbol.combos else _payout(flat, count)
+	var total := flat if not symbol.combos else _payout(flat, count)
+	return apply_cut(total)
+
+
+## The rake's cut, taken off a single action and floored at zero.
+##
+## Per action, not per line, and that is the whole design: a line is ~4 scoring
+## actions on the default strip, so a fragmented board eats the cut four times
+## while one long run eats it once. At a cut of 3 a line with no match keeps 33%
+## of its value and a line with a run of three keeps 71%. It taxes collecting
+## and rewards consolidating.
+static func apply_cut(total: int) -> int:
+	if total <= 0:
+		return total
+	return maxi(0, total - Global.action_cut)
 
 
 ## flat total for the run, and the count the bonus curve is driven by.
@@ -170,7 +185,7 @@ static func score_line(stops: Array[Stop], ctx: ResolutionContext = null) -> Lin
 				effective += effect.combo_count_bonus()
 
 		# Flat-only symbols (tokens) pay their face value however many land.
-		var total := flat if not symbol.combos else _payout(flat, effective)
+		var total := apply_cut(flat if not symbol.combos else _payout(flat, effective))
 		if total != 0:
 			result.runs.append(Run.new(symbol, run_len, effective, from, total, total - flat))
 			_accumulate(result, symbol.type, total)

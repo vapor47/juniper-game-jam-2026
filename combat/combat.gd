@@ -106,6 +106,8 @@ func _ready() -> void:
 	_begin_combat()
 
 func _begin_combat() -> void:
+	# Combat-scoped, so a rake from the last fight cannot follow the player.
+	Global.action_cut = 0
 	Global.player.replenish_tokens()
 	context.player = Global.player
 

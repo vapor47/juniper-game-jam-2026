@@ -4,6 +4,7 @@ var encounter_queue: Array[Array] = [
 	[DestituteGamblerData],
 	[ChargeyGuyData],
 	[TwoFacedData],
+	[TheRakeData],
 	[TheCoolerData],
 	[PitBossData],
 ]
