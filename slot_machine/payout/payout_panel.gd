@@ -93,7 +93,13 @@ func build_legend() -> void:
 		# its place on the strip, not in the table.
 		if symbol.trigger != Symbol.Trigger.NONE:
 			board_symbols.append(symbol)
-		elif symbol.type != Action.Type.NONE or symbol.is_wild \
+		# Wild is deliberately absent. Its payout is whatever it lands beside, so
+		# the table can only state that it substitutes — which the cell already
+		# says with its own glyph, and the stop tooltip says in words. A row of
+		# "=" spent height to repeat something and quote no numbers.
+		elif symbol.is_wild:
+			continue
+		elif symbol.type != Action.Type.NONE \
 				or symbol.is_curse or not symbol.payout.is_empty():
 			line_symbols.append(symbol)
 
@@ -159,19 +165,13 @@ func _run_table(symbols: Array[Symbol]) -> GridContainer:
 	return grid
 
 
-## What a run of n pays, straight from the scorer. Wild has no payout of its
-## own — it takes the value of whatever it lands beside — so its row says that
-## rather than inventing numbers for it.
+## What a run of n pays, straight from the scorer.
 func _payout_cell(symbol: Symbol, n: int) -> Control:
 	# A line curse charges per cell, so n of them on one line costs n times.
 	if symbol == SymbolTable.MARKED_CARD:
 		var per := SymbolTable.MARKED_CARD_DAMAGE_PER_LEVEL \
 			* maxi(1, Global.player.curse_level(SymbolTable.MARKED_CARD))
 		return _cell("-%d" % (per * n), CURSE_COLOR, HORIZONTAL_ALIGNMENT_CENTER)
-
-	if symbol.is_wild:
-		return _cell("=" if n == MIN_RUN_COLUMN else "", DEAD_COLOR,
-			HORIZONTAL_ALIGNMENT_CENTER)
 
 	if not symbol.payout.is_empty():
 		if not symbol.payout.has(n):
