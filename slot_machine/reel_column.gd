@@ -16,6 +16,10 @@ signal nudge_requested(column: ReelColumn, delta: int)
 ## direction a spin travels.
 const NUDGE_DOWN := -1
 const NUDGE_UP := 1
+## Gap between the reel window and an arrow. The room for them comes from
+## GridFrame's margins above and the column VBox's separation below, so the
+## arrows never sit on the cells, the health bar, or the hold button.
+const NUDGE_GAP := 6.0
 
 @onready var hold_button: Button = %HoldButton
 @onready var scroll_layer: Control = %ScrollLayer
@@ -29,8 +33,12 @@ var held: bool = false:
 
 var _cell_overlay: Control
 var _cell_panels: Array[Panel] = []
-var _nudge_up: Button
-var _nudge_down: Button
+## Named by position, not direction — the two disagree on purpose, see
+## _build_nudge_controls.
+var _nudge_top: Button
+var _nudge_bottom: Button
+var _nudging_available: bool = false
+var _hovered: bool = false
 
 
 ## This is a plain Control whose children are anchor-positioned, so it does
@@ -60,34 +68,77 @@ func _ready() -> void:
 	_build_nudge_controls()
 
 
-## Two arrows flanking the column. Hidden entirely unless the player owns a
-## nudge, so a run without one never sees them.
+## Two arrows, one above the reel window and one below it. Hidden unless the
+## player owns a nudge *and* the cursor is on this column — with five columns,
+## ten permanently visible arrows is a wall of chrome for a verb used three
+## times a fight.
+## Each arrow is labelled and wired by where the incoming symbol appears, not by
+## which way the reel travels. The top arrow pushes the reel *down*, so the stop
+## above slides into view — clicking the top of a column reads as "show me
+## what's up there", and the glyph points the way the reel will move.
+##
+## The opposite mapping was tried first and is genuinely confusing: pressing the
+## top arrow changed the bottom cell.
 func _build_nudge_controls() -> void:
-	_nudge_up = _make_nudge_button("▲", NUDGE_UP, Control.PRESET_CENTER_TOP)
-	_nudge_down = _make_nudge_button("▼", NUDGE_DOWN, Control.PRESET_CENTER_BOTTOM)
+	_nudge_top = _make_nudge_button("▼", NUDGE_DOWN)
+	_nudge_bottom = _make_nudge_button("▲", NUDGE_UP)
 	set_nudging_available(false)
 
 
-func _make_nudge_button(glyph: String, delta: int, preset: int) -> Button:
+func _make_nudge_button(glyph: String, delta: int) -> Button:
 	var button := Button.new()
 	button.text = glyph
 	button.focus_mode = Control.FOCUS_NONE
-	button.custom_minimum_size = Vector2(34, 22)
+	button.custom_minimum_size = Vector2(34, 20)
 	button.add_theme_font_size_override("font_size", 12)
 	add_child(button)
-	button.set_anchors_and_offsets_preset(preset, Control.PRESET_MODE_MINSIZE, 2)
 	button.pressed.connect(func() -> void: nudge_requested.emit(self, delta))
 	return button
 
 
-func set_nudging_available(available: bool) -> void:
-	if _nudge_up == null:
+## Placed off the reel window's own rect rather than the column's. The column
+## also contains the hold button, so anchoring to its bottom put the down arrow
+## on top of HOLD, and anchoring to its top put the up arrow over the first row
+## of cells.
+func _place_nudge_controls() -> void:
+	if _nudge_top == null or scroll_layer == null:
 		return
-	_nudge_up.visible = available
-	_nudge_down.visible = available
-	var usable := available and can_nudge()
-	_nudge_up.disabled = not usable
-	_nudge_down.disabled = not usable
+	var top: float = scroll_layer.global_position.y - global_position.y
+	var centre: float = (size.x - _nudge_top.size.x) * 0.5
+	_nudge_top.position = Vector2(centre, top - NUDGE_GAP - _nudge_top.size.y)
+	_nudge_bottom.position = Vector2(centre, top + scroll_layer.size.y + NUDGE_GAP)
+
+
+func set_nudging_available(available: bool) -> void:
+	_nudging_available = available
+	_refresh_nudge_visibility()
+
+
+## Rect containment rather than mouse_entered: the cell panels above the reel
+## take mouse input for their tooltips, so the column itself never sees an
+## enter event, and the arrows are children too — leaving the column to press
+## one would count as an exit.
+func _process(_delta: float) -> void:
+	if _nudge_top == null or not _nudging_available:
+		return
+	var hovered := get_global_rect().has_point(get_global_mouse_position())
+	if hovered != _hovered:
+		_hovered = hovered
+		_refresh_nudge_visibility()
+
+
+func _refresh_nudge_visibility() -> void:
+	if _nudge_top == null:
+		return
+	var show_arrows := _nudging_available and _hovered
+	_nudge_top.visible = show_arrows
+	_nudge_bottom.visible = show_arrows
+	if not show_arrows:
+		return
+	_place_nudge_controls()
+	var usable := can_nudge()
+	_nudge_top.disabled = not usable
+	_nudge_bottom.disabled = not usable
 
 
 ## Jammed columns are out of the player's hands by design, and a held column
