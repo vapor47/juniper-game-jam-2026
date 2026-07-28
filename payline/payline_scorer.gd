@@ -87,7 +87,7 @@ class LineResult extends RefCounted:
 static func run_value(symbol: Symbol, count: int) -> int:
 	var flat := symbol.value * count
 	var total := flat if not symbol.combos else _payout(flat, count)
-	return apply_cut(total)
+	return apply_cut(total, symbol.type)
 
 
 ## The rake's cut, taken off a single action and floored at zero.
@@ -97,8 +97,12 @@ static func run_value(symbol: Symbol, count: int) -> int:
 ## while one long run eats it once. At a cut of 3 a line with no match keeps 33%
 ## of its value and a line with a run of three keeps 71%. It taxes collecting
 ## and rewards consolidating.
-static func apply_cut(total: int) -> int:
-	if total <= 0:
+##
+## Combat types only. Gold and token symbols pay 5 and 1, so any cut at all
+## would round the Token to nothing on its first raise and delete a 220g rare
+## outright — a scaling tax cannot be applied to values that never scale.
+static func apply_cut(total: int, type: Action.Type) -> int:
+	if total <= 0 or not Action.is_combat(type):
 		return total
 	return maxi(0, total - Global.action_cut)
 
@@ -185,7 +189,8 @@ static func score_line(stops: Array[Stop], ctx: ResolutionContext = null) -> Lin
 				effective += effect.combo_count_bonus()
 
 		# Flat-only symbols (tokens) pay their face value however many land.
-		var total := apply_cut(flat if not symbol.combos else _payout(flat, effective))
+		var total := apply_cut(
+			flat if not symbol.combos else _payout(flat, effective), symbol.type)
 		if total != 0:
 			result.runs.append(Run.new(symbol, run_len, effective, from, total, total - flat))
 			_accumulate(result, symbol.type, total)

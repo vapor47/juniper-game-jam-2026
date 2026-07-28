@@ -57,6 +57,7 @@ it. Before adding any of the four, walk this table:
 | `type == NONE` | Skipped by the run loop entirely, and by `_apply_result_totals`. |
 | `type` GOLD or TOKEN | `_apply_result_totals` matches only ATTACK/DEFEND/HEAL, so `modify_result_total` never fires. |
 | `trigger != NONE` | Pays off the board via BoardEffects, not off a line at all. |
+| `type` in `Action.COMBAT_TYPES` | Attack, block and heal are the pot: they are spent inside the fight, and effects that skim it (The Rake) only touch these. Gold and tokens are carried out of the fight and are spared. New action types — bleed, poison — belong in COMBAT_TYPES when they land, or a rake will silently ignore them. |
 
 And for a new effect, ask which of those properties neuter it or amplify it. A modifier whose
 hook cannot reach a stop must say so in `can_apply` — otherwise it is a purchase that costs gold
