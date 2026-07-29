@@ -60,6 +60,10 @@ static var LIVE_WIRE := _curse("Live Wire", Symbol.Trigger.ON_SPIN)
 ## decision, so the best line of the turn can be the one carrying a price.
 static var MARKED_CARD := _curse("Marked Card", Symbol.Trigger.NONE)
 
+## Lands undecided and becomes something else for the spin. Its own face never
+## scores — `Stop.resolved` stands in for it once a spin has rolled.
+static var MYSTERY := _make("Mystery", Action.Type.NONE, 0, Symbol.Rarity.UNCOMMON)
+
 ## Freezes whatever column it lands in. Fires on spin because that is when the
 ## column locks up — it pays nothing, so BoardEffects ignores it and combat
 ## reads the board for it directly.
@@ -196,6 +200,29 @@ static var PRICES := {
 ## The one display order: action type, then value. Used by the paytable and the
 ## reel preview's tally, so a symbol keeps the same relative place everywhere it
 ## is listed.
+## What a Mystery stop can turn into: whatever else is already on the reel.
+##
+## Drawn from the strip rather than the shop catalogue, so it scales with the
+## machine the player actually built — a strip of Mega Atks makes Mystery
+## dangerous, a strip of Blanks makes it worthless, and neither needs tuning.
+## It also means nothing has to be maintained as new symbols are added.
+##
+## Curses are eligible when the player is carrying one, deliberately: a Mystery
+## can only ever become something already on the reel, so it never introduces a
+## risk the board did not already hold.
+##
+## Distinct symbols, not weighted by how many copies there are. Weighting by
+## count would make Mystery quietly mirror the strip's own odds, which is what
+## an ordinary stop already does.
+static func mystery_pool() -> Array[Symbol]:
+	var out: Array[Symbol] = []
+	for stop: Stop in Global.strip:
+		var candidate: Symbol = stop.base_symbol
+		if candidate != MYSTERY and candidate not in out:
+			out.append(candidate)
+	return out
+
+
 static func sort_for_display(symbols: Array[Symbol]) -> Array[Symbol]:
 	symbols.sort_custom(func(a: Symbol, b: Symbol) -> bool:
 		if a.type != b.type:
@@ -217,7 +244,7 @@ static func purchasable() -> Array[Symbol]:
 		LIGHT_ATK, MED_ATK, HEAVY_ATK, MEGA_ATK,
 		LIGHT_BLK, MED_BLK, HEAVY_BLK, HEAL,
 		MEGA_BLK, WILD, COIN, PENNY, TOKEN, CHIP, LUCKY_SEVEN,
-		RECYCLER, BLANK,
+		RECYCLER, BLANK, MYSTERY,
 	]
 
 

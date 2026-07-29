@@ -79,6 +79,8 @@ func _refresh() -> void:
 ## Static so the payout legend can label its rows the same way the board does —
 ## the legend is only useful if a row is recognisably the same thing as a cell.
 static func headline(symbol: Symbol) -> String:
+	if symbol == SymbolTable.MYSTERY:
+		return "?"
 	if symbol.is_wild:
 		return "W"
 	if symbol.is_curse:
@@ -97,6 +99,8 @@ static func headline(symbol: Symbol) -> String:
 ## you've read either number. Shared with the payout legend, for the same
 ## reason headline() is.
 static func color_for(symbol: Symbol) -> Color:
+	if symbol == SymbolTable.MYSTERY:
+		return Color(0.24, 0.30, 0.34)
 	if symbol.is_wild:
 		return Color(0.42, 0.2, 0.5)
 

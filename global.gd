@@ -30,6 +30,18 @@ func _ready() -> void:
 	player = PlayerData.new()
 	_load_strip()
 
+## Decides every Mystery stop for the coming spin. Called once per spin rather
+## than per read: resolving lazily would give a different answer to the hover
+## preview than to the resolution that follows it.
+##
+## Not called on a nudge. A nudge moves the window over stops the spin already
+## decided; rerolling them would mean nudging one column silently changed the
+## symbols in another.
+func reroll_mysteries() -> void:
+	for stop: Stop in strip:
+		stop.reroll()
+
+
 func _load_strip() -> void:
 	strip = []
 	for symbol: Symbol in SymbolTable.build_default_strip():

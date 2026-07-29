@@ -162,6 +162,7 @@ func _spin_all() -> void:
 	_busy = true
 	_set_controls_enabled(false)
 
+	Global.reroll_mysteries()
 	await slot_machine.spin_all()
 
 	has_spun_this_turn = true

@@ -88,9 +88,12 @@ func _refresh_tally() -> void:
 		_tally.remove_child(child)
 		child.queue_free()
 
+	# base_symbol, not symbol: the preview describes what is physically on the
+	# reel. A Mystery that happens to be resolved as Med Atk right now is still
+	# a Mystery stop, and tallying it as Med Atk would misstate the strip.
 	var counts := {}
 	for stop: Stop in Global.strip:
-		counts[stop.symbol] = counts.get(stop.symbol, 0) + 1
+		counts[stop.base_symbol] = counts.get(stop.base_symbol, 0) + 1
 
 	var symbols: Array[Symbol] = []
 	for symbol: Symbol in counts:
@@ -120,7 +123,7 @@ func _tile(stop: Stop, number: int, alpha: float = 1.0) -> Control:
 	panel.custom_minimum_size = STOP_SIZE
 
 	var style := StyleBoxFlat.new()
-	var base := SymbolCell.color_for(stop.symbol)
+	var base := SymbolCell.color_for(stop.base_symbol)
 	style.bg_color = Color(base.r, base.g, base.b, alpha)
 	style.set_corner_radius_all(3)
 	style.set_content_margin_all(3)
@@ -136,8 +139,8 @@ func _tile(stop: Stop, number: int, alpha: float = 1.0) -> Control:
 	panel.add_child(vbox)
 
 	vbox.add_child(_label(str(number), 15, Color(1, 1, 1, 0.45 * alpha)))
-	vbox.add_child(_label(SymbolCell.headline(stop.symbol), 30, Color(1, 1, 1, alpha)))
-	vbox.add_child(_label(stop.symbol.symbol_name, 14, Color(1, 1, 1, 0.8 * alpha)))
+	vbox.add_child(_label(SymbolCell.headline(stop.base_symbol), 30, Color(1, 1, 1, alpha)))
+	vbox.add_child(_label(stop.base_symbol.symbol_name, 14, Color(1, 1, 1, 0.8 * alpha)))
 
 	var notes: Array[String] = []
 	for m: StopModifier in stop.modifiers:
