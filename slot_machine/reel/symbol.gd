@@ -57,7 +57,7 @@ var payout: Dictionary = {}
 ## showing, including on a nudge, and "spin" would read as the lever only.
 ## "on lock in" matches the button the player actually presses.
 const ON_APPEARANCE := "on appearance"
-const ON_LOCK_IN := "on lock in"
+const ON_LOCK_IN := "upon lock in"
 
 ## What this symbol does beyond paying on a line — set next to the symbol's own
 ## definition rather than in a lookup somewhere else.
