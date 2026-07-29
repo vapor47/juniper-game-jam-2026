@@ -174,8 +174,8 @@ gold income peaks.
 | Med Atk | damage | 4 | 2 | 13% |
 | Heavy Atk | damage | 6 | 1 | 6.7% |
 | Mega Atk | damage | 10 | 1 | 6.7% |
-| Light Blk | block | 2 | 3 | 20% |
-| Med Blk | block | 4 | 1 | 6.7% |
+| Light Blk | block | 2 | 2 | 13% |
+| Med Blk | block | 4 | 2 | 13% |
 | Heavy Blk | block | 8 | 1 | 6.7% |
 | Heal | heal | 4 | 1 | 6.7% |
 | Blank | — | 0 | 2 | 13% |
@@ -188,6 +188,17 @@ removed low-tier padding rather than value.
 
 A singleton now shows on **67%** of boards rather than 56%, so Mega Atk is present on two turns
 in three instead of just over half.
+
+**Block is flatter than damage on purpose.** Damage runs 3/2/1/1 across four tiers; block runs
+2/2/1 across three. A lone Light Blk is 2 against a hit of 12-20, which barely registers, so
+bottom-heavy block supply produces stops that are technically defensive and practically dead.
+Two Med Blks instead of a third Light Blk trades block *combos* (0.169 per line down to 0.148)
+for block *consistency* — measured 6.6 to 7.3 block per line, and lines paying 12+ block rise
+from 18% to 24%. Since block is capped by the intent and overflow is wasted, consistent
+mid-sized block is worth more than occasional large block.
+
+Watch this one: it is the number that moves "two lines covers a typical hit" from marginal to
+comfortable, which is the direction the next note warns about.
 
 **Damage 50% / block 35% is deliberate.** Block is capped by the intent number and overflow is
 wasted; damage is unbounded. Equal supply would make covering the hit trivial and kill the
