@@ -254,7 +254,6 @@ static func purchasable() -> Array[Symbol]:
 static func build_default_strip() -> Array[Symbol]:
 	return [
 		LIGHT_ATK, LIGHT_BLK, MED_ATK, BLANK, HEAVY_ATK,
-		LIGHT_BLK, LIGHT_ATK, MED_BLK, MED_ATK, BLANK,
-		MEGA_ATK, LIGHT_BLK, LIGHT_ATK, HEAL, HEAVY_ATK,
-		LIGHT_BLK, MED_ATK, MED_BLK, LIGHT_ATK, HEAVY_BLK,
+		LIGHT_BLK, LIGHT_ATK, MED_BLK, MEGA_ATK, BLANK,
+		LIGHT_BLK, HEAL, MED_ATK, LIGHT_ATK, HEAVY_BLK,
 	]

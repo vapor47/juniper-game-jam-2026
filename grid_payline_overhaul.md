@@ -148,27 +148,46 @@ Measure rather than derive when a payout depends on it.
 
 ## 3. The Strip
 
-20 stops at run start. Small deliberately: at 20 stops one stop is 5%, so a single shop
-removal is a felt swing. At 40 it would be 2.5% and the shop's core verb would barely register.
+15 stops at run start. Small deliberately, and for two separate reasons.
+
+**Odds granularity.** At 15 stops one stop is 6.7%, so a single shop removal or insertion is a
+felt swing. At 40 it would be 2.5% and the shop's core verb would barely register.
+
+**The strip is something the player has to hold in their head.** Order is a design layer — a
+column shows three *adjacent* stops, so the sequence decides what can co-occur, and the nudge
+(§ The Shim) is only playable by someone who can tell where a column has landed. Fifteen stops
+is 25% less sequence to learn than twenty, and every 3-window stays unique, so a column's
+position is always identifiable from its three visible cells.
+
+It also matters that the strip is re-learned continuously: every purchase changes it, so a
+shorter reel means less to relearn each time and each change is a larger, more memorable share
+of the whole.
+
+**Grow toward the ideal, do not drift from it.** A run adds roughly 8-10 stops, so starting at 15
+ends near 22-25 — close to where granularity still reads. Starting at 20 ends near 30, where a
+bought symbol shows on 41% of boards instead of 67%, and the shop quietly deflates exactly as
+gold income peaks.
 
 | Symbol | Type | Value | Stops | P/cell |
 |---|---|---|---|---|
-| Light Atk | damage | 2 | 4 | 20% |
-| Med Atk | damage | 4 | 3 | 15% |
-| Heavy Atk | damage | 6 | 2 | 10% |
-| Mega Atk | damage | 10 | 1 | 5% |
-| Light Blk | block | 2 | 4 | 20% |
-| Med Blk | block | 4 | 2 | 10% |
-| Heavy Blk | block | 8 | 1 | 5% |
-| Heal | heal | 4 | 1 | 5% |
-| Blank | — | 0 | 2 | 10% |
+| Light Atk | damage | 2 | 3 | 20% |
+| Med Atk | damage | 4 | 2 | 13% |
+| Heavy Atk | damage | 6 | 1 | 6.7% |
+| Mega Atk | damage | 10 | 1 | 6.7% |
+| Light Blk | block | 2 | 3 | 20% |
+| Med Blk | block | 4 | 1 | 6.7% |
+| Heavy Blk | block | 8 | 1 | 6.7% |
+| Heal | heal | 4 | 1 | 6.7% |
+| Blank | — | 0 | 2 | 13% |
 
 **Values were doubled from the original table in playtesting.** At the original scale a line
 averaged 8.75 across all three types, so a 100 HP enemy took ~20 turns and individual symbols
-read as rounding errors. Stop counts were deliberately left alone, so everything below that
-depends on *supply* rather than magnitude — the 50/35 damage/block ratio, the inverse
-value-to-frequency relationship, match frequency — is unchanged. The strip now averages
-**3.5/cell**, so a 5-cell line runs ~10.5 damage / 6 block / 1 heal before bonuses.
+read as rounding errors. The strip now averages **3.5/cell**, so a 5-cell line runs ~19 before
+the run bonus — measured 19.0, effectively unchanged from the 20-stop version, because the cut
+removed low-tier padding rather than value.
+
+A singleton now shows on **67%** of boards rather than 56%, so Mega Atk is present on two turns
+in three instead of just over half.
 
 **Damage 50% / block 35% is deliberate.** Block is capped by the intent number and overflow is
 wasted; damage is unbounded. Equal supply would make covering the hit trivial and kill the
