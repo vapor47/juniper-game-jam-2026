@@ -72,6 +72,18 @@ fire on nudges for that reason: a board-manipulation verb that dodged the spin t
 weaken the curse written to punish board manipulation. It is not a *respin*, though, so it never
 raises the lever's price.
 
+**One vocabulary for timing.** A symbol can pay on a played line, off the board after a spin, or
+off the board at lock-in, and the player needs the same words for those moments everywhere. They
+live on `Symbol` as `ON_APPEARANCE` and `ON_LOCK_IN`, and the shop card, the cell tooltip and the
+paytable all read them. Line scoring gets no clause at all — it is the default, so "4 damage"
+says everything.
+
+A symbol's own description lives next to its definition (`Symbol.describe()`, fed by
+`board_text` / `effect_override`), not in a lookup keyed by symbol somewhere else. The shop used
+to own that table and it read "Adds a Penny symbol (1 gold on a line, 1 more every spin it
+shows)" — the name repeated from the card title above it, and a third phrasing of a timing the
+paytable already had two words for.
+
 **Never keep a second copy of a fact.** Every drift bug in this project has the
 same shape: two lists, two tables or two orderings that must agree, where
 nothing enforces it and nothing fails loudly when they stop. So far that has

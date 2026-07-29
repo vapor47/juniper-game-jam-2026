@@ -48,6 +48,43 @@ var min_run: int = 1
 ## table instead of the value/bonus formula, and pays nothing below min_run.
 var payout: Dictionary = {}
 
+## The one vocabulary for *when* an effect fires. Defined here so the shop card,
+## the paytable and the cell tooltip cannot drift into three different words for
+## the same moment — which is exactly how the shop's colour table and the
+## paytable's sort order went wrong (§0).
+##
+## "on appearance" rather than "each spin": it fires whenever the symbol is
+## showing, including on a nudge, and "spin" would read as the lever only.
+## "on lock in" matches the button the player actually presses.
+const ON_APPEARANCE := "on appearance"
+const ON_LOCK_IN := "on lock in"
+
+## What this symbol does beyond paying on a line — set next to the symbol's own
+## definition rather than in a lookup somewhere else.
+var board_text: String = ""
+
+## Replaces the whole description for symbols whose worth is not a number.
+var effect_override: String = ""
+
+
+## The player-facing line for this symbol, used by the shop card and the cell
+## tooltip. States the effect and nothing else: no "Adds a", no symbol name —
+## the card is already titled with the name, and repeating it spends the one
+## line that could have said something.
+func describe() -> String:
+	if effect_override != "":
+		return effect_override
+
+	var parts: Array[String] = []
+	if type != Action.Type.NONE and value != 0:
+		parts.append(effect_text())
+	if board_text != "":
+		parts.append(board_text)
+
+	if parts.is_empty():
+		return "Nothing"
+	return "  ·  ".join(parts)
+
 
 func _init(p_name: String, p_type: Action.Type, p_value: int, p_icon: Texture2D = null) -> void:
 	symbol_name = p_name

@@ -210,7 +210,7 @@ func _board_table(symbols: Array[Symbol]) -> GridContainer:
 ## What a board symbol does, stated per copy. Recycler and the curses each pay
 ## off something other than their own count, so "per copy" would be wrong.
 func _board_text(symbol: Symbol) -> String:
-	var when := "on lock" if symbol.trigger == Symbol.Trigger.ON_LOCK else "each spin"
+	var when := Symbol.ON_LOCK_IN if symbol.trigger == Symbol.Trigger.ON_LOCK else Symbol.ON_APPEARANCE
 	if symbol == SymbolTable.RECYCLER:
 		return "%dg per junk symbol, %s" % [SymbolTable.RECYCLER_GOLD_PER_JUNK, when]
 	if symbol == SymbolTable.REEL_JAM:

@@ -9,6 +9,25 @@ class_name SymbolTable
 
 # ------------------------------------------------------------ starting strip
 
+# Payout constants live above the symbols because the symbols read them when
+# they build their own description strings, and a static var initialiser cannot
+# see a constant declared further down the file.
+
+## Gold per Recycler per junk symbol. Multiplying both counts is the point: the
+## pair scales quadratically, which is what makes committing strip space to two
+## dead symbols worth doing. Junk dilutes everything else on the strip, so the
+## build pays for itself — and curses count, so being cursed pays a little.
+const RECYCLER_GOLD_PER_JUNK := 2
+const CHIP_GOLD_PER_COPY := 5
+const PENNY_GOLD_PER_COPY := 1
+
+## Both scale with the curse's level, which The Cooler raises as the fight runs.
+## Damage per Live Wire showing, per spin, per level.
+const LIVE_WIRE_DAMAGE_PER_LEVEL := 2
+## Damage per Marked Card sitting on a line you played, per level.
+const MARKED_CARD_DAMAGE_PER_LEVEL := 3
+
+
 static var LIGHT_ATK := _make("Light Atk", Action.Type.ATTACK, 2, Symbol.Rarity.COMMON,
 		preload("res://assets/icons/light_attack_icon.svg"))
 static var MED_ATK := _make("Med Atk", Action.Type.ATTACK, 4, Symbol.Rarity.COMMON,
@@ -42,7 +61,8 @@ static var WILD := _wild()
 ## Economy symbols. Coin and Penny pay through the normal run machinery; Penny
 ## also trickles gold every spin just for being on the board.
 static var COIN := _make("Coin", Action.Type.GOLD, 5, Symbol.Rarity.UNCOMMON)
-static var PENNY := _board("Penny", Action.Type.GOLD, 1, Symbol.Rarity.COMMON, Symbol.Trigger.ON_SPIN)
+static var PENNY := _board("Penny", Action.Type.GOLD, 1, Symbol.Rarity.COMMON,
+	Symbol.Trigger.ON_SPIN, "+%d gold %s" % [PENNY_GOLD_PER_COPY, Symbol.ON_APPEARANCE])
 
 ## Flat only — see Symbol.combos.
 static var TOKEN := _no_combo("Token", Action.Type.TOKEN, 1, Symbol.Rarity.RARE)
@@ -54,47 +74,40 @@ static var TOKEN := _no_combo("Token", Action.Type.TOKEN, 1, Symbol.Rarity.RARE)
 ##
 ## Live Wire fires every spin, including the free opening one — it is a flat
 ## tax first and a respin deterrent second.
-static var LIVE_WIRE := _curse("Live Wire", Symbol.Trigger.ON_SPIN)
+static var LIVE_WIRE := _curse("Live Wire", Symbol.Trigger.ON_SPIN,
+	"Damages you %s" % Symbol.ON_APPEARANCE)
 ## Marked Card has no board trigger at all: it costs only when it sits on a line
 ## you actually play. That is the whole point of it — the cost lands on the
 ## decision, so the best line of the turn can be the one carrying a price.
-static var MARKED_CARD := _curse("Marked Card", Symbol.Trigger.NONE)
+static var MARKED_CARD := _curse("Marked Card", Symbol.Trigger.NONE,
+	"Damages you when its line pays")
 
 ## Lands undecided and becomes something else for the spin. Its own face never
 ## scores — `Stop.resolved` stands in for it once a spin has rolled.
-static var MYSTERY := _make("Mystery", Action.Type.NONE, 0, Symbol.Rarity.UNCOMMON)
+static var MYSTERY := _mystery()
 
 ## Freezes whatever column it lands in. Fires on spin because that is when the
 ## column locks up — it pays nothing, so BoardEffects ignores it and combat
 ## reads the board for it directly.
-static var REEL_JAM := _curse("Reel Jam", Symbol.Trigger.ON_SPIN)
+static var REEL_JAM := _curse("Reel Jam", Symbol.Trigger.ON_SPIN,
+	"Freezes its column %s" % Symbol.ON_APPEARANCE)
 
-## Both scale with the curse's level, which The Cooler raises as the fight runs.
-## Damage per Live Wire showing, per spin, per level.
-const LIVE_WIRE_DAMAGE_PER_LEVEL := 2
-## Damage per Marked Card sitting on a line you played, per level.
-const MARKED_CARD_DAMAGE_PER_LEVEL := 3
 
 
 ## Pays for the junk on the board. Two symbols that are worthless alone and
 ## worth something together — and both cost strip space, which is the price.
 static var RECYCLER := _board("Recycler", Action.Type.NONE, 0, Symbol.Rarity.UNCOMMON,
-	Symbol.Trigger.ON_LOCK)
+	Symbol.Trigger.ON_LOCK,
+	"+%d gold per junk symbol %s" % [RECYCLER_GOLD_PER_JUNK, Symbol.ON_LOCK_IN])
 
-static var CHIP := _board("Chip", Action.Type.NONE, 0, Symbol.Rarity.COMMON, Symbol.Trigger.ON_LOCK)
+static var CHIP := _board("Chip", Action.Type.NONE, 0, Symbol.Rarity.COMMON,
+	Symbol.Trigger.ON_LOCK, "+%d gold %s" % [CHIP_GOLD_PER_COPY, Symbol.ON_LOCK_IN])
 
 ## Pays only as three or more in a row on a played line, like a slot line.
 ## Nothing below that, so it is a genuine jackpot rather than filler — and a
 ## Wild can stand in for one of the three.
 static var LUCKY_SEVEN := _jackpot()
 
-## Gold per Recycler per junk symbol. Multiplying both counts is the point: the
-## pair scales quadratically, which is what makes committing strip space to two
-## dead symbols worth doing. Junk dilutes everything else on the strip, so the
-## build pays for itself — and curses count, so being cursed pays a little.
-const RECYCLER_GOLD_PER_JUNK := 2
-const CHIP_GOLD_PER_COPY := 5
-const PENNY_GOLD_PER_COPY := 1
 
 ## A full line of Wilds pays out everything at once.
 ##
@@ -137,6 +150,7 @@ const WILD_JACKPOT := {
 static func _jackpot() -> Symbol:
 	var s := _make("Lucky Seven", Action.Type.NONE, 0, Symbol.Rarity.UNCOMMON)
 	s.min_run = 3
+	s.effect_override = "3 in a row pays 6 tokens and 400 gold, and more beyond that"
 	s.payout = {
 		3: [6, 400],
 		4: [10, 900],
@@ -158,10 +172,17 @@ static func _make(n: String, t: Action.Type, v: int, r: Symbol.Rarity,
 	return s
 
 
+static func _mystery() -> Symbol:
+	var s := _make("Mystery", Action.Type.NONE, 0, Symbol.Rarity.UNCOMMON)
+	s.effect_override = "Becomes a random symbol already on your reel"
+	return s
+
+
 static func _wild() -> Symbol:
 	var s := Symbol.new("Wild", Action.Type.NONE, 0)
 	s.rarity = Symbol.Rarity.RARE
 	s.is_wild = true
+	s.effect_override = "Counts as whatever it sits beside"
 	return s
 
 
@@ -172,14 +193,15 @@ static func _no_combo(n: String, t: Action.Type, v: int, r: Symbol.Rarity) -> Sy
 
 
 static func _board(n: String, t: Action.Type, v: int, r: Symbol.Rarity,
-		trigger: Symbol.Trigger) -> Symbol:
+		trigger: Symbol.Trigger, board_text: String = "") -> Symbol:
 	var s := _make(n, t, v, r)
 	s.trigger = trigger
+	s.board_text = board_text
 	return s
 
 
-static func _curse(n: String, trigger: Symbol.Trigger) -> Symbol:
-	var s := _board(n, Action.Type.NONE, 0, Symbol.Rarity.JUNK, trigger)
+static func _curse(n: String, trigger: Symbol.Trigger, text: String = "") -> Symbol:
+	var s := _board(n, Action.Type.NONE, 0, Symbol.Rarity.JUNK, trigger, text)
 	s.is_curse = true
 	s.is_junk = true
 	return s

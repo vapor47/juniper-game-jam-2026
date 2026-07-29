@@ -276,4 +276,4 @@ func _stop_tooltip(row: int) -> String:
 		return "%d in a row pays" % symbol.min_run
 	if symbol == SymbolTable.CHIP:
 		return "%d gold" % SymbolTable.CHIP_GOLD_PER_COPY
-	return symbol.effect_text()
+	return symbol.describe()
