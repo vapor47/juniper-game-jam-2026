@@ -162,14 +162,23 @@ func _spin_all() -> void:
 	_busy = true
 	_set_controls_enabled(false)
 
+	# Held columns do not move, so they do not re-appear — captured before the
+	# spin because holds are cleared as the turn advances.
+	var moved: Array[ReelColumn] = []
+	for col: ReelColumn in slot_machine.reel_columns:
+		if not col.held:
+			moved.append(col)
+
 	Global.reroll_mysteries()
 	await slot_machine.spin_all()
 
 	has_spun_this_turn = true
 
-	# Symbols that pay just for showing up (§ Penny). Every spin, including
-	# respins — the escalating respin cost is what keeps it from being farmed.
-	var board := BoardEffects.apply(slot_machine.reel_columns, Symbol.Trigger.ON_SPIN)
+	# Symbols that pay just for showing up (§ Penny), counted only where the reel
+	# actually turned. Holding a Penny and rerolling around it is not a new
+	# appearance, and paying it again would make it farmable for the price of a
+	# respin.
+	var board := BoardEffects.apply(moved, Symbol.Trigger.ON_SPIN)
 	if board.gold > 0:
 		spawn_popup("+%dg from the board" % board.gold)
 	if board.damage > 0:
@@ -227,7 +236,8 @@ func _on_nudge_requested(column: ReelColumn, delta: int) -> void:
 
 	await column.nudge(delta)
 
-	var board := BoardEffects.apply(slot_machine.reel_columns, Symbol.Trigger.ON_SPIN)
+	# Only the nudged column moved, so only it can have newly appeared.
+	var board := BoardEffects.apply([column] as Array[ReelColumn], Symbol.Trigger.ON_SPIN)
 	if board.gold > 0:
 		spawn_popup("+%dg from the board" % board.gold)
 	if board.damage > 0:

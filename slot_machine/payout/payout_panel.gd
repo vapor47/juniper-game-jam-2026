@@ -212,16 +212,16 @@ func _board_table(symbols: Array[Symbol]) -> GridContainer:
 func _board_text(symbol: Symbol) -> String:
 	var when := Symbol.ON_LOCK_IN if symbol.trigger == Symbol.Trigger.ON_LOCK else Symbol.ON_APPEARANCE
 	if symbol == SymbolTable.RECYCLER:
-		return "%dg per junk symbol, %s" % [SymbolTable.RECYCLER_GOLD_PER_JUNK, when]
+		return "%dg per junk symbol %s" % [SymbolTable.RECYCLER_GOLD_PER_JUNK, when]
 	if symbol == SymbolTable.REEL_JAM:
-		return "freezes its column, %s" % when
+		return "freezes its column %s" % when
 	if symbol == SymbolTable.LIVE_WIRE:
 		var per := SymbolTable.LIVE_WIRE_DAMAGE_PER_LEVEL \
 			* maxi(1, Global.player.curse_level(SymbolTable.LIVE_WIRE))
-		return "%d damage per copy, %s" % [per, when]
+		return "%d damage %s" % [per, when]
 	var per := SymbolTable.CHIP_GOLD_PER_COPY if symbol == SymbolTable.CHIP \
 		else SymbolTable.PENNY_GOLD_PER_COPY
-	return "%dg per copy, %s" % [per, when]
+	return "%dg %s" % [per, when]
 
 
 ## Carries the board's own colour and headline, so a row is recognisably the

@@ -93,18 +93,18 @@ func _init(p_name: String, p_type: Action.Type, p_value: int, p_icon: Texture2D 
 	icon = p_icon
 
 
-## Reads as a short effect line, e.g. "4 damage".
+## Reads as a short effect line, e.g. "Deal 4 damage".
 func effect_text() -> String:
 	match type:
 		Action.Type.ATTACK:
-			return "%d damage" % value
+			return "Deal %d damage" % value
 		Action.Type.DEFEND:
-			return "%d block" % value
+			return "Gain %d block" % value
 		Action.Type.HEAL:
-			return "%d heal" % value
+			return "Heal %d HP" % value
 		Action.Type.GOLD:
-			return "%d gold" % value
+			return "Gain %d gold" % value
 		Action.Type.TOKEN:
-			return "%d token" % value
+			return "Gain %d token" % value
 		_:
 			return "No effect"

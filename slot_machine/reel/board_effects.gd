@@ -49,6 +49,17 @@ class Result extends RefCounted:
 		return gold == 0 and damage == 0
 
 
+## ON_SPIN is passed only the columns that actually moved (§ combat._spin_all).
+## A held column never re-appears — it was already there — so paying it again
+## would let a Penny be farmed by holding it and rerolling everything else, and
+## would let Live Wire punish a column the player deliberately froze.
+##
+## Note real fruit machines do the opposite: a held reel counts toward the next
+## spin's payout, because the payout is read off the final board however it got
+## there. That is fine when a payout happens once per spin and cannot be
+## repeated for free; here it can be, so the honest rule wins over the faithful
+## one.
+##
 ## Applies everything that pays for merely being on the board. Marked Card is
 ## deliberately absent: it charges for the line it sits on, not for showing up,
 ## so PaylineScorer owns it.
