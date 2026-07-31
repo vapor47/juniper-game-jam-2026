@@ -160,7 +160,7 @@ Measure rather than derive when a payout depends on it.
 
 ## 3. The Strip
 
-15 stops at run start. Small deliberately, and for two separate reasons.
+16 stops at run start. Small deliberately, and for two separate reasons.
 
 **Odds granularity.** At 15 stops one stop is 6.7%, so a single shop removal or insertion is a
 felt swing. At 40 it would be 2.5% and the shop's core verb would barely register.
@@ -190,6 +190,7 @@ gold income peaks.
 | Med Blk | block | 4 | 2 | 13% |
 | Heavy Blk | block | 8 | 1 | 6.7% |
 | Heal | heal | 4 | 1 | 6.7% |
+| Penny | gold | 1 | 1 | 6.3% |
 | Blank | — | 0 | 2 | 13% |
 
 **Values were doubled from the original table in playtesting.** At the original scale a line
@@ -200,6 +201,13 @@ removed low-tier padding rather than value.
 
 A singleton now shows on **67%** of boards rather than 56%, so Mega Atk is present on two turns
 in three instead of just over half.
+
+**One Penny is on the starting strip, and it is there to defuse a trap.** An economy build that
+required buying its way in would punish players for not already knowing it exists: you spend
+scarce early gold on gold-generation, and only learn that was the correct move after losing a
+run. Starting with a trickle teaches the concept by having it, and turns economy from a
+bootstrap into a choice about whether to build further. It pays roughly **2 gold a turn**, about
+12 across a fight — noticeable, never sufficient.
 
 **Block is flatter than damage on purpose.** Damage runs 3/2/1/1 across four tiers; block runs
 2/2/1 across three. A lone Light Blk is 2 against a hit of 12-20, which barely registers, so
