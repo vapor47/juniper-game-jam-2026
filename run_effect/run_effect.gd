@@ -29,7 +29,7 @@ func on_player_turn_started(ctx: CombatContext) -> void: pass
 func on_resolution(ctx: ResolutionContext) -> void: pass
 func on_turn_ended(ctx: CombatContext) -> void: pass
 ## The player locked in having selected no lines at all.
-func on_turn_folded(ctx: CombatContext) -> void: pass
+func on_turn_skipped(ctx: CombatContext) -> void: pass
 func on_combo_landed(symbol: Symbol, ctx: ResolutionContext) -> void: pass
 func on_combat_ended(result, ctx: CombatContext) -> void: pass
 

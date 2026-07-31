@@ -1,51 +1,63 @@
 extends Souvenir
 class_name SlowPlaySouvenir
-## Fold to build the pot: every folded turn permanently raises what your lines
-## pay for the rest of the fight.
+## Skip a turn to make the next one bigger.
 ##
-## Named for the poker play — deliberately underplaying a strong hand so the pot
-## grows before you take it. Mechanically that is exactly this.
+## Each skipped turn adds to a multiplier that is spent the next time the player
+## actually resolves a line, then resets to nothing. It banks, it does not
+## compound across the whole fight — the pot is carried to one hand and taken.
 ##
-## A fold costs a full turn: no damage dealt, and no block either, so the
-## enemy's hit lands on an unblocked player. Measured against a 9-turn fight on
-## a block-heavy machine, three folds turns 182 total damage into 303 — a 66%
-## gain for about 42 HP. That is the trade.
+## A skip costs a full turn: no damage dealt, and no block either, so the
+## enemy's hit lands on an unblocked player. That cost is what the multiplier is
+## paying for.
 ##
-## The bonus persists for the fight rather than resetting when it is cashed in.
-## A version that reset on the next played turn is strictly worse than never
-## folding at all: fold-fold-fold-cash on repeat deals roughly 120 over nine
-## turns against 182 for simply playing every turn.
-##
-## It needs no cap up to about four folds — losing a turn you would have scored
-## on is its own brake, and at +50% a fourth fold gains nothing over a third.
-## MAX_FOLDS only guards the long fights (The Cooler runs past twenty turns)
-## where the tempo cost stops mattering.
+## Named for the poker play — underplaying to let the pot grow before taking it.
+## The *mechanic* is described to the player in slots language ("skipped turn"),
+## since the machine is a slot machine even when the archetype names are not.
 
-const PER_FOLD := 0.5
-const MAX_FOLDS := 4
+const PER_SKIP := 0.5
 
-var folds: int = 0
+var skips: int = 0
 
 
 func _init() -> void:
 	display_name = "Slow Play"
-	description = "Folding a turn raises every payline by %d%% for the rest of the combat" \
-		% int(PER_FOLD * 100.0)
+	_refresh_text()
 	rarity = Souvenir.Rarity.RARE
 
 
 func on_combat_started(_ctx: CombatContext) -> void:
-	folds = 0
+	skips = 0
+	_refresh_text()
 
 
-func on_turn_folded(_ctx: CombatContext) -> void:
-	folds = mini(folds + 1, MAX_FOLDS)
+func on_turn_skipped(_ctx: CombatContext) -> void:
+	skips += 1
+	_refresh_text()
+
+
+## Spent at lock-in, not at score time. score_line runs on every hover, so
+## clearing the bank there would wipe it the moment the player read a line.
+func on_resolution(_ctx: ResolutionContext) -> void:
+	if skips > 0:
+		skips = 0
+		_refresh_text()
+
+
+func multiplier() -> float:
+	return 1.0 + PER_SKIP * float(skips)
 
 
 ## Scales the line as a whole. Runs inside score_line, so the hover preview
-## shows the raised numbers before the player commits — which is the point:
-## the payoff has to be visible for folding to be a decision.
+## shows the banked total before the player commits — the payoff has to be
+## visible or skipping is a bet placed blind.
 func modify_result_total(total: int, _type: Action.Type, _ctx: ResolutionContext) -> int:
-	if folds <= 0 or total <= 0:
+	if skips <= 0 or total <= 0:
 		return total
-	return roundi(float(total) * (1.0 + PER_FOLD * float(folds)))
+	return roundi(float(total) * multiplier())
+
+
+## Carries the live figure, because the whole decision is "is the bank big
+## enough yet" and a static description cannot answer that.
+func _refresh_text() -> void:
+	description = "Every skipped turn increases your next action's totals by %d%% (Current: %d%%)" \
+		% [int(PER_SKIP * 100.0), int((multiplier() - 1.0) * 100.0)]
