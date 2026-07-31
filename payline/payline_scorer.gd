@@ -303,6 +303,12 @@ static func _accumulate(result: LineResult, type: Action.Type, amount: int) -> v
 ## HOOK B — a stop on the line can adjust the line's total for its own type.
 static func _apply_result_totals(result: LineResult, stops: Array[Stop],
 		ctx: ResolutionContext) -> void:
+	var before := {
+		Action.Type.ATTACK: result.attack,
+		Action.Type.DEFEND: result.block,
+		Action.Type.HEAL: result.heal,
+	}
+
 	for stop: Stop in stops:
 		if stop.modifiers.is_empty() or stop.symbol.type == Action.Type.NONE:
 			continue
@@ -317,13 +323,59 @@ static func _apply_result_totals(result: LineResult, stops: Array[Stop],
 
 	# Run effects get the same hook, applied to the line as a whole rather than
 	# per stop. RunEffect.modify_result_total existed and was never called by
-	# anything — declared alongside the stop-modifier version and then only the
-	# stop one wired up, so every souvenir and drink that wanted to scale a
-	# line total silently did nothing.
+	# anything — declared alongside the stop-modifier version, and only the stop
+	# one wired up.
 	for effect: RunEffect in _active_effects():
 		result.attack = effect.modify_result_total(result.attack, Action.Type.ATTACK, ctx)
 		result.block = effect.modify_result_total(result.block, Action.Type.DEFEND, ctx)
 		result.heal = effect.modify_result_total(result.heal, Action.Type.HEAL, ctx)
+
+	_rescale_runs(result, before)
+
+
+## Pushes any change made to the totals back down into the runs.
+##
+## This is load-bearing, not tidying. `to_actions()` builds one Action per run
+## from `run.value` (§4), and never reads result.attack/block/heal — so a hook
+## that only moved the totals changed what the readout displayed and nothing
+## about what actually resolved. Weighted Payout had been inert in combat for
+## exactly this reason, visible in the preview and absent from the swing.
+##
+## Distributed proportionally, with the remainder forced onto the last run so
+## the runs sum to the total exactly. Approximating here would let the summary
+## and the damage disagree by a point, which is the same class of bug.
+static func _rescale_runs(result: LineResult, before: Dictionary) -> void:
+	for type: Action.Type in before:
+		var old_total: int = before[type]
+		var new_total: int = _total_for(result, type)
+		if old_total == new_total or old_total == 0:
+			continue
+
+		var runs: Array[Run] = []
+		for run: Run in result.runs:
+			if run.symbol.type == type:
+				runs.append(run)
+		if runs.is_empty():
+			continue
+
+		var assigned := 0
+		for i in runs.size():
+			if i == runs.size() - 1:
+				runs[i].value = new_total - assigned
+			else:
+				runs[i].value = roundi(float(runs[i].value) * float(new_total) / float(old_total))
+				assigned += runs[i].value
+
+
+static func _total_for(result: LineResult, type: Action.Type) -> int:
+	match type:
+		Action.Type.ATTACK:
+			return result.attack
+		Action.Type.DEFEND:
+			return result.block
+		Action.Type.HEAL:
+			return result.heal
+	return 0
 
 
 ## Fired once, at lock-in — never from a preview. Grants combo payoffs and lets

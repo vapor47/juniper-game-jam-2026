@@ -84,6 +84,17 @@ to own that table and it read "Adds a Penny symbol (1 gold on a line, 1 more eve
 shows)" — the name repeated from the card title above it, and a third phrasing of a timing the
 paytable already had two words for.
 
+**A hook that moves a total must move the runs too.** `LineResult` carries both per-run values
+and per-type totals, and they are read by different things: the payline readout shows the totals,
+while `to_actions()` builds one Action per run (§4) from `run.value` and never looks at the
+totals at all. So an effect that only changed `result.attack` changed what the player was *told*
+and nothing about what actually landed. Weighted Payout shipped inert in combat for exactly that
+reason, and Slow Play repeated it.
+
+`_rescale_runs` now pushes any change to a total back down into that type's runs, remainder
+forced onto the last one so they sum exactly. **Verifying an effect by reading `result.attack` is
+not a verification** — it reads the number that is not used. Check `to_actions()`.
+
 **Never keep a second copy of a fact.** Every drift bug in this project has the
 same shape: two lists, two tables or two orderings that must agree, where
 nothing enforces it and nothing fails loudly when they stop. So far that has
