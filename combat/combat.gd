@@ -250,7 +250,10 @@ func _set_controls_enabled(enabled: bool) -> void:
 	for col: ReelColumn in slot_machine.reel_columns:
 		col.hold_button.disabled = not live or col.jammed
 		col.set_nudging_available(live and can_nudge)
-	slot_machine.lock_in_button.disabled = not live or selected_lines.is_empty()
+	# Locking in with nothing selected is legal: it folds the turn. The button
+	# says which one it is, so the player is never guessing what pressing it does.
+	slot_machine.lock_in_button.disabled = not live
+	slot_machine.lock_in_button.text = "LOCK IN" if not selected_lines.is_empty() else "FOLD"
 	slot_machine.lever.disabled = not live or Global.player.tokens < _next_spin_cost()
 	slot_machine.lever.text = "RESPIN (%d)" % _next_spin_cost()
 	slot_machine.payline_panel.set_interactive(live)
@@ -365,8 +368,20 @@ func _on_lever_pulled() -> void:
 
 
 func _on_lock_in_pressed() -> void:
-	if _busy or _combat_over or not has_spun_this_turn or selected_lines.is_empty():
+	if _busy or _combat_over or not has_spun_this_turn:
 		return
+
+	# Folding: no lines, so nothing scores, nothing resolves, and the turn ends
+	# with the enemy's hit landing on an unblocked player. That cost is the
+	# whole point — anything that pays for folding is paying for taking it.
+	if selected_lines.is_empty():
+		_busy = true
+		_set_controls_enabled(false)
+		Global.player.broadcast("on_turn_folded", [context])
+		spawn_popup("FOLD")
+		_end_player_turn()
+		return
+
 	_busy = true
 	_set_controls_enabled(false)
 	slot_machine.show_selected_paylines(selected_lines)

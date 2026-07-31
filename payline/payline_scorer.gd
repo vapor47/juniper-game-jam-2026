@@ -315,6 +315,16 @@ static func _apply_result_totals(result: LineResult, stops: Array[Stop],
 				Action.Type.HEAL:
 					result.heal = modifier.modify_result_total(result.heal, ctx, stop)
 
+	# Run effects get the same hook, applied to the line as a whole rather than
+	# per stop. RunEffect.modify_result_total existed and was never called by
+	# anything — declared alongside the stop-modifier version and then only the
+	# stop one wired up, so every souvenir and drink that wanted to scale a
+	# line total silently did nothing.
+	for effect: RunEffect in _active_effects():
+		result.attack = effect.modify_result_total(result.attack, Action.Type.ATTACK, ctx)
+		result.block = effect.modify_result_total(result.block, Action.Type.DEFEND, ctx)
+		result.heal = effect.modify_result_total(result.heal, Action.Type.HEAL, ctx)
+
 
 ## Fired once, at lock-in — never from a preview. Grants combo payoffs and lets
 ## modifiers act on having been played (§ HOOK D).
