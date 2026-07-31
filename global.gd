@@ -2,6 +2,10 @@ extends Node
 
 var player: PlayerData
 
+## The machine this run is being played on. Null falls back to the default
+## strip, so anything that boots straight into combat still works.
+var machine: Machine
+
 ## The single shared master reel strip (§2/§3). Every ReelColumn's Reel points
 ## at this same array (GDScript arrays are reference types), so shop edits
 ## (Phase 4) are visible to all 5 columns immediately.
@@ -44,5 +48,7 @@ func reroll_mysteries() -> void:
 
 func _load_strip() -> void:
 	strip = []
-	for symbol: Symbol in SymbolTable.build_default_strip():
+	var symbols := machine.build_strip() if machine != null \
+		else SymbolTable.build_default_strip()
+	for symbol: Symbol in symbols:
 		strip.append(Stop.new(symbol))

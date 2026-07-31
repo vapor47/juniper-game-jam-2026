@@ -4,6 +4,7 @@ const COMBAT_SCENE = preload("res://combat/combat.tscn")
 const SHOP_SCENE = preload("res://shop/shop.tscn")
 const VICTORY_SCREEN_SCENE = preload("res://screens/battle_victory_screen.tscn")
 const MAIN_MENU_SCENE = preload("res://screens/main_menu.tscn")
+const MACHINE_SELECT_SCENE = preload("res://screens/machine_select.tscn")
 
 signal combat_reward_chosen
 
@@ -44,6 +45,16 @@ func go_to_win_screen() -> void:
 	HUD.hide_for_menu()
 	add_child(VICTORY_SCREEN_SCENE.instantiate())
 	
+## Between the menu and the first fight: the run has not started yet, so the
+## HUD stays hidden until a machine is chosen.
+func go_to_machine_select() -> void:
+	var screen := MACHINE_SELECT_SCENE.instantiate()
+	get_tree().root.add_child(screen)
+	get_tree().current_scene.queue_free()
+	get_tree().current_scene = screen
+	HUD.hide_for_menu()
+
+
 func go_to_main_screen() -> void:
 	var main_menu := MAIN_MENU_SCENE.instantiate()
 	get_tree().root.add_child(main_menu)

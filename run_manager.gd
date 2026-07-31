@@ -52,10 +52,25 @@ func award_combat_reward() -> int:
 func is_run_complete() -> bool:
 	return curr_encounter_idx >= encounter_queue.size()
 
+## Entry point for a run. Sets the machine first so Global.reset() builds that
+## machine's strip, then grants whatever it comes with.
+func start_run(machine: Machine) -> void:
+	Global.machine = machine
+	reset_run_state()
+	for souvenir: Souvenir in machine.starting_souvenirs():
+		Global.player.add_souvenir(souvenir)
+	SceneManager.go_to_combat(get_next_encounter())
+
+
 func restart_run() -> void:
 	is_resetting = true
 	
 	reset_run_state()
+	# Restarting keeps the machine, so its starting kit has to be re-granted —
+	# reset_run_state built a fresh PlayerData with nothing on it.
+	if Global.machine != null:
+		for souvenir: Souvenir in Global.machine.starting_souvenirs():
+			Global.player.add_souvenir(souvenir)
 	SceneManager.go_to_combat(get_next_encounter())
 	await get_tree().process_frame
 	

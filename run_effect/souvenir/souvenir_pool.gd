@@ -1,5 +1,8 @@
 class_name SouvenirPool
 
+## Slow Play is deliberately absent: it is The Nit's starting souvenir and its
+## whole identity. A machine's opening kit should not also be a shop find, or
+## the machine stops being a choice.
 static var ENTRIES := [
 	{ "souvenir": LoyaltyCardSouvenir,   "rarity": Souvenir.Rarity.COMMON },
 	{ "souvenir": RabbitsFootSouvenir,   "rarity": Souvenir.Rarity.COMMON },
@@ -9,7 +12,6 @@ static var ENTRIES := [
 	{ "souvenir": FrequentFlyerSouvenir, "rarity": Souvenir.Rarity.UNCOMMON },
 	{ "souvenir": CardCounterSouvenir,   "rarity": Souvenir.Rarity.RARE },
 	{ "souvenir": ShimSouvenir,          "rarity": Souvenir.Rarity.RARE },
-	{ "souvenir": SlowPlaySouvenir,      "rarity": Souvenir.Rarity.RARE },
 ]
 
 static var RARITY_WEIGHTS := {
